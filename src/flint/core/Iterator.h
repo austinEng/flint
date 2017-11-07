@@ -3,6 +3,7 @@
 
 #include <functional>
 
+namespace flint {
 namespace core {
 namespace iterator {
 
@@ -151,5 +152,6 @@ namespace iterator {
 
     }
 
+}
 }
 }

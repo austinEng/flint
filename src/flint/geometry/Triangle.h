@@ -3,6 +3,7 @@
 
 #include "FixedPolygon.h"
 
+namespace flint {
 namespace geometry {
 
 class TriangleBase { };
@@ -20,4 +21,5 @@ class Triangle : public FixedPolygon<3, D, T>, TriangleBase {
         }
 };
 
+}
 }

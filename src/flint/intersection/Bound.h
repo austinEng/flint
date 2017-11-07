@@ -7,6 +7,7 @@
 #include "Ray.h"
 #include "RayGroup.h"
 
+namespace flint {
 namespace intersection {
 
 template<int GroupSize, typename Ray, typename T>
@@ -44,4 +45,5 @@ std::array<Eigen::Array<float, GroupSize, 1>, 2> IntersectBound(const core::Axis
     return result;
 }
 
+}
 }

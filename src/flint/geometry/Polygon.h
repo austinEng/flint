@@ -5,6 +5,7 @@
 #include <Eigen/Dense>
 #include "Geometry.h"
 
+namespace flint {
 namespace geometry {
 
 template <unsigned int D, typename T = precision_t>
@@ -36,4 +37,5 @@ class Polygon : public Geometry<D> {
         }
 };
 
+}
 }

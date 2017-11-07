@@ -9,6 +9,7 @@
 #include "intersection/RayGroup.h"
 #include "intersection/object/Triangle.h"
 
+namespace flint {
 namespace intersection {
 namespace BVH {
 
@@ -87,4 +88,5 @@ namespace BVH {
 
 }
 
+}
 }

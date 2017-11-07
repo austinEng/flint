@@ -5,6 +5,7 @@
 #include "flint/intersection/Bound.h"
 #include "flint/intersection/RayGroup.h"
 
+using namespace flint;
 using namespace core;
 using namespace intersection;
 

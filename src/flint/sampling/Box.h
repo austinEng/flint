@@ -8,6 +8,7 @@
 #include "core/MultiGrid.h"
 #include "Random.h"
 
+namespace flint {
 namespace sampling {
 
 // https://www.cct.lsu.edu/~fharhad/ganbatte/siggraph2007/CD2/content/sketches/0250.pdf
@@ -131,4 +132,5 @@ std::vector<Eigen::Array<SamplePrecision, N, 1>> SampleBox(const core::AxisAlign
     return samples;
 }
 
+}
 }

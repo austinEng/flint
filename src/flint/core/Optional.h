@@ -4,6 +4,7 @@
 #include <type_traits>
 #include <utility>
 
+namespace flint {
 namespace core {
 
 template <typename Value>
@@ -107,4 +108,5 @@ private:
 
 };
 
+}
 }

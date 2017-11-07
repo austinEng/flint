@@ -5,6 +5,7 @@
 #include <Eigen/Dense>
 #include "Ray.h"
 
+namespace flint {
 namespace intersection {
 
 template<typename Ray, int N>
@@ -71,7 +72,7 @@ class RayGroup  {
         typename data_t::template ConstFixedBlockXpr<N, kDimension>::Type Origins() const {
             return _data.template block<N, kDimension>(0, 0, _data.rows(), kDimension);
         }
-        
+
         typename data_t::template ConstFixedBlockXpr<N, kDimension>::Type Directions() const {
             return _data.template block<N, kDimension>(0, kDimension, _data.rows(), kDimension);
         }
@@ -79,7 +80,7 @@ class RayGroup  {
         typename data_t::template FixedBlockXpr<N, kDimension>::Type Origins() {
             return _data.template block<N, kDimension>(0, 0, _data.rows(), kDimension);
         }
-        
+
         typename data_t::template FixedBlockXpr<N, kDimension>::Type Directions() {
             return _data.template block<N, kDimension>(0, kDimension, _data.rows(), kDimension);
         }
@@ -106,4 +107,5 @@ std::vector<RayGroup<Ray, GroupSize>> CreateRayGroups(const Ray* rays, unsigned 
     return groups;
 }
 
+}
 }

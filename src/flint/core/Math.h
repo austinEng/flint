@@ -3,6 +3,7 @@
 
 static constexpr double kPI = 3.14159265358979;
 
+namespace flint {
 namespace core {
 
 template <typename T>
@@ -28,4 +29,5 @@ constexpr T constPow(const T base, const unsigned int exponent) {
 	return exponent == 0 ? 1 : base * constPow(base, exponent - 1);
 }
 
+}
 }

@@ -4,6 +4,7 @@
 #include <Eigen/Dense>
 #include "Optional.h"
 
+namespace flint {
 namespace core {
 
 template <int N, typename T>
@@ -240,4 +241,5 @@ Optional<AxisAlignedBox<N, T>>& Merge(Optional<AxisAlignedBox<N, T>> &a, Optiona
     return a;
 }
 
+}
 }

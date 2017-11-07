@@ -3,21 +3,22 @@
 
 #include <Eigen/Dense>
 
+namespace flint {
 namespace intersection {
 
 template<int D, typename _Precision>
 class Ray {
-    
+
     public:
         static constexpr unsigned int kDimension = D;
         using Precision = _Precision;
         using Vector = Eigen::Matrix<Precision, kDimension, 1>;
-        
+
         Ray() {
 
         }
-        
-        Ray(const Precision* originData, const Precision* directionData) 
+
+        Ray(const Precision* originData, const Precision* directionData)
           : origin(originData), direction(directionData) {
 
         }
@@ -43,4 +44,5 @@ class Ray {
         Vector direction;
 };
 
+}
 }

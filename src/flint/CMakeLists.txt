@@ -1,25 +1,20 @@
-include(ExternalProject)
+include(ExternalGitProject)
 
-ExternalProject_Add(eigen
+ExternalGitProject(
+    NAME eigen
     GIT_REPOSITORY https://github.com/RLovelett/eigen.git
     GIT_TAG 3.3.4
     UPDATE_COMMAND ""
     CONFIGURE_COMMAND ""
     BUILD_COMMAND ""
-    INSTALL_COMMAND
-        ${CMAKE_COMMAND} -E copy_directory
-            ${CMAKE_BINARY_DIR}/third_party/eigen-prefix/src/eigen/Eigen
-            ${CMAKE_BINARY_DIR}/include/Eigen3/Eigen &&
-        ${CMAKE_COMMAND} -E copy_directory
-            ${CMAKE_BINARY_DIR}/third_party/eigen-prefix/src/eigen/unsupported
-            ${CMAKE_BINARY_DIR}/include/Eigen3/unsupported
+    INSTALL_COMMAND ""
 )
-set(EIGEN_INCLUDE_DIR ${CMAKE_BINARY_DIR}/include/Eigen3)
+set(EIGEN_INCLUDE_DIR ${EP_PREFIX}/third_party/src/eigen)
 
-ExternalProject_Add(tinyobjloader
+ExternalGitProject(
+    NAME tinyobjloader
     GIT_REPOSITORY https://github.com/syoyo/tinyobjloader.git
     GIT_TAG v1.0.6
-    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}
 )
 
 file(GLOB_RECURSE SOURCES *.cc)
@@ -36,6 +31,7 @@ target_include_directories(flint PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
   $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>
+  $<BUILD_INTERFACE:${EP_PREFIX}/include>
   $<BUILD_INTERFACE:${EIGEN_INCLUDE_DIR}>
   $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${INCLUDE_DEST}>
 )

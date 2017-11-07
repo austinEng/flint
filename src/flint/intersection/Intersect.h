@@ -3,6 +3,7 @@
 
 #include "Ray.h"
 
+namespace flint {
 namespace intersection {
 
 enum IntersectionOptions {
@@ -13,9 +14,9 @@ enum IntersectionOptions {
 
 template <int N, IntersectionOptions Options>
 struct IntersectionInfoGroup : public Eigen::Matrix<float, N, (Options & IntersectionOptions::Nearest) + (Options & IntersectionOptions::Farthest) + 1> {
-    
+
     using Base = Eigen::Matrix<float, N, (Options & IntersectionOptions::Nearest) + (Options & IntersectionOptions::Farthest) + 1>;
-    
+
     static constexpr unsigned int kNearIndex = 0;
     static constexpr unsigned int kFarIndex = kNearIndex + (Options & IntersectionOptions::Nearest);
     static constexpr unsigned int kCountIndex = kFarIndex + (Options & IntersectionOptions::Farthest);
@@ -26,17 +27,6 @@ struct IntersectionInfoGroup : public Eigen::Matrix<float, N, (Options & Interse
     }
 };
 
-// template <typename Object, typename Ray, IntersectionOptions Options, typename Impl>
-// class Intersect {
-
-//     public:
-//         template <int GroupSize, typename RayIterator>
-//         typename std::enable_if<std::is_same<typename std::iterator_traits<RayIterator>::value_type, Ray>::value, IntersectionInfoGroup<GroupSize, Options>>::type
-//         IntersectRays(const Object* object, RayIterator rayBegin, RayIterator rayEnd) {
-//             return static_cast<const Impl*>(this)->template IntersectRaysImpl<GroupSize>(object, rayBegin, rayEnd);
-//         }
-// };
-
 template <typename Ray, IntersectionOptions _Options>
 struct IntersectBase {
     static constexpr IntersectionOptions Options = _Options;
@@ -45,4 +35,5 @@ struct IntersectBase {
     using IntersectionInfoGroup = intersection::IntersectionInfoGroup<N, Options>;
 };
 
+}
 }

@@ -6,6 +6,7 @@
 #include "core/Optional.h"
 #include "core/AxisAlignedBox.h"
 
+namespace flint {
 namespace geometry {
 
 class GeometryBase {
@@ -39,4 +40,5 @@ class Geometry : public GeometryBase {
 
 };
 
+}
 }

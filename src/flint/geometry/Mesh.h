@@ -5,13 +5,14 @@
 
 #include "Geometry.h"
 
+namespace flint {
 namespace geometry {
 
 class MeshBase { };
 
 template <unsigned int D, typename _GeometryType = Geometry<D>>
 class Mesh : public Geometry<D>, MeshBase {
-    
+
     public:
         using GeometryType = _GeometryType;
 
@@ -24,11 +25,12 @@ class Mesh : public Geometry<D>, MeshBase {
         }
 
         virtual ~Mesh() {
-            
+
         }
 
     private:
         std::vector<GeometryType*> _geometries;
 };
 
+}
 }

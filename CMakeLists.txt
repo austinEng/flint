@@ -1,6 +1,12 @@
 project(flint CXX)
 cmake_minimum_required(VERSION 2.8.6)
 
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
+option(BUILD_NATIVE "Target native platform" ON)
+option(BUILD_WASM "Target Web Assmembly" ON)
+option(BUILD_JS "Target asm.js" ON)
+
 include(CheckCXXCompilerFlag)
 CHECK_CXX_COMPILER_FLAG("-std=c++14" COMPILER_SUPPORTS_CXX14)
 if (COMPILER_SUPPORTS_CXX14)
@@ -61,6 +67,58 @@ function(InternalTarget folder target)
   endif()
 endfunction(InternalTarget)
 
-add_subdirectory(third_party)
-add_subdirectory(src/flint)
-add_subdirectory(test)
+if (WIN32)
+    # By default, ExternalProject finds the wrong git
+    find_package(Git REQUIRED)
+    set(GIT_EXECUTABLE "C:/Program Files/Git/cmd/git.exe")
+endif()
+
+if (NOT DEFINED EP_PREFIX)
+    set(EP_PREFIX ${PROJECT_BINARY_DIR})
+endif()
+
+if (BUILD_NATIVE)
+    add_subdirectory(src/flint ${CMAKE_CURRENT_BINARY_DIR}/native/src/flint)
+    add_subdirectory(src/flint_viewport ${CMAKE_CURRENT_BINARY_DIR}/native/src/flint_viewport)
+    add_subdirectory(src/examples ${CMAKE_CURRENT_BINARY_DIR}/native/src/examples)
+    add_subdirectory(test ${CMAKE_CURRENT_BINARY_DIR}/native/test)
+endif()
+
+if (BUILD_WEB)
+    add_subdirectory(src/flint)
+    add_subdirectory(src/flint_viewport)
+    add_subdirectory(src/examples)
+    add_subdirectory(test)
+endif()
+
+include(ExternalProject)
+
+if (BUILD_JS)
+    ExternalProject_Add(flint_js
+        SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
+        BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/js
+        CMAKE_ARGS
+          -DBUILD_WEB:BOOL=ON
+          -DUSE_WASM=0
+          -DBUILD_NATIVE:BOOL=OFF
+          -DBUILD_JS:BOOL=OFF
+          -DBUILD_WASM:BOOL=OFF
+          -DEP_PREFIX:PATH=${PROJECT_BINARY_DIR}
+        INSTALL_COMMAND ""
+    )
+endif()
+
+if (BUILD_WASM)
+    ExternalProject_Add(flint_wasm
+        SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
+        BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/wasm
+        CMAKE_ARGS
+          -DBUILD_WEB:BOOL=ON
+          -DUSE_WASM=1
+          -DBUILD_NATIVE:BOOL=OFF
+          -DBUILD_JS:BOOL=OFF
+          -DBUILD_WASM:BOOL=OFF
+          -DEP_PREFIX:PATH=${PROJECT_BINARY_DIR}
+        INSTALL_COMMAND ""
+    )
+endif()

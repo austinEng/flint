@@ -5,6 +5,9 @@
 #include <iostream>
 #include "Math.h"
 
+namespace flint {
+namespace core {
+
 template <typename T>
 class Camera {
 
@@ -140,3 +143,6 @@ class Camera {
             return _center;
         }
     };
+
+}
+}

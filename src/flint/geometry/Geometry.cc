@@ -1,6 +1,7 @@
 
 #include "Geometry.h"
 
+namespace flint {
 namespace geometry {
   uint64_t GeometryBase::NextGeometryID = 0;
 
@@ -9,4 +10,5 @@ namespace geometry {
   uint64_t GeometryBase::getGeometryID() const {
     return id;
   }
+}
 }

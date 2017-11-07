@@ -11,6 +11,7 @@
 #include "intersection/bvh/Tree.h"
 #include "sampling/Box.h"
 
+namespace flint {
 namespace sampling {
 
 template <typename SamplePrecision, typename Mesh>
@@ -75,7 +76,7 @@ typename std::enable_if<
         using Tree = typename std::remove_pointer<decltype(tree)>::type;
 
         for (unsigned int i = 0; i < rayGroups.size(); ++i) {
-			intersection::BVH::Intersect<Tree, Ray, intersection::IntersectionOptions::Count> intersect;
+            intersection::BVH::Intersect<Tree, Ray, intersection::IntersectionOptions::Count> intersect;
             auto intersections = intersect.IntersectRayGroup(tree, rayGroups[i]);
 
             using array_t = decltype(intersections.col(0).array());
@@ -97,4 +98,5 @@ typename std::enable_if<
     return samples;
 }
 
+}
 }

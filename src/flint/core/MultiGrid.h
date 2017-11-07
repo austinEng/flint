@@ -4,6 +4,7 @@
 #include <vector>
 #include <Eigen/Dense>
 
+namespace flint {
 namespace core {
 
 template <typename T, unsigned int Dimension>
@@ -16,7 +17,7 @@ class MultiGridBase {
 
 template <typename T, unsigned int Dimension>
 class MultiGrid : public MultiGridBase<T, Dimension> {
-    
+
 
     public:
         using Index = typename MultiGridBase<T, Dimension>::Index;
@@ -86,7 +87,7 @@ class MultiGrid : public MultiGridBase<T, Dimension> {
             class iterator {
                 public:
                     iterator(const Index& index, MultiGrid* grid) : index(index), grid(grid) { }
-                    
+
                     iterator& operator++() {
                         for (unsigned int d = 0; d < Dimension; ++d) {
                             index[d]++;
@@ -124,7 +125,7 @@ class MultiGrid : public MultiGridBase<T, Dimension> {
                     Index index;
                     MultiGrid* grid;
             };
-            
+
             public:
                 CellIterator(MultiGrid* grid) : grid(grid) { }
 
@@ -136,7 +137,7 @@ class MultiGrid : public MultiGridBase<T, Dimension> {
 
                     return iterator(index, grid);
                 }
-                
+
                 iterator end() const {
                     Index index = grid->sizes;
                     iterator iter(index, grid);
@@ -337,4 +338,5 @@ class StaticMultiGrid<T, Dimension> : public MultiGridBase<T, Dimension> {
         }
 };
 
+}
 }

@@ -1,9 +1,10 @@
 
-#pragma once 
+#pragma once
 
 #include <random>
 #include <chrono>
 
+namespace flint {
 namespace sampling {
 
 class RandomGenerator : public std::mt19937_64 {
@@ -20,4 +21,5 @@ class RandomGenerator : public std::mt19937_64 {
         RandomGenerator(std::mt19937_64::result_type val) : std::mt19937_64(val) { }
 };
 
+}
 }
