@@ -11,23 +11,10 @@ function(ExternalGitProject)
       ${ARGN} # arguments of the function to parse, here we take the all original ones
     )
 
-    if (BUILD_NATIVE)
-        set(STAMP_DIR ${EP_PREFIX}/third_party/src/${THIRD_PARTY_NAME}-stamp/native)
-        set(BINARY_DIR ${EP_PREFIX}/third_party/src/${THIRD_PARTY_NAME}-build/native)
-    elseif(BUILD_WEB)
-        if (USE_WASM)
-          set(STAMP_DIR ${EP_PREFIX}/third_party/src/${THIRD_PARTY_NAME}-stamp/wasm)
-          set(BINARY_DIR ${EP_PREFIX}/third_party/src/${THIRD_PARTY_NAME}-build/wasm)
-        else()
-          set(STAMP_DIR ${EP_PREFIX}/third_party/src/${THIRD_PARTY_NAME}-stamp/js)
-          set(BINARY_DIR ${EP_PREFIX}/third_party/src/${THIRD_PARTY_NAME}-build/js)
-        endif()
-    endif()
-
     ExternalProject_Add(${THIRD_PARTY_NAME}
       PREFIX ${EP_PREFIX}/third_party
-      STAMP_DIR ${STAMP_DIR}
-      BINARY_DIR ${BINARY_DIR}
+      STAMP_DIR ${EP_PREFIX}/third_party/src/${THIRD_PARTY_NAME}-stamp/${EP_SUFFIX}
+      BINARY_DIR ${EP_PREFIX}/third_party/src/${THIRD_PARTY_NAME}-build/${EP_SUFFIX}
       GIT_REPOSITORY ${THIRD_PARTY_GIT_REPOSITORY}
       GIT_TAG ${THIRD_PARTY_GIT_TAG}
       UPDATE_COMMAND ${THIRD_PARTY_UPDATE_COMMAND}
