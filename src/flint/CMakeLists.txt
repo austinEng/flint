@@ -1,0 +1,46 @@
+include(ExternalProject)
+
+ExternalProject_Add(eigen
+    GIT_REPOSITORY https://github.com/RLovelett/eigen.git
+    GIT_TAG 3.3.4
+    UPDATE_COMMAND ""
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND ""
+    INSTALL_COMMAND
+        ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_BINARY_DIR}/third_party/eigen-prefix/src/eigen/Eigen
+            ${CMAKE_BINARY_DIR}/include/Eigen3/Eigen &&
+        ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_BINARY_DIR}/third_party/eigen-prefix/src/eigen/unsupported
+            ${CMAKE_BINARY_DIR}/include/Eigen3/unsupported
+)
+set(EIGEN_INCLUDE_DIR ${CMAKE_BINARY_DIR}/include/Eigen3)
+
+ExternalProject_Add(tinyobjloader
+    GIT_REPOSITORY https://github.com/syoyo/tinyobjloader.git
+    GIT_TAG v1.0.6
+    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}
+)
+
+file(GLOB_RECURSE SOURCES *.cc)
+file(GLOB_RECURSE HEADERS *.h)
+
+add_library(flint ${SOURCES} ${HEADERS})
+set_target_properties(flint PROPERTIES LINKER_LANGUAGE CXX)
+add_dependencies(flint eigen tinyobjloader)
+
+set(INCLUDE_DEST "include/flint")
+set(LIB_DEST "lib/${CMAKE_BUILD_TYPE}")
+
+target_include_directories(flint PUBLIC
+  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+  $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>
+  $<BUILD_INTERFACE:${EIGEN_INCLUDE_DIR}>
+  $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${INCLUDE_DEST}>
+)
+
+install(TARGETS flint EXPORT flint DESTINATION ${LIB_DEST})
+install(FILES ${HEADERS} DESTINATION ${INCLUDE_DEST})
+
+InternalTarget("src" flint)
