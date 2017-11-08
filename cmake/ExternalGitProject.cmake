@@ -11,6 +11,11 @@ function(ExternalGitProject)
       ${ARGN} # arguments of the function to parse, here we take the all original ones
     )
 
+    # if (DEFINED ${THIRD_PARTY_UPDATE_COMMAND})
+    #   set(UPDATE_COMMAND ${THIRD_PARTY_UPDATE_COMMAND})
+    #   message(STATUS "UPDATE COMMAND IS ${UPDATE_COMMAND}.")
+    # endif()
+
     ExternalProject_Add(${THIRD_PARTY_NAME}
       PREFIX ${EP_PREFIX}/third_party
       STAMP_DIR ${EP_PREFIX}/third_party/src/${THIRD_PARTY_NAME}-stamp/${EP_SUFFIX}
@@ -21,6 +26,6 @@ function(ExternalGitProject)
       CONFIGURE_COMMAND ${THIRD_PARTY_CONFIGURE_COMMAND}
       BUILD_COMMAND ${THIRD_PARTY_BUILD_COMMAND}
       INSTALL_COMMAND ${THIRD_PARTY_INSTALL_COMMAND}
-      CMAKE_ARGS ${THIRD_PARTY_CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX=${EP_PREFIX}
+      CMAKE_ARGS ${THIRD_PARTY_CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX=${EP_PREFIX} -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
     )
 endfunction()

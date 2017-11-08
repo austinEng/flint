@@ -75,7 +75,7 @@ GLFWwindow* Window::GetGLFWWindow() const {
     return glfwWindow;
 }
 
-void Window::FrameLoop(void(*callback)(Window*)) {
+void Window::FrameLoop(void(*callback)(void*)) {
 #ifdef __EMSCRIPTEN__
     emscripten_set_main_loop_arg(callback, this, 0, 0);
 #else

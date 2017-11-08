@@ -20,4 +20,6 @@ add_executable(flint_tests
 add_dependencies(flint_tests googletest)
 target_link_libraries(flint_tests flint gtest)
 
+install(TARGETS flint_tests EXPORT flint_tests DESTINATION "bin/${CMAKE_BUILD_TYPE}")
+
 InternalTarget("test" flint_tests)

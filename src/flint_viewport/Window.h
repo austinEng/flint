@@ -20,7 +20,7 @@ public:
     void Close();
     void SwapBuffers();
     GLFWwindow* GetGLFWWindow() const;
-    void FrameLoop(void (*callback)(Window*));
+    void FrameLoop(void (*callback)(void*));
 
 private:
     GLFWwindow* glfwWindow = nullptr;

@@ -8,12 +8,23 @@ option(BUILD_NATIVE "Build examples targeting native platform" ON)
 option(BUILD_WASM "Build examples targeting Web Assembly" ON)
 option(BUILD_JS "Build examples targeting asm.js" ON)
 
-include(CheckCXXCompilerFlag)
-CHECK_CXX_COMPILER_FLAG("-std=c++14" COMPILER_SUPPORTS_CXX14)
-if (COMPILER_SUPPORTS_CXX14)
-  add_compile_options(-std=c++14)
-else()
-  message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++14 support. Please use a different C++ compiler.")
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+if (EMSCRIPTEN OR BUILD_JS OR BUILD_WASM)
+    set(CMAKE_TOOLCHAIN_FILE $ENV{EMSCRIPTEN_ROOT}/cmake/Modules/Platform/Emscripten.cmake)
+    if (EXISTS ${CMAKE_TOOLCHAIN_FILE})
+        message(STATUS "Found Emscripten toolchain: ${CMAKE_TOOLCHAIN_FILE}")
+    else()
+        message(FATAL_ERROR "Could not find Emscripten toolchain")
+    endif()
+
+    if (WIN32)
+        set(EMSCRIPTEN_GENERATOR "MinGW Makefiles")
+    else()
+        set(EMSCRIPTEN_GENERATOR "Unix Makefiles")
+    endif()
 endif()
 
 if (MSVC)
@@ -31,8 +42,6 @@ if (MSVC)
     add_compile_options(-Qpar-report=2)
   endif()
 else()
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wfatal-errors")
-
   if (CMAKE_BUILD_TYPE MATCHES "Deb")
     add_compile_options(-Wall -g -ggdb)
   endif()
@@ -78,28 +87,80 @@ if (NOT DEFINED EP_PREFIX)
     set(EP_PREFIX ${PROJECT_BINARY_DIR})
 endif()
 
-if(BUILD_WEB)
-    if (USE_WASM)
-        set(EP_SUFFIX "wasm")
-    else()
-        set(EP_SUFFIX "js")
-    endif()
+include (ExternalProject)
 
-    if (NOT ENV{EMSCRIPTEN_ROOT})
-        message(FATAL_ERROR "Could not find Emscripten root path")
-    endif()
-
-    set(CMAKE_C_COMPILER   ENV{EMSCRIPTEN_ROOT}/emcc        CACHE PATH "C compiler")
-    set(CMAKE_CXX_COMPILER ENV{EMSCRIPTEN_ROOT}/em++        CACHE PATH "C++ compiler")
-    set(CMAKE_AR           ENV{EMSCRIPTEN_ROOT}/emar        CACHE PATH "archive")
-    set(CMAKE_RANLIB       ENV{EMSCRIPTEN_ROOT}/emranlib    CACHE PATH "ranlib")
-    set(CMAKE_LINKER       ENV{EMSCRIPTEN_ROOT}/emlink.py   CACHE PATH "linker")
-else()
-    set(EP_SUFFIX "native")
+if (BUILD_JS)
+    ExternalProject_Add(flint_js
+        SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
+        BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/js
+        CONFIGURE_COMMAND ${CMAKE_COMMAND} ${CMAKE_CURRENT_SOURCE_DIR}
+            -G ${EMSCRIPTEN_GENERATOR}
+            -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+            -DBUILD_WEB:BOOL=ON
+            -DUSE_WASM=0
+            -DBUILD_NATIVE:BOOL=OFF
+            -DBUILD_JS:BOOL=OFF
+            -DBUILD_WASM:BOOL=OFF
+            -DBUILD_EXAMPLES:BOOL=${BUILD_EXAMPLES}
+            -DEP_PREFIX:PATH=${PROJECT_BINARY_DIR}
+            -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}
+            -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+            -DEMSCRIPTEN=1
+        BUILD_COMMAND mingw32-make
+    )
 endif()
 
-add_subdirectory(src)
+if (BUILD_WASM)
+    ExternalProject_Add(flint_wasm
+        SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
+        BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/wasm
+        CONFIGURE_COMMAND ${CMAKE_COMMAND} ${CMAKE_CURRENT_SOURCE_DIR}
+            -G ${EMSCRIPTEN_GENERATOR}
+            -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+            -DBUILD_WEB:BOOL=ON
+            -DUSE_WASM=1
+            -DBUILD_NATIVE:BOOL=OFF
+            -DBUILD_JS:BOOL=OFF
+            -DBUILD_WASM:BOOL=OFF
+            -DBUILD_EXAMPLES:BOOL=${BUILD_EXAMPLES}
+            -DEP_PREFIX:PATH=${PROJECT_BINARY_DIR}
+            -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}
+            -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+            -DEMSCRIPTEN=1
+        BUILD_COMMAND mingw32-make
+    )
+endif()
 
-if (BUILD_EXAMPLES)
-    add_subdirectory(examples)
+if(BUILD_WEB)
+    message(STATUS "Emscripten root: ${EMSCRIPTEN_ROOT_PATH}")
+
+    set(EMSCRIPTEN_FLAGS "-s ASSERTIONS=1 -s USE_WEBGL2=1 -s FULL_ES3=1 -s USE_GLFW=3 -s NO_EXIT_RUNTIME=1 -s MODULARIZE=1")
+
+    if (USE_WASM)
+        set(EP_SUFFIX "wasm")
+        set(EMSCRIPTEN_FLAGS "${EMSCRIPTEN_FLAGS} -s WASM=1")
+    else()
+        set(EP_SUFFIX "js")
+        set(EMSCRIPTEN_FLAGS "${EMSCRIPTEN_FLAGS} -s ALLOW_MEMORY_GROWTH=1 --memory-init-file 1")
+    endif()
+
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${EMSCRIPTEN_FLAGS}")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${EMSCRIPTEN_FLAGS}")
+
+    add_subdirectory(src/flint)
+    add_subdirectory(src/flint_viewport)
+    add_subdirectory(src/test)
+
+    if (BUILD_EXAMPLES)
+      add_subdirectory(examples)
+    endif()
+else()
+    set(EP_SUFFIX "native")
+    add_subdirectory(src/flint ${CMAKE_CURRENT_BINARY_DIR}/native/src/flint)
+    add_subdirectory(src/flint_viewport ${CMAKE_CURRENT_BINARY_DIR}/native/src/flint_viewport)
+    add_subdirectory(src/test ${CMAKE_CURRENT_BINARY_DIR}/native/src/test)
+
+    if (BUILD_EXAMPLES)
+      add_subdirectory(examples ${CMAKE_CURRENT_BINARY_DIR}/native/examples)
+    endif()
 endif()

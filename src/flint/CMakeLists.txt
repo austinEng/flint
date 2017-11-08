@@ -4,10 +4,10 @@ ExternalGitProject(
     NAME eigen
     GIT_REPOSITORY https://github.com/RLovelett/eigen.git
     GIT_TAG 3.3.4
-    UPDATE_COMMAND ""
-    CONFIGURE_COMMAND ""
-    BUILD_COMMAND ""
-    INSTALL_COMMAND ""
+    # UPDATE_COMMAND ${CMAKE_COMMAND} -E echo "Skipping update"
+    CONFIGURE_COMMAND ${CMAKE_COMMAND} -E echo "Skipping configure"
+    BUILD_COMMAND ${CMAKE_COMMAND} -E echo "Skipping build"
+    INSTALL_COMMAND ${CMAKE_COMMAND} -E echo "Skipping install"
 )
 set(EIGEN_INCLUDE_DIR ${EP_PREFIX}/third_party/src/eigen)
 

@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include <cmath>
 #include <flint/core/Math.h>
 #include <flint_viewport/Window.h>
@@ -10,7 +11,8 @@ static void resizeCallback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
 }
 
-static void frame(viewport::Window* window) {
+static void frame(void* ptr) {
+    viewport::Window* window = reinterpret_cast<viewport::Window*>(ptr);
     float r = static_cast<float>(std::sin(static_cast<double>(window->GetFrameNumber()) * 2 * kPI * frequency) * 0.5f + 0.5);
     float g = static_cast<float>(std::sin(static_cast<double>(window->GetFrameNumber()) * 2 * kPI * frequency + 2 * kPI / 3) * 0.5f + 0.5);
     float b = static_cast<float>(std::sin(static_cast<double>(window->GetFrameNumber()) * 2 * kPI * frequency + 2 * 2 * kPI / 3) * 0.5f + 0.5);
