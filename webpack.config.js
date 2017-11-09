@@ -6,7 +6,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 function replaceWithRequire(match) {
   const fname = match.substring(1, match.length - 1);
-  if (fs.existsSync(path.resolve(__dirname, 'build/bin', fname))) {
+  if (fs.existsSync(path.join('@CMAKE_CURRENT_BINARY_DIR@', 'src/examples', fname))) {
     return 'require(\"./' + fname + '\")';
   } else {
     return fname;
@@ -15,7 +15,7 @@ function replaceWithRequire(match) {
 
 module.exports = {
   entry: {
-    'examples/windowDemo': path.resolve(__dirname, 'src/examples/windowDemo/windowDemo'),
+    'examples/windowDemo': path.join('@CMAKE_CURRENT_SOURCE_DIR@', 'src/examples/windowDemo/windowDemo'),
   },
   output: {
     filename: '[name].js',
@@ -80,7 +80,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       title: path.basename(chunk),
       filename: `${chunk}.html`,
-      template: path.resolve(__dirname, 'src/examples/template.ejs'),
+      template: path.join('@CMAKE_CURRENT_SOURCE_DIR@', 'src/examples/template.ejs'),
       chunks: [ chunk ],
     })
   ))),

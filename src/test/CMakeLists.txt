@@ -1,42 +1,32 @@
-include(ExternalGitProject)
+include(ExternalProject)
 
-ExternalGitProject(
-    NAME googletest
+ExternalProject_Add(googletest
     GIT_REPOSITORY https://github.com/google/googletest.git
     GIT_TAG release-1.8.0
+    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${PROJECT_BINARY_DIR}
 )
 
 add_library(gtest STATIC IMPORTED GLOBAL)
-set_target_properties(gtest PROPERTIES IMPORTED_LOCATION ${EP_PREFIX}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${CMAKE_STATIC_LIBRARY_SUFFIX})
+set_target_properties(gtest PROPERTIES IMPORTED_LOCATION ${PROJECT_BINARY_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${CMAKE_STATIC_LIBRARY_SUFFIX})
 
 if (WIN32)
     add_compile_options(-MTd)
 endif()
 
-if (EMSCRIPTEN)
-    if (WASM)
-        set(TARGET_NAME flint_tests_wasm)
-    else()
-        set(TARGET_NAME flint_tests_js)
-    endif()
-else()
-    set(TARGET_NAME flint_tests_native)
-endif()
-
-add_executable(${TARGET_NAME}
+add_executable(flint_tests
     ${CMAKE_CURRENT_SOURCE_DIR}/intersection/AxisAlignedBox.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/main.cc
 )
-add_dependencies(${TARGET_NAME} googletest)
-target_link_libraries(${TARGET_NAME} flint gtest)
+add_dependencies(flint_tests googletest)
+target_link_libraries(flint_tests flint gtest)
 
-install(TARGETS ${TARGET_NAME} EXPORT ${TARGET_NAME} DESTINATION "bin")
+install(TARGETS flint_tests EXPORT flint_tests DESTINATION "bin")
 if (EMSCRIPTEN)
     if (WASM)
-        install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}.wasm DESTINATION "bin")
+        install(FILES ${CMAKE_CURRENT_BINARY_DIR}/flint_tests.wasm DESTINATION "bin")
     else()
-        install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}.js.mem DESTINATION "bin")
+        install(FILES ${CMAKE_CURRENT_BINARY_DIR}/flint_tests.js.mem DESTINATION "bin")
     endif()
 endif()
 
-InternalTarget("test" ${TARGET_NAME})
+InternalTarget("test" flint_tests)

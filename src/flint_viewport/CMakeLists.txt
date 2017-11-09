@@ -1,34 +1,33 @@
-include(ExternalGitProject)
+include(ExternalProject)
 
 if(NOT EMSCRIPTEN)
-    ExternalGitProject(
-        NAME GLFW
+    ExternalProject_Add(GLFW
         GIT_REPOSITORY https://github.com/glfw/glfw.git
         GIT_TAG 3.2.1
         CMAKE_ARGS
         -DGLFW_BUILD_EXAMPLES:BOOL=OFF
         -DGLFW_BUILD_TESTS:BOOL=OFF
         -DGLFW_BUILD_DOCS:BOOL=OFF
+        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${PROJECT_BINARY_DIR}
     )
 
     add_library(glfw STATIC IMPORTED GLOBAL)
-    set_target_properties(glfw PROPERTIES IMPORTED_LOCATION ${EP_PREFIX}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}glfw3${CMAKE_STATIC_LIBRARY_SUFFIX})
-    set(GLFW_INCLUDE_DIR ${CMAKE_BINARY_DIR}/include)
+    set_target_properties(glfw PROPERTIES IMPORTED_LOCATION ${PROJECT_BINARY_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}glfw3${CMAKE_STATIC_LIBRARY_SUFFIX})
+    set(GLFW_INCLUDE_DIR ${PROJECT_BINARY_DIR}/include)
 
     find_package(OpenGL REQUIRED)
     if(NOT OpenGL_FOUND)
         message(ERROR "OpenGL not found")
     endif()
 
-    ExternalGitProject(
-        NAME GLAD
+    ExternalProject_Add(GLAD
         GIT_REPOSITORY https://github.com/Dav1dde/glad.git
         GIT_TAG v0.1.14a0
-        CMAKE_ARGS -DGLAD_INSTALL:BOOL=ON
+        CMAKE_ARGS -DGLAD_INSTALL:BOOL=ON -DCMAKE_INSTALL_PREFIX=${PROJECT_BINARY_DIR}
     )
 
     add_library(glad STATIC IMPORTED GLOBAL)
-    set_target_properties(glad PROPERTIES IMPORTED_LOCATION ${EP_PREFIX}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}glad${CMAKE_STATIC_LIBRARY_SUFFIX})
+    set_target_properties(glad PROPERTIES IMPORTED_LOCATION ${PROJECT_BINARY_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}glad${CMAKE_STATIC_LIBRARY_SUFFIX})
 
     list(APPEND FLINT_VIEWPORT_LINK_LIBRARIES glfw glad ${OPENGL_LIBRARIES})
     list(APPEND FLINT_VIEWPORT_DEPENDENCIES GLFW GLAD)

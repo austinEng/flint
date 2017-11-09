@@ -1,6 +1,3 @@
-#ifdef __EMSCRIPTEN__
-#include <emscripten/emscripten.h>
-#endif
 
 #include <cstdlib>
 #include <cmath>
@@ -9,7 +6,7 @@
 
 using namespace flint;
 
-static float frequency = 0.01f;
+static float frequency = 1.0f;
 
 static void resizeCallback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
@@ -17,12 +14,17 @@ static void resizeCallback(GLFWwindow* window, int width, int height) {
 
 static void frame(void* ptr) {
     viewport::Window* window = reinterpret_cast<viewport::Window*>(ptr);
-    float r = static_cast<float>(std::sin(static_cast<double>(window->GetFrameNumber()) * 2 * kPI * frequency) * 0.5f + 0.5);
-    float g = static_cast<float>(std::sin(static_cast<double>(window->GetFrameNumber()) * 2 * kPI * frequency + 2 * kPI / 3) * 0.5f + 0.5);
-    float b = static_cast<float>(std::sin(static_cast<double>(window->GetFrameNumber()) * 2 * kPI * frequency + 2 * 2 * kPI / 3) * 0.5f + 0.5);
+
+    glfwPollEvents();
+
+    float r = static_cast<float>(std::sin(static_cast<double>(window->GetFrameNumber()) * 2 * kPI * frequency / 60) * 0.5f + 0.5);
+    float g = static_cast<float>(std::sin(static_cast<double>(window->GetFrameNumber()) * 2 * kPI * frequency / 60 + 2 * kPI / 3) * 0.5f + 0.5);
+    float b = static_cast<float>(std::sin(static_cast<double>(window->GetFrameNumber()) * 2 * kPI * frequency / 60 + 2 * 2 * kPI / 3) * 0.5f + 0.5);
 
     glClearColor(r, g, b, 1.f);
     glClear(GL_COLOR_BUFFER_BIT);
+
+    window->SwapBuffers();
 }
 
 int main(int argc, char** argv) {
@@ -36,16 +38,14 @@ int main(int argc, char** argv) {
     }
 
     viewport::Window window("Window Test", width, height);
-    glfwSetWindowSizeCallback(window.GetGLFWWindow(), resizeCallback);
-    {
-        int width, height;
-        glfwGetFramebufferSize(window.GetGLFWWindow(), &width, &height);
-        resizeCallback(window.GetGLFWWindow(), width, height);
-    }
+    glViewport(0, 0, width, height);
     window.FrameLoop(frame);
 
     return 0;
 }
+
+#ifdef __EMSCRIPTEN__
+#include <emscripten/emscripten.h>
 
 // Define JavaScript bindings
 extern "C" {
@@ -54,3 +54,5 @@ extern "C" {
         frequency = _frequency;
     }
 }
+
+#endif

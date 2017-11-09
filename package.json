@@ -1,7 +1,4 @@
 {
-  "scripts": {
-    "build": "webpack -p"
-  },
   "devDependencies": {
     "file-loader": "^1.1.5",
     "html-webpack-plugin": "^2.30.1",

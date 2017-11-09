@@ -1,5 +1,4 @@
-import WindowDemoJS from 'build/bin/windowDemo_js';
-import WindowDemoWASM from 'build/bin/windowDemo_wasm';
+import WindowDemo from 'src/examples/windowDemo';
 import Stats from 'stats-js';
 import DAT from 'dat-gui';
 
@@ -17,17 +16,27 @@ window.addEventListener('resize', function(e) {
   resizeCanvas(window.innerWidth, window.innerHeight);
 });
 
-resizeCanvas(window.innerWidth, window.innerHeight);
-
-const WindowDemo = window.location.hash === 'js' ? WindowDemoJS : WindowDemoWASM;
-const windowDemoModule = new WindowDemo({
-  canvas: canvas,
-  arguments: [window.innerWidth.toString(), window.innerHeight.toString()],
-});
-
 const params = {
   frequency: 1,
 };
+
+const windowDemoModule = new WindowDemo({
+  canvas: canvas,
+  arguments: [window.innerWidth.toString(), window.innerHeight.toString()],
+  onRuntimeInitialized: function() {
+    moduleBindings.updateFrequency(params.frequency);
+
+    // Strange, but for some reason the size doesn't get initialized immediately
+    (function initializeSize() {
+      resizeCanvas(window.innerWidth, window.innerHeight);
+      process.nextTick(function() {
+        if (window.innerWidth !== parseInt(canvas.getAttribute('width'))) {
+          setTimeout(initializeSize, 100);
+        }
+      });
+    })();
+  },
+});
 
 const moduleBindings = {
   updateFrequency: windowDemoModule.cwrap('updateFrequency', 'number', ['number'])

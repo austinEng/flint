@@ -79,12 +79,11 @@ void Window::FrameLoop(void(*callback)(void*)) {
 #ifdef __EMSCRIPTEN__
     emscripten_set_main_loop_arg(callback, this, 0, 0);
 #else
+
     while (!glfwWindowShouldClose(glfwWindow) && !shouldClose) {
         using namespace std::chrono;
         auto t0 = high_resolution_clock::now();
-        glfwPollEvents();
         callback(this);
-        SwapBuffers();
         auto t1 = high_resolution_clock::now();
         auto ms = duration_cast<milliseconds>(t1 - t0);
         auto remaining = ms >= milliseconds(16) ? milliseconds(0) : milliseconds(16) - ms;
