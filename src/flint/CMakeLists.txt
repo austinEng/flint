@@ -4,7 +4,6 @@ ExternalGitProject(
     NAME eigen
     GIT_REPOSITORY https://github.com/RLovelett/eigen.git
     GIT_TAG 3.3.4
-    # UPDATE_COMMAND ${CMAKE_COMMAND} -E echo "Skipping update"
     CONFIGURE_COMMAND ${CMAKE_COMMAND} -E echo "Skipping configure"
     BUILD_COMMAND ${CMAKE_COMMAND} -E echo "Skipping build"
     INSTALL_COMMAND ${CMAKE_COMMAND} -E echo "Skipping install"

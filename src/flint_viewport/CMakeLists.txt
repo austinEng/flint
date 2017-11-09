@@ -1,8 +1,5 @@
 include(ExternalGitProject)
 
-# set(FLINT_VIEWPORT_LINK_LIBRARIES)
-# set(FLINT_VIEWPORT_DEPENDENCIES)
-
 if(NOT EMSCRIPTEN)
     ExternalGitProject(
         NAME GLFW

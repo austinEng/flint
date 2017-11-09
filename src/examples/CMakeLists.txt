@@ -1,0 +1,30 @@
+
+function(BuildDemo EXAMPLE_NAME)
+    set(EXAMPLE_LINK_LIBRARIES flint flint_viewport)
+    file(GLOB SOURCES ${EXAMPLE_NAME}/*.cpp ${EXAMPLE_NAME}/*.h)
+
+    if (EMSCRIPTEN)
+        if (WASM)
+            set(TARGET_NAME ${EXAMPLE_NAME}_wasm)
+        else()
+            set(TARGET_NAME ${EXAMPLE_NAME}_js)
+        endif()
+    else()
+        set(TARGET_NAME ${EXAMPLE_NAME}_native)
+    endif()
+
+    add_executable(${TARGET_NAME} ${SOURCES})
+    target_link_libraries(${TARGET_NAME} ${EXAMPLE_LINK_LIBRARIES})
+    InternalTarget("examples" ${TARGET_NAME})
+
+    install(TARGETS ${TARGET_NAME} EXPORT ${TARGET_NAME} DESTINATION "bin")
+    if (EMSCRIPTEN)
+        if (WASM)
+            install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}.wasm DESTINATION "bin")
+        else()
+            install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}.js.mem DESTINATION "bin")
+        endif()
+    endif()
+endfunction()
+
+BuildDemo(windowDemo)

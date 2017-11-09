@@ -2,6 +2,16 @@
 include(CMakeParseArguments)
 include(ExternalProject)
 
+if (WIN32 AND NOT Git_FOUND)
+  # By default, ExternalProject finds the wrong git
+  find_package(Git REQUIRED)
+  set(GIT_EXECUTABLE "C:/Program Files/Git/cmd/git.exe")
+endif()
+
+if (NOT DEFINED EP_PREFIX)
+  set(EP_PREFIX ${PROJECT_BINARY_DIR})
+endif()
+
 function(ExternalGitProject)
     cmake_parse_arguments(
       THIRD_PARTY # prefix of output variables
@@ -10,11 +20,6 @@ function(ExternalGitProject)
       "CMAKE_ARGS" # list of names of multi-valued arguments (output variables are lists)
       ${ARGN} # arguments of the function to parse, here we take the all original ones
     )
-
-    # if (DEFINED ${THIRD_PARTY_UPDATE_COMMAND})
-    #   set(UPDATE_COMMAND ${THIRD_PARTY_UPDATE_COMMAND})
-    #   message(STATUS "UPDATE COMMAND IS ${UPDATE_COMMAND}.")
-    # endif()
 
     ExternalProject_Add(${THIRD_PARTY_NAME}
       PREFIX ${EP_PREFIX}/third_party

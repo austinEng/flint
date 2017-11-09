@@ -1,0 +1,21 @@
+# Enable the creation of folders for Visual Studio projects
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+function(ExternalTarget folder target)
+  set_property(TARGET ${target} PROPERTY FOLDER ${folder})
+endfunction(ExternalTarget)
+
+function(InternalTarget folder target)
+  ExternalTarget("${folder}" ${target})
+  if (MSVC)
+    get_target_property(targetSources ${target} SOURCES)
+    foreach(sourceFile IN ITEMS ${targetSources})
+      if (IS_ABSOLUTE "${sourceFile}")
+        file(RELATIVE_PATH sourceFile "${CMAKE_CURRENT_SOURCE_DIR}" "${sourceFile}")
+      endif()
+      get_filename_component(sourceDir "${sourceFile}" PATH)
+      string(REPLACE "/" "\\" sourceDir "${sourceDir}")
+      source_group("${sourceDir}" FILES "${sourceFile}")
+    endforeach()
+  endif()
+endfunction(InternalTarget)

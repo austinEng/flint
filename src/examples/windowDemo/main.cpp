@@ -1,3 +1,7 @@
+#ifdef __EMSCRIPTEN__
+#include <emscripten/emscripten.h>
+#endif
+
 #include <cstdlib>
 #include <cmath>
 #include <flint/core/Math.h>
@@ -41,4 +45,12 @@ int main(int argc, char** argv) {
     window.FrameLoop(frame);
 
     return 0;
+}
+
+// Define JavaScript bindings
+extern "C" {
+    EMSCRIPTEN_KEEPALIVE
+    void updateFrequency(float _frequency) {
+        frequency = _frequency;
+    }
 }

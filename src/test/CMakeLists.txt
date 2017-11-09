@@ -13,13 +13,30 @@ if (WIN32)
     add_compile_options(-MTd)
 endif()
 
-add_executable(flint_tests
-  ${CMAKE_CURRENT_SOURCE_DIR}/intersection/AxisAlignedBox.cc
-  ${CMAKE_CURRENT_SOURCE_DIR}/main.cc
+if (EMSCRIPTEN)
+    if (WASM)
+        set(TARGET_NAME flint_tests_wasm)
+    else()
+        set(TARGET_NAME flint_tests_js)
+    endif()
+else()
+    set(TARGET_NAME flint_tests_native)
+endif()
+
+add_executable(${TARGET_NAME}
+    ${CMAKE_CURRENT_SOURCE_DIR}/intersection/AxisAlignedBox.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/main.cc
 )
-add_dependencies(flint_tests googletest)
-target_link_libraries(flint_tests flint gtest)
+add_dependencies(${TARGET_NAME} googletest)
+target_link_libraries(${TARGET_NAME} flint gtest)
 
-install(TARGETS flint_tests EXPORT flint_tests DESTINATION "bin/${CMAKE_BUILD_TYPE}")
+install(TARGETS ${TARGET_NAME} EXPORT ${TARGET_NAME} DESTINATION "bin")
+if (EMSCRIPTEN)
+    if (WASM)
+        install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}.wasm DESTINATION "bin")
+    else()
+        install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}.js.mem DESTINATION "bin")
+    endif()
+endif()
 
-InternalTarget("test" flint_tests)
+InternalTarget("test" ${TARGET_NAME})
