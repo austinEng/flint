@@ -13,10 +13,12 @@ function replaceWithRequire(match) {
   }
 }
 
+const examples = {
+  'examples/windowDemo': path.join('@CMAKE_CURRENT_SOURCE_DIR@', 'src/examples/windowDemo/main'),
+};
+
 module.exports = {
-  entry: {
-    'examples/windowDemo': path.join('@CMAKE_CURRENT_SOURCE_DIR@', 'src/examples/windowDemo/windowDemo'),
-  },
+  entry: examples,
   output: {
     filename: '[name].js',
     path: path.resolve(__dirname, 'dist'),
@@ -76,7 +78,7 @@ module.exports = {
   plugins: [
     new webpack.NoEmitOnErrorsPlugin(),
     new StringReplacePlugin(),
-  ].concat(['examples/windowDemo'].map(chunk => (
+  ].concat(Object.keys(examples).map(chunk => (
     new HtmlWebpackPlugin({
       title: path.basename(chunk),
       filename: `${chunk}.html`,

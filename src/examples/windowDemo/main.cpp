@@ -37,7 +37,7 @@ int main(int argc, char** argv) {
         height = atoi(argv[2]);
     }
 
-    viewport::Window window("Window Test", width, height);
+    viewport::Window window("Window Demo", width, height);
     glViewport(0, 0, width, height);
     window.FrameLoop(frame);
 
