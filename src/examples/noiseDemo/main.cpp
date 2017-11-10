@@ -41,7 +41,7 @@ static void frame(void* ptr) {
     glfwPollEvents();
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+    
     glUseProgram(shaderProgram.GetGLProgram());
     t += 0.005;
     glUniform1f(timeLocation, t);
@@ -84,6 +84,7 @@ int main(int argc, char** argv) {
 
     viewport::Window window("Noise Demo", width, height);
     glfwSetWindowSizeCallback(window.GetGLFWWindow(), resizeCallback);
+
     glViewport(0, 0, width, height);
     glClearColor(0.f, 0.f, 0.f, 1.f);
     glEnable(GL_DEPTH_TEST);
@@ -302,7 +303,7 @@ int main(int argc, char** argv) {
             float largeNoise = 5.0 * pnoise( 0.5 * normal + vec3( 2.0 * time ), vec3(100.0) );
             float displacement = -smallNoiseStrength * smallNoise + largeNoiseStrength * largeNoise;
 
-            vec3 newPosition = position + max(-position, normal * displacement);
+            vec3 newPosition = position + normal * displacement;
 
             fs_pos = newPosition;
             fs_nor = normal;

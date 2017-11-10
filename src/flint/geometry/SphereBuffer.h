@@ -68,6 +68,8 @@ public:
         GeometryBuffer::TriangleList nextTriangles;
 
         for (unsigned int s = 0; s < subdivisions; ++s) {
+            nextTriangles.clear();
+            nextVertices.clear();
             nextTriangles.reserve(triangles.size() * 4);
             nextVertices.reserve(vertices.size() * 2);
 
