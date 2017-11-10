@@ -20,3 +20,4 @@ function(BuildDemo EXAMPLE_NAME)
 endfunction()
 
 BuildDemo(windowDemo)
+BuildDemo(noiseDemo)

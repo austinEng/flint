@@ -10,8 +10,8 @@ namespace geometry {
 
 class MeshBase { };
 
-template <unsigned int D, typename _GeometryType = Geometry<D>>
-class Mesh : public Geometry<D>, MeshBase {
+template <unsigned int D, , typename T = precision_t, typename _GeometryType = Geometry<D, T>>
+class Mesh : public Geometry<D, T>, MeshBase {
 
     public:
         using GeometryType = _GeometryType;

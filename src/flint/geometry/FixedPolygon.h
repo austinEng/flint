@@ -10,7 +10,7 @@ namespace flint {
 namespace geometry {
 
 template <unsigned int N, unsigned int D, typename T = precision_t>
-class FixedPolygon : public Geometry<D> {
+class FixedPolygon : public Geometry<D, T> {
 
     protected:
         Eigen::Matrix<T, D, N> points;

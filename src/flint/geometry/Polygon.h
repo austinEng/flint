@@ -9,7 +9,7 @@ namespace flint {
 namespace geometry {
 
 template <unsigned int D, typename T = precision_t>
-class Polygon : public Geometry<D> {
+class Polygon : public Geometry<D, T> {
     std::vector<Eigen::Matrix<T, D, 1>> points;
 
     public:

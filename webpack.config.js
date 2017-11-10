@@ -15,6 +15,7 @@ function replaceWithRequire(match) {
 
 const examples = {
   'examples/windowDemo': path.join('@CMAKE_CURRENT_SOURCE_DIR@', 'src/examples/windowDemo/main'),
+  'examples/noiseDemo': path.join('@CMAKE_CURRENT_SOURCE_DIR@', 'src/examples/noiseDemo/main'),
 };
 
 module.exports = {

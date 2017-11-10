@@ -2,6 +2,7 @@
 #pragma once
 
 #include <cstdint>
+#include <vector>
 #include <Eigen/Dense>
 #include "core/Optional.h"
 #include "core/AxisAlignedBox.h"
@@ -20,7 +21,7 @@ class GeometryBase {
 
 using precision_t = float;
 
-template <unsigned int D>
+template <unsigned int D, typename T = precision_t>
 class Geometry : public GeometryBase {
 
   public:
