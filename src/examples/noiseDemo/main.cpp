@@ -74,7 +74,7 @@ int main(int argc, char** argv) {
     glClearColor(0.f, 0.f, 0.f, 1.f);
     glEnable(GL_DEPTH_TEST);
 
-    glCreateBuffers(buffers.size(), buffers.data());
+    glGenBuffers(buffers.size(), buffers.data());
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(sphereBuffer.GetTriangles()[0]) * sphereBuffer.GetTriangles().size(), sphereBuffer.GetTriangles().data(), GL_STATIC_DRAW);
