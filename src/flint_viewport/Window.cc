@@ -44,6 +44,12 @@ Window::Window(const char* name, int width, int height) {
         fputs("Failed to initialize OpenGL context", stderr);
         flint::Exit(EXIT_FAILURE);
     }
+
+    /*emscripten_set_resize_callback("canvas", glfwWindow, true, [](int eventType, const EmscriptenUiEvent* uiEvent, void* ptr) {
+        GLFWwindow* glfwWindow = reinterpret_cast<GLFWwindow*>(ptr);
+        printf("%d %d\n", uiEvent->windowInnerWidth, uiEvent->windowInnerHeight);
+        glfwSetWindowSize(glfwWindow, uiEvent->windowInnerWidth, uiEvent->windowInnerHeight);
+    });*/
 #endif
 }
 
