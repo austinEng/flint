@@ -14,15 +14,15 @@ template <unsigned int D, typename T = precision_t>
 class Sphere : public Geometry<D, T>, SphereBase {
 
     protected:
-        Eigen::Matrix<T, D, 1> center;
+        Eigen::Array<T, D, 1> center;
         T radius;
 
     public:
 
-        Sphere(const Eigen::Matrix<T, D, 1> &center, T radius) : center(center), radius(radius) {
+        Sphere(const Eigen::Array<T, D, 1> &center, T radius) : center(center), radius(radius) {
         }
 
-        const Eigen::Matrix<T, D, 1>& getCenter() const {
+        const Eigen::Array<T, D, 1>& getCenter() const {
             return center;
         }
 
@@ -38,7 +38,7 @@ class Sphere : public Geometry<D, T>, SphereBase {
 
         core::Optional<Eigen::Matrix<T, D, 1>> getCentroid() const override {
             core::Optional<Eigen::Matrix<T, D, 1>> centroid;
-            centroid.set(center);
+            centroid.set(center.matrix());
             return centroid;
         }
 

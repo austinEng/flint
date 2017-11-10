@@ -38,6 +38,7 @@ int main(int argc, char** argv) {
     }
 
     viewport::Window window("Window Demo", width, height);
+    glfwSetWindowSizeCallback(window.GetGLFWWindow(), resizeCallback);
     glViewport(0, 0, width, height);
     window.FrameLoop(frame);
 

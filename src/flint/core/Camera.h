@@ -72,6 +72,16 @@ class Camera {
 
         }
 
+        void SetAzimuth(T azimuth) {
+            _azimuth = azimuth;
+            _viewDirty = true;
+        }
+
+        void SetAltitude(T altitude) {
+            _altitude = altitude;
+            _viewDirty = true;
+        }
+
         void SetAspectRatio(T ratio) {
             _ratio = ratio;
             _projectionDirty = true;
