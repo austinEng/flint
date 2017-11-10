@@ -27,7 +27,7 @@ if (MSVC)
   endif()
 else()
   if (CMAKE_BUILD_TYPE MATCHES "Deb")
-    add_compile_options(-Wall -g -ggdb)
+    add_compile_options(-Wall -g)
   endif()
 
   if (CMAKE_BUILD_TYPE MATCHES "Rel")
@@ -43,7 +43,7 @@ if (EMSCRIPTEN)
     set(EMSCRIPTEN_FLAGS "-s ASSERTIONS=1 -s USE_WEBGL2=1 -s FULL_ES3=1 -s USE_GLFW=3 -s NO_EXIT_RUNTIME=1 -s MODULARIZE=1")
 
     if (WASM)
-        set(EMSCRIPTEN_FLAGS "${EMSCRIPTEN_FLAGS} -s WASM=1")
+        set(EMSCRIPTEN_FLAGS "${EMSCRIPTEN_FLAGS} -s ALLOW_MEMORY_GROWTH=1 -s WASM=1")
     else()
         set(EMSCRIPTEN_FLAGS "${EMSCRIPTEN_FLAGS} -s ALLOW_MEMORY_GROWTH=1 --memory-init-file 1")
     endif()
@@ -66,9 +66,16 @@ if (BUILD_EXAMPLES)
     if (EMSCRIPTEN)
         configure_file(${CMAKE_CURRENT_SOURCE_DIR}/webpack.config.js ${CMAKE_CURRENT_BINARY_DIR}/webpack.config.js @ONLY)
 
-        add_custom_command(TARGET flint_examples POST_BUILD
-          COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/node_modules/.bin/webpack -p
-          WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-        )
+        if (CMAKE_BUILD_TYPE MATCHES "Rel")
+          add_custom_command(TARGET flint_examples POST_BUILD
+            COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/node_modules/.bin/webpack -p
+            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+          )
+        else()
+          add_custom_command(TARGET flint_examples POST_BUILD
+            COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/node_modules/.bin/webpack
+            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+          )
+        endif()
     endif()
 endif()

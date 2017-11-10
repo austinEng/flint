@@ -17,7 +17,9 @@ float frequency = 1.0f;
 geometry::SphereBuffer<3> sphereBuffer;
 core::Camera<float> camera;
 float smallNoiseStrength = 2.0;
+float _smallNoiseStrength = smallNoiseStrength;
 float largeNoiseStrength = 0.1;
+float _largeNoiseStrength = largeNoiseStrength;
 
 GLint viewProjLocation, timeLocation, smallNoiseStrengthLocation, largeNoiseStrengthLocation;
 GLint positionLocation;
@@ -25,6 +27,7 @@ std::array<GLuint, 2> buffers = {};
 GLuint& indexBuffer = buffers[0];
 GLuint& vertexBuffer = buffers[1];
 viewport::ShaderProgram shaderProgram;
+unsigned int elementCount;
 float t = 0;
 
 static void resizeCallback(GLFWwindow* window, int width, int height) {
@@ -44,12 +47,22 @@ static void frame(void* ptr) {
     glUniform1f(timeLocation, t);
     glUniformMatrix4fv(viewProjLocation, 1, false, camera.GetViewProjection().data());
 
+    if (smallNoiseStrength != _smallNoiseStrength) {
+        smallNoiseStrength = _smallNoiseStrength;
+        glUniform1f(smallNoiseStrengthLocation, smallNoiseStrength);
+    }
+
+    if (largeNoiseStrength != _largeNoiseStrength) {
+        largeNoiseStrength = _largeNoiseStrength;
+        glUniform1f(largeNoiseStrengthLocation, largeNoiseStrength);
+    }
+
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-    glVertexAttribPointer(positionLocation, 3, GL_FLOAT, false, 0, 0);
     glEnableVertexAttribArray(positionLocation);
+    glVertexAttribPointer(positionLocation, 3, GL_FLOAT, false, 0, 0);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-    glDrawElements(GL_TRIANGLES, sphereBuffer.GetTriangles().size() * 3, GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, elementCount, GL_UNSIGNED_INT, 0);
 
     glDisableVertexAttribArray(positionLocation);
 
@@ -66,7 +79,8 @@ int main(int argc, char** argv) {
         height = atoi(argv[2]);
     }
 
-    sphereBuffer = geometry::SphereBuffer<3>::Create(geometry::Sphere<3>({ 0, 0, 0 }, 6), 8);
+    sphereBuffer = geometry::SphereBuffer<3>::Create(geometry::Sphere<3>({ 0, 0, 0 }, 6), 6);
+    elementCount = sphereBuffer.GetTriangles().size() * 3;
 
     viewport::Window window("Noise Demo", width, height);
     glfwSetWindowSizeCallback(window.GetGLFWWindow(), resizeCallback);
@@ -84,6 +98,8 @@ int main(int argc, char** argv) {
 
     viewport::Shader vertexShader, fragmentShader;
     vertexShader.Load(R"(
+        precision highp float;
+
         // GLSL textureless classic 3D noise "cnoise",
         // with an RSL-style periodic variant "pnoise".
         // Author:  Stefan Gustavson (stefan.gustavson@liu.se)
@@ -187,7 +203,7 @@ int main(int argc, char** argv) {
           vec3 fade_xyz = fade(Pf0);
           vec4 n_z = mix(vec4(n000, n100, n010, n110), vec4(n001, n101, n011, n111), fade_xyz.z);
           vec2 n_yz = mix(n_z.xy, n_z.zw, fade_xyz.y);
-          float n_xyz = mix(n_yz.x, n_yz.y, fade_xyz.x); 
+          float n_xyz = mix(n_yz.x, n_yz.y, fade_xyz.x);
           return 2.2 * n_xyz;
         }
 
@@ -257,7 +273,7 @@ int main(int argc, char** argv) {
           vec3 fade_xyz = fade(Pf0);
           vec4 n_z = mix(vec4(n000, n100, n010, n110), vec4(n001, n101, n011, n111), fade_xyz.z);
           vec2 n_yz = mix(n_z.xy, n_z.zw, fade_xyz.y);
-          float n_xyz = mix(n_yz.x, n_yz.y, fade_xyz.x); 
+          float n_xyz = mix(n_yz.x, n_yz.y, fade_xyz.x);
           return 2.2 * n_xyz;
         }
 
@@ -286,7 +302,7 @@ int main(int argc, char** argv) {
             float largeNoise = 5.0 * pnoise( 0.5 * normal + vec3( 2.0 * time ), vec3(100.0) );
             float displacement = -smallNoiseStrength * smallNoise + largeNoiseStrength * largeNoise;
 
-            vec3 newPosition = position + normal * displacement;
+            vec3 newPosition = position + max(-position, normal * displacement);
 
             fs_pos = newPosition;
             fs_nor = normal;
@@ -295,12 +311,14 @@ int main(int argc, char** argv) {
     )", GL_VERTEX_SHADER);
 
     fragmentShader.Load(R"(
-        attribute vec3 fs_pos;
-        attribute vec3 fs_nor;
-        attribute float smallNoise;
+        precision highp float;
+
+        varying vec3 fs_pos;
+        varying vec3 fs_nor;
+        varying float smallNoise;
 
         float cosineColor(float a, float b, float c, float d, float t) {
-            return a + b * cos(2 * 3.14159 * (c * t + d));
+            return a + b * cos(2.0 * 3.14159 * (c * t + d));
         }
 
         void main() {
@@ -321,6 +339,12 @@ int main(int argc, char** argv) {
     smallNoiseStrengthLocation = glGetUniformLocation(shaderProgram.GetGLProgram(), "smallNoiseStrength");
     largeNoiseStrengthLocation = glGetUniformLocation(shaderProgram.GetGLProgram(), "largeNoiseStrength");
 
+    if (positionLocation < 0) { fputs("Could not find position attribute", stderr); }
+    if (timeLocation < 0) { fputs("Could not find time uniform", stderr); }
+    if (viewProjLocation < 0) { fputs("Could not find viewProj uniform", stderr); }
+    if (smallNoiseStrengthLocation < 0) { fputs("Could not find smallNoiseStrength uniform", stderr); }
+    if (largeNoiseStrengthLocation < 0) { fputs("Could not find largeNoiseStrength uniform", stderr); }
+
     glUseProgram(shaderProgram.GetGLProgram());
     glUniform1f(smallNoiseStrengthLocation, smallNoiseStrength);
     glUniform1f(largeNoiseStrengthLocation, largeNoiseStrength);
@@ -335,8 +359,6 @@ int main(int argc, char** argv) {
     controls.SetCurrent();
 
     window.FrameLoop(frame);
-
-    glDeleteBuffers(buffers.size(), buffers.data());
     return 0;
 }
 
@@ -347,16 +369,12 @@ int main(int argc, char** argv) {
 extern "C" {
     EMSCRIPTEN_KEEPALIVE
     void updateSmallNoiseStrength(float value) {
-        smallNoiseStrength = value;
-        glUseProgram(shaderProgram.GetGLProgram());
-        glUniform1f(smallNoiseStrengthLocation, smallNoiseStrength);
+        _smallNoiseStrength = value;
     }
 
     EMSCRIPTEN_KEEPALIVE
-    void updateLargeNoiseStength(float value) {
-        largeNoiseStrength = value;
-        glUseProgram(shaderProgram.GetGLProgram());
-        glUniform1f(largeNoiseStrengthLocation, largeNoiseStrength);
+    void updateLargeNoiseStrength(float value) {
+        _largeNoiseStrength = value;
     }
 }
 

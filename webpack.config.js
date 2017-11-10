@@ -4,6 +4,8 @@ const webpack = require('webpack');
 const StringReplacePlugin = require('string-replace-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
+const suffix = (@WASM@ ? 'wasm' : 'js');
+
 function replaceWithRequire(match) {
   const fname = match.substring(1, match.length - 1);
   if (fs.existsSync(path.join('@CMAKE_CURRENT_BINARY_DIR@', 'src/examples', fname))) {
@@ -22,8 +24,8 @@ module.exports = {
   entry: examples,
   output: {
     filename: '[name].js',
-    path: path.resolve(__dirname, 'dist'),
-    publicPath: '/dist/',
+    path: path.join('@CMAKE_CURRENT_SOURCE_DIR@', 'dist', suffix),
+    // publicPath: `/dist/${suffix}/`,
   },
   module: {
     rules: [
@@ -58,14 +60,18 @@ module.exports = {
         test: /\.wasm$/,
         loader: 'file-loader',
         options: {
-          name: '[sha512:hash:base64:7].[ext]',
+          name: '[name].[ext]',
+          publicPath: '../',
+          outputPath: 'examples/',
         },
       },
       {
         test: /\.js\.mem$/,
         loader: 'file-loader',
         options: {
-          name: '[sha512:hash:base64:7].[ext]',
+          name: '[name].[ext]',
+          publicPath: '../',
+          outputPath: 'examples/',
         },
       },
     ],
@@ -85,6 +91,7 @@ module.exports = {
       filename: `${chunk}.html`,
       template: path.join('@CMAKE_CURRENT_SOURCE_DIR@', 'src/examples/template.ejs'),
       chunks: [ chunk ],
+      // publicPath: '',
     })
   ))),
   node: {

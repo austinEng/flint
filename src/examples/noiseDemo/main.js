@@ -7,21 +7,25 @@ canvas.addEventListener("webglcontextlost", function(e) {
 }, false);
 
 const params = {
-  frequency: 1,
+  noise0: 2.0,
+  noise1: 0.1,
 };
 
 const noiseDemoModule = new NoiseDemo({
   canvas: canvas,
   arguments: [window.innerWidth.toString(), window.innerHeight.toString()],
   onRuntimeInitialized: function() {
-    moduleBindings.updateFrequency(params.frequency);
+    moduleBindings.updateSmallNoiseStrength(params.noise0);
+    moduleBindings.updateLargeNoiseStrength(params.noise1);
     setCanvasToWindowSize(canvas);
   },
 });
 
 const moduleBindings = {
-  updateFrequency: noiseDemoModule.cwrap('updateFrequency', 'number', ['number'])
+  updateSmallNoiseStrength: noiseDemoModule.cwrap('updateSmallNoiseStrength', 'number', ['number']),
+  updateLargeNoiseStrength: noiseDemoModule.cwrap('updateLargeNoiseStrength', 'number', ['number']),
 };
 
 const gui = createStatsAndGUI();
-gui.add(params, 'frequency', 0, 1).onChange(moduleBindings.updateFrequency);
+gui.add(params, 'noise0', 0, 5).onChange(moduleBindings.updateSmallNoiseStrength);
+gui.add(params, 'noise1', 0, 1).onChange(moduleBindings.updateLargeNoiseStrength);
