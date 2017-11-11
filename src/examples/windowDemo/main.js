@@ -15,7 +15,7 @@ const windowDemoModule = new WindowDemo({
   arguments: [window.innerWidth.toString(), window.innerHeight.toString()],
   onRuntimeInitialized: function() {
     moduleBindings.updateFrequency(params.frequency);
-    setCanvasToWindowSize(canvas);
+    setCanvasToWindowSize(windowDemoModule);
   },
 });
 

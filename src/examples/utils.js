@@ -22,10 +22,10 @@ export function createStatsAndGUI() {
   return gui;
 }
 
-export function setCanvasToWindowSize(canvas) {
+export function setCanvasToWindowSize(Module) {
   function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    Module.canvas.width = window.innerWidth;
+    Module.canvas.height = window.innerHeight;
   }
 
   window.addEventListener('resize', resizeCanvas);
@@ -34,7 +34,7 @@ export function setCanvasToWindowSize(canvas) {
   (function initializeSize() {
     resizeCanvas();
     process.nextTick(function() {
-      if (window.innerWidth !== parseInt(canvas.getAttribute('width'))) {
+      if (window.innerWidth !== parseInt(Module.canvas.getAttribute('width'))) {
         setTimeout(initializeSize, 100);
       }
     });

@@ -17,7 +17,7 @@ const noiseDemoModule = new NoiseDemo({
   onRuntimeInitialized: function() {
     moduleBindings.updateSmallNoiseStrength(params.noise0);
     moduleBindings.updateLargeNoiseStrength(params.noise1);
-    setCanvasToWindowSize(canvas);
+    setCanvasToWindowSize(noiseDemoModule);
   },
 });
 

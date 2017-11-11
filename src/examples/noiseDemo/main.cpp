@@ -41,7 +41,7 @@ static void frame(void* ptr) {
     glfwPollEvents();
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    
+
     glUseProgram(shaderProgram.GetGLProgram());
     t += 0.005;
     glUniform1f(timeLocation, t);
@@ -81,6 +81,7 @@ int main(int argc, char** argv) {
 
     sphereBuffer = geometry::SphereBuffer<3>::Create(geometry::Sphere<3>({ 0, 0, 0 }, 6), 6);
     elementCount = sphereBuffer.GetTriangles().size() * 3;
+    printf("Created icosphere with %d vertices\n", sphereBuffer.GetPositions().size());
 
     viewport::Window window("Noise Demo", width, height);
     glfwSetWindowSizeCallback(window.GetGLFWWindow(), resizeCallback);
@@ -360,6 +361,7 @@ int main(int argc, char** argv) {
     controls.SetCurrent();
 
     window.FrameLoop(frame);
+
     return 0;
 }
 
