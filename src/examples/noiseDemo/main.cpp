@@ -41,7 +41,7 @@ static void frame(void* ptr) {
     glfwPollEvents();
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+    
     glUseProgram(shaderProgram.GetGLProgram());
     t += 0.005;
     glUniform1f(timeLocation, t);
