@@ -1,7 +1,7 @@
 #pragma once
-
-#include <Eigen/Dense>
+#include <memory>
 #include <vector>
+#include <Eigen/Dense>
 #include <flint/core/Math.h>
 #include "GeometryBuffer.h"
 #include "Sphere.h"
@@ -43,8 +43,37 @@ template <typename T>
 class SphereBuffer<3, T> : public SphereBufferBase<3, T> {
 
 public:
+    struct CreateArgs {
+        Sphere<3, T> sphere;
+        int subdivisions;
+        SphereBuffer* buffer;
+        std::allocator<char> alloc;
+        unsigned int bytes;
+    };
+
+    static CreateArgs* GetRequiredMemory(const Sphere<3, T> &sphere, unsigned int subdivisions) {
+        unsigned int bytes = (
+            sizeof(CreateArgs) +
+            sizeof(SphereBuffer) +
+            20 * core::constPow(4, subdivisions) * sizeof(GeometryBuffer::Triangle) +
+            12 * core::constPow(2, subdivisions) * sizeof(Eigen::Array<T, 3, 1>) +
+            12 * core::constPow(2, subdivisions) * sizeof(Eigen::Array<T, 3, 1>)
+        );
+
+        std::allocator<char> alloc;
+        char* ptr = alloc.allocate(bytes);
+        CreateArgs* args = reinterpret_cast<CreateArgs*>(ptr);
+        args->alloc = alloc;
+        args->buffer = reinterpret_cast<SphereBuffer*>(ptr + sizeof(CreateArgs));
+        args->subdivisions = subdivisions;
+        args->sphere = sphere;
+        args->bytes = bytes;
+
+        return args;
+    }
+
     // https://schneide.wordpress.com/2016/07/15/generating-an-icosphere-in-c/
-    static SphereBuffer Create(const Sphere<3, T> &sphere, unsigned int subdivisions) {
+    static void Create(CreateArgs* args) {
         static constexpr T X = static_cast<T>(.525731112119133606);
         static constexpr T Z = static_cast<T>(.850650808352039932);
         static constexpr T N = static_cast<T>(0);
@@ -67,7 +96,7 @@ public:
         GeometryBuffer::VertexList<Eigen::Array<T, 3, 1>> nextVertices;
         GeometryBuffer::TriangleList nextTriangles;
 
-        for (unsigned int s = 0; s < subdivisions; ++s) {
+        for (unsigned int s = 0; s < args->subdivisions; ++s) {
             nextTriangles.clear();
             nextVertices.clear();
             nextTriangles.reserve(triangles.size() * 4);
@@ -91,15 +120,14 @@ public:
             std::swap(vertices, nextVertices);
         }
 
-        SphereBuffer buffer;
-        buffer.triangles = triangles;
-        buffer.normals = vertices;
-        buffer.positions.reserve(vertices.size());
-        for (unsigned int i = 0; i < vertices.size(); ++i) {
-            buffer.positions.push_back(vertices[i] * sphere.getRadius() + sphere.getCenter());
-        }
+        SphereBuffer* sphereBuffer = new(args->buffer) SphereBuffer();
+        sphereBuffer->triangles = std::vector<GeometryBuffer::Triangle>(triangles, args->alloc);
+        sphereBuffer->normals = GeometryBuffer::VertexList<Eigen::Array<T, 3, 1>>(vertices, args->alloc);
+        sphereBuffer->positions = GeometryBuffer::VertexList<Eigen::Array<T, 3, 1>>(vertices.size(), args->alloc);
 
-        return buffer;
+        for (unsigned int i = 0; i < vertices.size(); ++i) {
+            sphereBuffer->positions[i] = vertices[i] * args->sphere.getRadius() + args->sphere.getCenter();
+        }
     }
 };
 

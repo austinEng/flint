@@ -1,0 +1,17 @@
+function(BuildWorker MODULE_NAME)
+    file(GLOB SOURCES ${MODULE_NAME}/*.cpp ${MODULE_NAME}/*.h)
+
+    if (EMSCRIPTEN)
+        add_executable(${MODULE_NAME} ${SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp)
+        target_link_libraries(${MODULE_NAME} threading flint)
+        install(TARGETS ${MODULE_NAME} EXPORT ${MODULE_NAME} DESTINATION "bin")
+    else()
+        add_library(${MODULE_NAME} ${SOURCES})
+        target_link_libraries(${MODULE_NAME} threading flint)
+    endif()
+    InternalTarget("examples/workers" ${MODULE_NAME})
+endfunction()
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${EMSCRIPTEN_WORKER_FLAGS}")
+BuildWorker(testWorker)
+BuildWorker(createGeometry)
