@@ -9,6 +9,7 @@ canvas.addEventListener("webglcontextlost", function(e) {
 const params = {
   noise0: 2.0,
   noise1: 0.1,
+  drawMode: 0,
 };
 
 const noiseDemoModule = new NoiseDemo({
@@ -17,6 +18,7 @@ const noiseDemoModule = new NoiseDemo({
   onRuntimeInitialized: function() {
     moduleBindings.updateSmallNoiseStrength(params.noise0);
     moduleBindings.updateLargeNoiseStrength(params.noise1);
+    moduleBindings.updateDrawMode(params.drawMode);
     setCanvasToWindowSize(noiseDemoModule);
   },
 });
@@ -24,8 +26,10 @@ const noiseDemoModule = new NoiseDemo({
 const moduleBindings = {
   updateSmallNoiseStrength: noiseDemoModule.cwrap('updateSmallNoiseStrength', 'number', ['number']),
   updateLargeNoiseStrength: noiseDemoModule.cwrap('updateLargeNoiseStrength', 'number', ['number']),
+  updateDrawMode: noiseDemoModule.cwrap('updateDrawMode', 'number', ['number']),
 };
 
 const gui = createStatsAndGUI();
 gui.add(params, 'noise0', 0, 5).onChange(moduleBindings.updateSmallNoiseStrength);
 gui.add(params, 'noise1', 0, 1).onChange(moduleBindings.updateLargeNoiseStrength);
+gui.add(params, 'drawMode', 0, 1).step(1).onChange(moduleBindings.updateDrawMode);

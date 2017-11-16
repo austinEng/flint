@@ -20,6 +20,8 @@ float smallNoiseStrength = 2.0;
 float _smallNoiseStrength = smallNoiseStrength;
 float largeNoiseStrength = 0.1;
 float _largeNoiseStrength = largeNoiseStrength;
+unsigned int _drawMode = 0;
+GLenum drawModes[] = { GL_TRIANGLES, GL_LINES };
 
 GLint viewProjLocation, timeLocation, smallNoiseStrengthLocation, largeNoiseStrengthLocation;
 GLint positionLocation;
@@ -41,7 +43,7 @@ static void frame(void* ptr) {
     glfwPollEvents();
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    
+
     glUseProgram(shaderProgram.GetGLProgram());
     t += 0.005;
     glUniform1f(timeLocation, t);
@@ -62,7 +64,7 @@ static void frame(void* ptr) {
     glVertexAttribPointer(positionLocation, 3, GL_FLOAT, false, 0, 0);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-    glDrawElements(GL_TRIANGLES, elementCount, GL_UNSIGNED_INT, 0);
+    glDrawElements(drawModes[_drawMode], elementCount, GL_UNSIGNED_INT, 0);
 
     glDisableVertexAttribArray(positionLocation);
 
@@ -378,6 +380,11 @@ extern "C" {
     EMSCRIPTEN_KEEPALIVE
     void updateLargeNoiseStrength(float value) {
         _largeNoiseStrength = value;
+    }
+
+    EMSCRIPTEN_KEEPALIVE
+    void updateDrawMode(unsigned int drawMode) {
+        _drawMode = drawMode;
     }
 }
 
