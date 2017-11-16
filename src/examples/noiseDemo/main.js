@@ -12,14 +12,23 @@ const params = {
   drawMode: 0,
 };
 
+
+const workers = {
+  TestModule: require('src/examples/workers/testWorker'),
+  CreateGeometry: require('src/examples/workers/createGeometry'),
+};
+
 const noiseDemoModule = new NoiseDemo({
   canvas: canvas,
   arguments: [window.innerWidth.toString(), window.innerHeight.toString()],
-  onRuntimeInitialized: function() {
+  onRuntimeInitialized() {
     moduleBindings.updateSmallNoiseStrength(params.noise0);
     moduleBindings.updateLargeNoiseStrength(params.noise1);
     moduleBindings.updateDrawMode(params.drawMode);
     setCanvasToWindowSize(noiseDemoModule);
+  },
+  getWorkerURL(moduleName) {
+    return workers[moduleName];
   },
 });
 
