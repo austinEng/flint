@@ -1,1 +1,5053 @@
-!function(e){function t(r){if(n[r])return n[r].exports;var i=n[r]={i:r,l:!1,exports:{}};return e[r].call(i.exports,i,i.exports,t),i.l=!0,i.exports}var n={};t.m=e,t.c=n,t.d=function(e,n,r){t.o(e,n)||Object.defineProperty(e,n,{configurable:!1,enumerable:!0,get:r})},t.n=function(e){var n=e&&e.__esModule?function(){return e.default}:function(){return e};return t.d(n,"a",n),n},t.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},t.p="",t(t.s=8)}([function(e,t){function n(){throw new Error("setTimeout has not been defined")}function r(){throw new Error("clearTimeout has not been defined")}function i(e){if(c===setTimeout)return setTimeout(e,0);if((c===n||!c)&&setTimeout)return c=setTimeout,setTimeout(e,0);try{return c(e,0)}catch(t){try{return c.call(null,e,0)}catch(t){return c.call(this,e,0)}}}function o(e){if(d===clearTimeout)return clearTimeout(e);if((d===r||!d)&&clearTimeout)return d=clearTimeout,clearTimeout(e);try{return d(e)}catch(t){try{return d.call(null,e)}catch(t){return d.call(this,e)}}}function a(){p&&m&&(p=!1,m.length?_=m.concat(_):h=-1,_.length&&s())}function s(){if(!p){var e=i(a);p=!0;for(var t=_.length;t;){for(m=_,_=[];++h<t;)m&&m[h].run();h=-1,t=_.length}m=null,p=!1,o(e)}}function u(e,t){this.fun=e,this.array=t}function l(){}var c,d,f=e.exports={};!function(){try{c="function"==typeof setTimeout?setTimeout:n}catch(e){c=n}try{d="function"==typeof clearTimeout?clearTimeout:r}catch(e){d=r}}();var m,_=[],p=!1,h=-1;f.nextTick=function(e){var t=new Array(arguments.length-1);if(arguments.length>1)for(var n=1;n<arguments.length;n++)t[n-1]=arguments[n];_.push(new u(e,t)),1!==_.length||p||i(s)},u.prototype.run=function(){this.fun.apply(null,this.array)},f.title="browser",f.browser=!0,f.env={},f.argv=[],f.version="",f.versions={},f.on=l,f.addListener=l,f.once=l,f.off=l,f.removeListener=l,f.removeAllListeners=l,f.emit=l,f.prependListener=l,f.prependOnceListener=l,f.listeners=function(e){return[]},f.binding=function(e){throw new Error("process.binding is not supported")},f.cwd=function(){return"/"},f.chdir=function(e){throw new Error("process.chdir is not supported")},f.umask=function(){return 0}},function(e,t){},function(e,t,n){(function(e){function n(e,t){for(var n=0,r=e.length-1;r>=0;r--){var i=e[r];"."===i?e.splice(r,1):".."===i?(e.splice(r,1),n++):n&&(e.splice(r,1),n--)}if(t)for(;n--;n)e.unshift("..");return e}function r(e,t){if(e.filter)return e.filter(t);for(var n=[],r=0;r<e.length;r++)t(e[r],r,e)&&n.push(e[r]);return n}var i=/^(\/?|)([\s\S]*?)((?:\.{1,2}|[^\/]+?|)(\.[^.\/]*|))(?:[\/]*)$/,o=function(e){return i.exec(e).slice(1)};t.resolve=function(){for(var t="",i=!1,o=arguments.length-1;o>=-1&&!i;o--){var a=o>=0?arguments[o]:e.cwd();if("string"!=typeof a)throw new TypeError("Arguments to path.resolve must be strings");a&&(t=a+"/"+t,i="/"===a.charAt(0))}return t=n(r(t.split("/"),function(e){return!!e}),!i).join("/"),(i?"/":"")+t||"."},t.normalize=function(e){var i=t.isAbsolute(e),o="/"===a(e,-1);return e=n(r(e.split("/"),function(e){return!!e}),!i).join("/"),e||i||(e="."),e&&o&&(e+="/"),(i?"/":"")+e},t.isAbsolute=function(e){return"/"===e.charAt(0)},t.join=function(){var e=Array.prototype.slice.call(arguments,0);return t.normalize(r(e,function(e,t){if("string"!=typeof e)throw new TypeError("Arguments to path.join must be strings");return e}).join("/"))},t.relative=function(e,n){function r(e){for(var t=0;t<e.length&&""===e[t];t++);for(var n=e.length-1;n>=0&&""===e[n];n--);return t>n?[]:e.slice(t,n-t+1)}e=t.resolve(e).substr(1),n=t.resolve(n).substr(1);for(var i=r(e.split("/")),o=r(n.split("/")),a=Math.min(i.length,o.length),s=a,u=0;u<a;u++)if(i[u]!==o[u]){s=u;break}for(var l=[],u=s;u<i.length;u++)l.push("..");return l=l.concat(o.slice(s)),l.join("/")},t.sep="/",t.delimiter=":",t.dirname=function(e){var t=o(e),n=t[0],r=t[1];return n||r?(r&&(r=r.substr(0,r.length-1)),n+r):"."},t.basename=function(e,t){var n=o(e)[2];return t&&n.substr(-1*t.length)===t&&(n=n.substr(0,n.length-t.length)),n},t.extname=function(e){return o(e)[3]};var a="b"==="ab".substr(-1)?function(e,t,n){return e.substr(t,n)}:function(e,t,n){return t<0&&(t=e.length+t),e.substr(t,n)}}).call(t,n(0))},function(e,t,n){"use strict";(function(e){function r(){const e=new a.a;e.setMode(1),e.domElement.style.position="absolute",e.domElement.style.left="0px",e.domElement.style.top="0px",document.body.appendChild(e.domElement);const t=requestAnimationFrame;return e.begin(),requestAnimationFrame=function(n){e.end(),t(n),e.begin()},new u.a.GUI}function i(t){function n(){t.canvas.width=window.innerWidth,t.canvas.height=window.innerHeight}window.addEventListener("resize",n),function r(){n(),e.nextTick(function(){window.innerWidth!==parseInt(t.canvas.getAttribute("width"))&&setTimeout(r,100)})}()}t.a=r,t.b=i;var o=n(4),a=n.n(o),s=n(5),u=n.n(s)}).call(t,n(0))},function(e,t){var n=function(){var e=Date.now(),t=e,n=0,r=1/0,i=0,o=0,a=1/0,s=0,u=0,l=0,c=document.createElement("div");c.id="stats",c.addEventListener("mousedown",function(e){e.preventDefault(),v(++l%2)},!1),c.style.cssText="width:80px;opacity:0.9;cursor:pointer";var d=document.createElement("div");d.id="fps",d.style.cssText="padding:0 0 3px 3px;text-align:left;background-color:#002",c.appendChild(d);var f=document.createElement("div");f.id="fpsText",f.style.cssText="color:#0ff;font-family:Helvetica,Arial,sans-serif;font-size:9px;font-weight:bold;line-height:15px",f.innerHTML="FPS",d.appendChild(f);var m=document.createElement("div");for(m.id="fpsGraph",m.style.cssText="position:relative;width:74px;height:30px;background-color:#0ff",d.appendChild(m);74>m.children.length;){var _=document.createElement("span");_.style.cssText="width:1px;height:30px;float:left;background-color:#113",m.appendChild(_)}var p=document.createElement("div");p.id="ms",p.style.cssText="padding:0 0 3px 3px;text-align:left;background-color:#020;display:none",c.appendChild(p);var h=document.createElement("div");h.id="msText",h.style.cssText="color:#0f0;font-family:Helvetica,Arial,sans-serif;font-size:9px;font-weight:bold;line-height:15px",h.innerHTML="MS",p.appendChild(h);var g=document.createElement("div");for(g.id="msGraph",g.style.cssText="position:relative;width:74px;height:30px;background-color:#0f0",p.appendChild(g);74>g.children.length;)_=document.createElement("span"),_.style.cssText="width:1px;height:30px;float:left;background-color:#131",g.appendChild(_);var v=function(e){switch(l=e){case 0:d.style.display="block",p.style.display="none";break;case 1:d.style.display="none",p.style.display="block"}};return{REVISION:12,domElement:c,setMode:v,begin:function(){e=Date.now()},end:function(){var l=Date.now();n=l-e,r=Math.min(r,n),i=Math.max(i,n),h.textContent=n+" MS ("+r+"-"+i+")";var c=Math.min(30,30-n/200*30);return g.appendChild(g.firstChild).style.height=c+"px",u++,l>t+1e3&&(o=Math.round(1e3*u/(l-t)),a=Math.min(a,o),s=Math.max(s,o),f.textContent=o+" FPS ("+a+"-"+s+")",c=Math.min(30,30-o/100*30),m.appendChild(m.firstChild).style.height=c+"px",t=l,u=0),l},update:function(){e=this.end()}}};"object"==typeof e&&(e.exports=n)},function(e,t,n){e.exports=n(6),e.exports.color=n(7)},function(e,t){var n=e.exports=n||{};n.gui=n.gui||{},n.utils=n.utils||{},n.controllers=n.controllers||{},n.dom=n.dom||{},n.color=n.color||{},n.utils.css=function(){return{load:function(e,t){t=t||document;var n=t.createElement("link");n.type="text/css",n.rel="stylesheet",n.href=e,t.getElementsByTagName("head")[0].appendChild(n)},inject:function(e,t){t=t||document;var n=document.createElement("style");n.type="text/css",n.innerHTML=e,t.getElementsByTagName("head")[0].appendChild(n)}}}(),n.utils.common=function(){var e=Array.prototype.forEach,t=Array.prototype.slice;return{BREAK:{},extend:function(e){return this.each(t.call(arguments,1),function(t){for(var n in t)this.isUndefined(t[n])||(e[n]=t[n])},this),e},defaults:function(e){return this.each(t.call(arguments,1),function(t){for(var n in t)this.isUndefined(e[n])&&(e[n]=t[n])},this),e},compose:function(){var e=t.call(arguments);return function(){for(var n=t.call(arguments),r=e.length-1;r>=0;r--)n=[e[r].apply(this,n)];return n[0]}},each:function(t,n,r){if(e&&t.forEach===e)t.forEach(n,r);else if(t.length===t.length+0){for(var i=0,o=t.length;i<o;i++)if(i in t&&n.call(r,t[i],i)===this.BREAK)return}else for(var i in t)if(n.call(r,t[i],i)===this.BREAK)return},defer:function(e){setTimeout(e,0)},toArray:function(e){return e.toArray?e.toArray():t.call(e)},isUndefined:function(e){return void 0===e},isNull:function(e){return null===e},isNaN:function(e){return e!==e},isArray:Array.isArray||function(e){return e.constructor===Array},isObject:function(e){return e===Object(e)},isNumber:function(e){return e===e+0},isString:function(e){return e===e+""},isBoolean:function(e){return!1===e||!0===e},isFunction:function(e){return"[object Function]"===Object.prototype.toString.call(e)}}}(),n.controllers.Controller=function(e){var t=function(e,t){this.initialValue=e[t],this.domElement=document.createElement("div"),this.object=e,this.property=t,this.__onChange=void 0,this.__onFinishChange=void 0};return e.extend(t.prototype,{onChange:function(e){return this.__onChange=e,this},onFinishChange:function(e){return this.__onFinishChange=e,this},setValue:function(e){return this.object[this.property]=e,this.__onChange&&this.__onChange.call(this,e),this.updateDisplay(),this},getValue:function(){return this.object[this.property]},updateDisplay:function(){return this},isModified:function(){return this.initialValue!==this.getValue()}}),t}(n.utils.common),n.dom.dom=function(e){function t(t){if("0"===t||e.isUndefined(t))return 0;var n=t.match(i);return e.isNull(n)?0:parseFloat(n[1])}var n={HTMLEvents:["change"],MouseEvents:["click","mousemove","mousedown","mouseup","mouseover"],KeyboardEvents:["keydown"]},r={};e.each(n,function(t,n){e.each(t,function(e){r[e]=n})});var i=/(\d+(\.\d+)?)px/,o={makeSelectable:function(e,t){void 0!==e&&void 0!==e.style&&(e.onselectstart=t?function(){return!1}:function(){},e.style.MozUserSelect=t?"auto":"none",e.style.KhtmlUserSelect=t?"auto":"none",e.unselectable=t?"on":"off")},makeFullscreen:function(t,n,r){e.isUndefined(n)&&(n=!0),e.isUndefined(r)&&(r=!0),t.style.position="absolute",n&&(t.style.left=0,t.style.right=0),r&&(t.style.top=0,t.style.bottom=0)},fakeEvent:function(t,n,i,o){i=i||{};var a=r[n];if(!a)throw new Error("Event type "+n+" not supported.");var s=document.createEvent(a);switch(a){case"MouseEvents":var u=i.x||i.clientX||0,l=i.y||i.clientY||0;s.initMouseEvent(n,i.bubbles||!1,i.cancelable||!0,window,i.clickCount||1,0,0,u,l,!1,!1,!1,!1,0,null);break;case"KeyboardEvents":var c=s.initKeyboardEvent||s.initKeyEvent;e.defaults(i,{cancelable:!0,ctrlKey:!1,altKey:!1,shiftKey:!1,metaKey:!1,keyCode:void 0,charCode:void 0}),c(n,i.bubbles||!1,i.cancelable,window,i.ctrlKey,i.altKey,i.shiftKey,i.metaKey,i.keyCode,i.charCode);break;default:s.initEvent(n,i.bubbles||!1,i.cancelable||!0)}e.defaults(s,o),t.dispatchEvent(s)},bind:function(e,t,n,r){return r=r||!1,e.addEventListener?e.addEventListener(t,n,r):e.attachEvent&&e.attachEvent("on"+t,n),o},unbind:function(e,t,n,r){return r=r||!1,e.removeEventListener?e.removeEventListener(t,n,r):e.detachEvent&&e.detachEvent("on"+t,n),o},addClass:function(e,t){if(void 0===e.className)e.className=t;else if(e.className!==t){var n=e.className.split(/ +/);-1==n.indexOf(t)&&(n.push(t),e.className=n.join(" ").replace(/^\s+/,"").replace(/\s+$/,""))}return o},removeClass:function(e,t){if(t)if(void 0===e.className);else if(e.className===t)e.removeAttribute("class");else{var n=e.className.split(/ +/),r=n.indexOf(t);-1!=r&&(n.splice(r,1),e.className=n.join(" "))}else e.className=void 0;return o},hasClass:function(e,t){return new RegExp("(?:^|\\s+)"+t+"(?:\\s+|$)").test(e.className)||!1},getWidth:function(e){var n=getComputedStyle(e);return t(n["border-left-width"])+t(n["border-right-width"])+t(n["padding-left"])+t(n["padding-right"])+t(n.width)},getHeight:function(e){var n=getComputedStyle(e);return t(n["border-top-width"])+t(n["border-bottom-width"])+t(n["padding-top"])+t(n["padding-bottom"])+t(n.height)},getOffset:function(e){var t={left:0,top:0};if(e.offsetParent)do{t.left+=e.offsetLeft,t.top+=e.offsetTop}while(e=e.offsetParent);return t},isActive:function(e){return e===document.activeElement&&(e.type||e.href)}};return o}(n.utils.common),n.controllers.OptionController=function(e,t,n){var r=function(e,i,o){r.superclass.call(this,e,i);var a=this;if(this.__select=document.createElement("select"),n.isArray(o)){var s={};n.each(o,function(e){s[e]=e}),o=s}n.each(o,function(e,t){var n=document.createElement("option");n.innerHTML=t,n.setAttribute("value",e),a.__select.appendChild(n)}),this.updateDisplay(),t.bind(this.__select,"change",function(){var e=this.options[this.selectedIndex].value;a.setValue(e)}),this.domElement.appendChild(this.__select)};return r.superclass=e,n.extend(r.prototype,e.prototype,{setValue:function(e){var t=r.superclass.prototype.setValue.call(this,e);return this.__onFinishChange&&this.__onFinishChange.call(this,this.getValue()),t},updateDisplay:function(){return this.__select.value=this.getValue(),r.superclass.prototype.updateDisplay.call(this)}}),r}(n.controllers.Controller,n.dom.dom,n.utils.common),n.controllers.NumberController=function(e,t){function n(e){return e=e.toString(),e.indexOf(".")>-1?e.length-e.indexOf(".")-1:0}var r=function(e,i,o){r.superclass.call(this,e,i),o=o||{},this.__min=o.min,this.__max=o.max,this.__step=o.step,t.isUndefined(this.__step)?0==this.initialValue?this.__impliedStep=1:this.__impliedStep=Math.pow(10,Math.floor(Math.log(this.initialValue)/Math.LN10))/10:this.__impliedStep=this.__step,this.__precision=n(this.__impliedStep)};return r.superclass=e,t.extend(r.prototype,e.prototype,{setValue:function(e){return void 0!==this.__min&&e<this.__min?e=this.__min:void 0!==this.__max&&e>this.__max&&(e=this.__max),void 0!==this.__step&&e%this.__step!=0&&(e=Math.round(e/this.__step)*this.__step),r.superclass.prototype.setValue.call(this,e)},min:function(e){return this.__min=e,this},max:function(e){return this.__max=e,this},step:function(e){return this.__step=e,this}}),r}(n.controllers.Controller,n.utils.common),n.controllers.NumberControllerBox=function(e,t,n){function r(e,t){var n=Math.pow(10,t);return Math.round(e*n)/n}var i=function(e,r,o){function a(){var e=parseFloat(f.__input.value);n.isNaN(e)||f.setValue(e)}function s(){a(),f.__onFinishChange&&f.__onFinishChange.call(f,f.getValue())}function u(e){t.bind(window,"mousemove",l),t.bind(window,"mouseup",c),d=e.clientY}function l(e){var t=d-e.clientY;f.setValue(f.getValue()+t*f.__impliedStep),d=e.clientY}function c(){t.unbind(window,"mousemove",l),t.unbind(window,"mouseup",c)}this.__truncationSuspended=!1,i.superclass.call(this,e,r,o);var d,f=this;this.__input=document.createElement("input"),this.__input.setAttribute("type","text"),t.bind(this.__input,"change",a),t.bind(this.__input,"blur",s),t.bind(this.__input,"mousedown",u),t.bind(this.__input,"keydown",function(e){13===e.keyCode&&(f.__truncationSuspended=!0,this.blur(),f.__truncationSuspended=!1)}),this.updateDisplay(),this.domElement.appendChild(this.__input)};return i.superclass=e,n.extend(i.prototype,e.prototype,{updateDisplay:function(){return this.__input.value=this.__truncationSuspended?this.getValue():r(this.getValue(),this.__precision),i.superclass.prototype.updateDisplay.call(this)}}),i}(n.controllers.NumberController,n.dom.dom,n.utils.common),n.controllers.NumberControllerSlider=function(e,t,n,r,i){function o(e,t,n,r,i){return r+(e-t)/(n-t)*(i-r)}var a=function(e,n,r,i,s){function u(e){t.bind(window,"mousemove",l),t.bind(window,"mouseup",c),l(e)}function l(e){e.preventDefault();var n=t.getOffset(d.__background),r=t.getWidth(d.__background);return d.setValue(o(e.clientX,n.left,n.left+r,d.__min,d.__max)),!1}function c(){t.unbind(window,"mousemove",l),t.unbind(window,"mouseup",c),d.__onFinishChange&&d.__onFinishChange.call(d,d.getValue())}a.superclass.call(this,e,n,{min:r,max:i,step:s});var d=this;this.__background=document.createElement("div"),this.__foreground=document.createElement("div"),t.bind(this.__background,"mousedown",u),t.addClass(this.__background,"slider"),t.addClass(this.__foreground,"slider-fg"),this.updateDisplay(),this.__background.appendChild(this.__foreground),this.domElement.appendChild(this.__background)};return a.superclass=e,a.useDefaultStyles=function(){n.inject(".slider {\n  box-shadow: inset 0 2px 4px rgba(0,0,0,0.15);\n  height: 1em;\n  border-radius: 1em;\n  background-color: #eee;\n  padding: 0 0.5em;\n  overflow: hidden;\n}\n\n.slider-fg {\n  padding: 1px 0 2px 0;\n  background-color: #aaa;\n  height: 1em;\n  margin-left: -0.5em;\n  padding-right: 0.5em;\n  border-radius: 1em 0 0 1em;\n}\n\n.slider-fg:after {\n  display: inline-block;\n  border-radius: 1em;\n  background-color: #fff;\n  border:  1px solid #aaa;\n  content: '';\n  float: right;\n  margin-right: -1em;\n  margin-top: -1px;\n  height: 0.9em;\n  width: 0.9em;\n}")},r.extend(a.prototype,e.prototype,{updateDisplay:function(){var e=(this.getValue()-this.__min)/(this.__max-this.__min);return this.__foreground.style.width=100*e+"%",a.superclass.prototype.updateDisplay.call(this)}}),a}(n.controllers.NumberController,n.dom.dom,n.utils.css,n.utils.common),n.controllers.FunctionController=function(e,t,n){var r=function(e,n,i){r.superclass.call(this,e,n);var o=this;this.__button=document.createElement("div"),this.__button.innerHTML=void 0===i?"Fire":i,t.bind(this.__button,"click",function(e){return e.preventDefault(),o.fire(),!1}),t.addClass(this.__button,"button"),this.domElement.appendChild(this.__button)};return r.superclass=e,n.extend(r.prototype,e.prototype,{fire:function(){this.__onChange&&this.__onChange.call(this),this.__onFinishChange&&this.__onFinishChange.call(this,this.getValue()),this.getValue().call(this.object)}}),r}(n.controllers.Controller,n.dom.dom,n.utils.common),n.controllers.BooleanController=function(e,t,n){var r=function(e,n){function i(){o.setValue(!o.__prev)}r.superclass.call(this,e,n);var o=this;this.__prev=this.getValue(),this.__checkbox=document.createElement("input"),this.__checkbox.setAttribute("type","checkbox"),t.bind(this.__checkbox,"change",i,!1),this.domElement.appendChild(this.__checkbox),this.updateDisplay()};return r.superclass=e,n.extend(r.prototype,e.prototype,{setValue:function(e){var t=r.superclass.prototype.setValue.call(this,e);return this.__onFinishChange&&this.__onFinishChange.call(this,this.getValue()),this.__prev=this.getValue(),t},updateDisplay:function(){return!0===this.getValue()?(this.__checkbox.setAttribute("checked","checked"),this.__checkbox.checked=!0):this.__checkbox.checked=!1,r.superclass.prototype.updateDisplay.call(this)}}),r}(n.controllers.Controller,n.dom.dom,n.utils.common),n.color.toString=function(e){return function(t){if(1==t.a||e.isUndefined(t.a)){for(var n=t.hex.toString(16);n.length<6;)n="0"+n;return"#"+n}return"rgba("+Math.round(t.r)+","+Math.round(t.g)+","+Math.round(t.b)+","+t.a+")"}}(n.utils.common),n.color.interpret=function(e,t){var n,r,i=function(){r=!1;var e=arguments.length>1?t.toArray(arguments):arguments[0];return t.each(o,function(i){if(i.litmus(e))return t.each(i.conversions,function(i,o){if(n=i.read(e),!1===r&&!1!==n)return r=n,n.conversionName=o,n.conversion=i,t.BREAK}),t.BREAK}),r},o=[{litmus:t.isString,conversions:{THREE_CHAR_HEX:{read:function(e){var t=e.match(/^#([A-F0-9])([A-F0-9])([A-F0-9])$/i);return null!==t&&{space:"HEX",hex:parseInt("0x"+t[1].toString()+t[1].toString()+t[2].toString()+t[2].toString()+t[3].toString()+t[3].toString())}},write:e},SIX_CHAR_HEX:{read:function(e){var t=e.match(/^#([A-F0-9]{6})$/i);return null!==t&&{space:"HEX",hex:parseInt("0x"+t[1].toString())}},write:e},CSS_RGB:{read:function(e){var t=e.match(/^rgb\(\s*(.+)\s*,\s*(.+)\s*,\s*(.+)\s*\)/);return null!==t&&{space:"RGB",r:parseFloat(t[1]),g:parseFloat(t[2]),b:parseFloat(t[3])}},write:e},CSS_RGBA:{read:function(e){var t=e.match(/^rgba\(\s*(.+)\s*,\s*(.+)\s*,\s*(.+)\s*\,\s*(.+)\s*\)/);return null!==t&&{space:"RGB",r:parseFloat(t[1]),g:parseFloat(t[2]),b:parseFloat(t[3]),a:parseFloat(t[4])}},write:e}}},{litmus:t.isNumber,conversions:{HEX:{read:function(e){return{space:"HEX",hex:e,conversionName:"HEX"}},write:function(e){return e.hex}}}},{litmus:t.isArray,conversions:{RGB_ARRAY:{read:function(e){return 3==e.length&&{space:"RGB",r:e[0],g:e[1],b:e[2]}},write:function(e){return[e.r,e.g,e.b]}},RGBA_ARRAY:{read:function(e){return 4==e.length&&{space:"RGB",r:e[0],g:e[1],b:e[2],a:e[3]}},write:function(e){return[e.r,e.g,e.b,e.a]}}}},{litmus:t.isObject,conversions:{RGBA_OBJ:{read:function(e){return!!(t.isNumber(e.r)&&t.isNumber(e.g)&&t.isNumber(e.b)&&t.isNumber(e.a))&&{space:"RGB",r:e.r,g:e.g,b:e.b,a:e.a}},write:function(e){return{r:e.r,g:e.g,b:e.b,a:e.a}}},RGB_OBJ:{read:function(e){return!!(t.isNumber(e.r)&&t.isNumber(e.g)&&t.isNumber(e.b))&&{space:"RGB",r:e.r,g:e.g,b:e.b}},write:function(e){return{r:e.r,g:e.g,b:e.b}}},HSVA_OBJ:{read:function(e){return!!(t.isNumber(e.h)&&t.isNumber(e.s)&&t.isNumber(e.v)&&t.isNumber(e.a))&&{space:"HSV",h:e.h,s:e.s,v:e.v,a:e.a}},write:function(e){return{h:e.h,s:e.s,v:e.v,a:e.a}}},HSV_OBJ:{read:function(e){return!!(t.isNumber(e.h)&&t.isNumber(e.s)&&t.isNumber(e.v))&&{space:"HSV",h:e.h,s:e.s,v:e.v}},write:function(e){return{h:e.h,s:e.s,v:e.v}}}}}];return i}(n.color.toString,n.utils.common),n.GUI=n.gui.GUI=function(e,t,n,r,i,o,a,s,u,l,c,d,f,m,_){function p(e,t,n,o){if(void 0===t[n])throw new Error("Object "+t+' has no property "'+n+'"');var a;if(o.color)a=new c(t,n);else{var s=[t,n].concat(o.factoryArgs);a=r.apply(e,s)}o.before instanceof i&&(o.before=o.before.__li),v(e,a),m.addClass(a.domElement,"c");var u=document.createElement("span");m.addClass(u,"property-name"),u.innerHTML=a.property;var l=document.createElement("div");l.appendChild(u),l.appendChild(a.domElement);var d=h(e,l,o.before);return m.addClass(d,N.CLASS_CONTROLLER_ROW),m.addClass(d,typeof a.getValue()),g(e,d,a),e.__controllers.push(a),a}function h(e,t,n){var r=document.createElement("li");return t&&r.appendChild(t),n?e.__ul.insertBefore(r,params.before):e.__ul.appendChild(r),e.onResize(),r}function g(e,t,n){if(n.__li=t,n.__gui=e,_.extend(n,{options:function(t){return arguments.length>1?(n.remove(),p(e,n.object,n.property,{before:n.__li.nextElementSibling,factoryArgs:[_.toArray(arguments)]})):_.isArray(t)||_.isObject(t)?(n.remove(),p(e,n.object,n.property,{before:n.__li.nextElementSibling,factoryArgs:[t]})):void 0},name:function(e){return n.__li.firstElementChild.firstElementChild.innerHTML=e,n},listen:function(){return n.__gui.listen(n),n},remove:function(){return n.__gui.remove(n),n}}),n instanceof u){var r=new s(n.object,n.property,{min:n.__min,max:n.__max,step:n.__step});_.each(["updateDisplay","onChange","onFinishChange"],function(e){var t=n[e],i=r[e];n[e]=r[e]=function(){var e=Array.prototype.slice.call(arguments);return t.apply(n,e),i.apply(r,e)}}),m.addClass(t,"has-slider"),n.domElement.insertBefore(r.domElement,n.domElement.firstElementChild)}else if(n instanceof s){var i=function(t){return _.isNumber(n.__min)&&_.isNumber(n.__max)?(n.remove(),p(e,n.object,n.property,{before:n.__li.nextElementSibling,factoryArgs:[n.__min,n.__max,n.__step]})):t};n.min=_.compose(i,n.min),n.max=_.compose(i,n.max)}else n instanceof o?(m.bind(t,"click",function(){m.fakeEvent(n.__checkbox,"click")}),m.bind(n.__checkbox,"click",function(e){e.stopPropagation()})):n instanceof a?(m.bind(t,"click",function(){m.fakeEvent(n.__button,"click")}),m.bind(t,"mouseover",function(){m.addClass(n.__button,"hover")}),m.bind(t,"mouseout",function(){m.removeClass(n.__button,"hover")})):n instanceof c&&(m.addClass(t,"color"),n.updateDisplay=_.compose(function(e){return t.style.borderLeftColor=n.__color.toString(),e},n.updateDisplay),n.updateDisplay());n.setValue=_.compose(function(t){return e.getRoot().__preset_select&&n.isModified()&&S(e.getRoot(),!0),t},n.setValue)}function v(e,t){var n=e.getRoot(),r=n.__rememberedObjects.indexOf(t.object);if(-1!=r){var i=n.__rememberedObjectIndecesToControllers[r];if(void 0===i&&(i={},n.__rememberedObjectIndecesToControllers[r]=i),i[t.property]=t,n.load&&n.load.remembered){var o,a=n.load.remembered;if(a[e.preset])o=a[e.preset];else{if(!a[F])return;o=a[F]}if(o[r]&&void 0!==o[r][t.property]){var s=o[r][t.property];t.initialValue=s,t.setValue(s)}}}}function w(e,t){return document.location.href+"."+t}function y(e){function t(){l.style.display=e.useLocalStorage?"block":"none"}var n=e.__save_row=document.createElement("li");m.addClass(e.domElement,"has-save"),e.__ul.insertBefore(n,e.__ul.firstChild),m.addClass(n,"save-row");var r=document.createElement("span");r.innerHTML="&nbsp;",m.addClass(r,"button gears");var i=document.createElement("span");i.innerHTML="Save",m.addClass(i,"button"),m.addClass(i,"save");var o=document.createElement("span");o.innerHTML="New",m.addClass(o,"button"),m.addClass(o,"save-as");var a=document.createElement("span");a.innerHTML="Revert",m.addClass(a,"button"),m.addClass(a,"revert");var s=e.__preset_select=document.createElement("select");if(e.load&&e.load.remembered?_.each(e.load.remembered,function(t,n){A(e,n,n==e.preset)}):A(e,F,!1),m.bind(s,"change",function(){for(var t=0;t<e.__preset_select.length;t++)e.__preset_select[t].innerHTML=e.__preset_select[t].value;e.preset=this.value}),n.appendChild(s),n.appendChild(r),n.appendChild(i),n.appendChild(o),n.appendChild(a),R){var u=document.getElementById("dg-save-locally"),l=document.getElementById("dg-local-explain");u.style.display="block";var c=document.getElementById("dg-local-storage");"true"===localStorage.getItem(w(e,"isLocal"))&&c.setAttribute("checked","checked"),t(),m.bind(c,"change",function(){e.useLocalStorage=!e.useLocalStorage,t()})}var d=document.getElementById("dg-new-constructor");m.bind(d,"keydown",function(e){!e.metaKey||67!==e.which&&67!=e.keyCode||x.hide()}),m.bind(r,"click",function(){d.innerHTML=JSON.stringify(e.getSaveObject(),void 0,2),x.show(),d.focus(),d.select()}),m.bind(i,"click",function(){e.save()}),m.bind(o,"click",function(){var t=prompt("Enter a new preset name.");t&&e.saveAs(t)}),m.bind(a,"click",function(){e.revert()})}function E(e){function t(t){return t.preventDefault(),i=t.clientX,m.addClass(e.__closeButton,N.CLASS_DRAG),m.bind(window,"mousemove",n),m.bind(window,"mouseup",r),!1}function n(t){return t.preventDefault(),e.width+=i-t.clientX,e.onResize(),i=t.clientX,!1}function r(){m.removeClass(e.__closeButton,N.CLASS_DRAG),m.unbind(window,"mousemove",n),m.unbind(window,"mouseup",r)}e.__resize_handle=document.createElement("div"),_.extend(e.__resize_handle.style,{width:"6px",marginLeft:"-3px",height:"200px",cursor:"ew-resize",position:"absolute"});var i;m.bind(e.__resize_handle,"mousedown",t),m.bind(e.__closeButton,"mousedown",t),e.domElement.insertBefore(e.__resize_handle,e.domElement.firstElementChild)}function b(e,t){e.domElement.style.width=t+"px",e.__save_row&&e.autoPlace&&(e.__save_row.style.width=t+"px"),e.__closeButton&&(e.__closeButton.style.width=t+"px")}function M(e,t){var n={};return _.each(e.__rememberedObjects,function(r,i){var o={},a=e.__rememberedObjectIndecesToControllers[i];_.each(a,function(e,n){o[n]=t?e.initialValue:e.getValue()}),n[i]=o}),n}function A(e,t,n){var r=document.createElement("option");r.innerHTML=t,r.value=t,e.__preset_select.appendChild(r),n&&(e.__preset_select.selectedIndex=e.__preset_select.length-1)}function T(e){for(var t=0;t<e.__preset_select.length;t++)e.__preset_select[t].value==e.preset&&(e.__preset_select.selectedIndex=t)}function S(e,t){var n=e.__preset_select[e.__preset_select.selectedIndex];n.innerHTML=t?n.value+"*":n.value}function L(e){0!=e.length&&d(function(){L(e)}),_.each(e,function(e){e.updateDisplay()})}e.inject(".dg ul{list-style:none;margin:0;padding:0;width:100%;clear:both}.dg.ac{position:fixed;top:0;left:0;right:0;height:0;z-index:0}.dg:not(.ac) .main{overflow:hidden}.dg.main{-webkit-transition:opacity 0.1s linear;-o-transition:opacity 0.1s linear;-moz-transition:opacity 0.1s linear;transition:opacity 0.1s linear}.dg.main.taller-than-window{overflow-y:auto}.dg.main.taller-than-window .close-button{opacity:1;margin-top:-1px;border-top:1px solid #2c2c2c}.dg.main ul.closed .close-button{opacity:1 !important}.dg.main:hover .close-button,.dg.main .close-button.drag{opacity:1}.dg.main .close-button{-webkit-transition:opacity 0.1s linear;-o-transition:opacity 0.1s linear;-moz-transition:opacity 0.1s linear;transition:opacity 0.1s linear;border:0;position:absolute;line-height:19px;height:20px;cursor:pointer;text-align:center;background-color:#000}.dg.main .close-button:hover{background-color:#111}.dg.a{float:right;margin-right:15px;overflow-x:hidden}.dg.a.has-save ul{margin-top:27px}.dg.a.has-save ul.closed{margin-top:0}.dg.a .save-row{position:fixed;top:0;z-index:1002}.dg li{-webkit-transition:height 0.1s ease-out;-o-transition:height 0.1s ease-out;-moz-transition:height 0.1s ease-out;transition:height 0.1s ease-out}.dg li:not(.folder){cursor:auto;height:27px;line-height:27px;overflow:hidden;padding:0 4px 0 5px}.dg li.folder{padding:0;border-left:4px solid rgba(0,0,0,0)}.dg li.title{cursor:pointer;margin-left:-4px}.dg .closed li:not(.title),.dg .closed ul li,.dg .closed ul li > *{height:0;overflow:hidden;border:0}.dg .cr{clear:both;padding-left:3px;height:27px}.dg .property-name{cursor:default;float:left;clear:left;width:40%;overflow:hidden;text-overflow:ellipsis}.dg .c{float:left;width:60%}.dg .c input[type=text]{border:0;margin-top:4px;padding:3px;width:100%;float:right}.dg .has-slider input[type=text]{width:30%;margin-left:0}.dg .slider{float:left;width:66%;margin-left:-5px;margin-right:0;height:19px;margin-top:4px}.dg .slider-fg{height:100%}.dg .c input[type=checkbox]{margin-top:9px}.dg .c select{margin-top:5px}.dg .cr.function,.dg .cr.function .property-name,.dg .cr.function *,.dg .cr.boolean,.dg .cr.boolean *{cursor:pointer}.dg .selector{display:none;position:absolute;margin-left:-9px;margin-top:23px;z-index:10}.dg .c:hover .selector,.dg .selector.drag{display:block}.dg li.save-row{padding:0}.dg li.save-row .button{display:inline-block;padding:0px 6px}.dg.dialogue{background-color:#222;width:460px;padding:15px;font-size:13px;line-height:15px}#dg-new-constructor{padding:10px;color:#222;font-family:Monaco, monospace;font-size:10px;border:0;resize:none;box-shadow:inset 1px 1px 1px #888;word-wrap:break-word;margin:12px 0;display:block;width:440px;overflow-y:scroll;height:100px;position:relative}#dg-local-explain{display:none;font-size:11px;line-height:17px;border-radius:3px;background-color:#333;padding:8px;margin-top:10px}#dg-local-explain code{font-size:10px}#dat-gui-save-locally{display:none}.dg{color:#eee;font:11px 'Lucida Grande', sans-serif;text-shadow:0 -1px 0 #111}.dg.main::-webkit-scrollbar{width:5px;background:#1a1a1a}.dg.main::-webkit-scrollbar-corner{height:0;display:none}.dg.main::-webkit-scrollbar-thumb{border-radius:5px;background:#676767}.dg li:not(.folder){background:#1a1a1a;border-bottom:1px solid #2c2c2c}.dg li.save-row{line-height:25px;background:#dad5cb;border:0}.dg li.save-row select{margin-left:5px;width:108px}.dg li.save-row .button{margin-left:5px;margin-top:1px;border-radius:2px;font-size:9px;line-height:7px;padding:4px 4px 5px 4px;background:#c5bdad;color:#fff;text-shadow:0 1px 0 #b0a58f;box-shadow:0 -1px 0 #b0a58f;cursor:pointer}.dg li.save-row .button.gears{background:#c5bdad url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAANCAYAAAB/9ZQ7AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAQJJREFUeNpiYKAU/P//PwGIC/ApCABiBSAW+I8AClAcgKxQ4T9hoMAEUrxx2QSGN6+egDX+/vWT4e7N82AMYoPAx/evwWoYoSYbACX2s7KxCxzcsezDh3evFoDEBYTEEqycggWAzA9AuUSQQgeYPa9fPv6/YWm/Acx5IPb7ty/fw+QZblw67vDs8R0YHyQhgObx+yAJkBqmG5dPPDh1aPOGR/eugW0G4vlIoTIfyFcA+QekhhHJhPdQxbiAIguMBTQZrPD7108M6roWYDFQiIAAv6Aow/1bFwXgis+f2LUAynwoIaNcz8XNx3Dl7MEJUDGQpx9gtQ8YCueB+D26OECAAQDadt7e46D42QAAAABJRU5ErkJggg==) 2px 1px no-repeat;height:7px;width:8px}.dg li.save-row .button:hover{background-color:#bab19e;box-shadow:0 -1px 0 #b0a58f}.dg li.folder{border-bottom:0}.dg li.title{padding-left:16px;background:#000 url(data:image/gif;base64,R0lGODlhBQAFAJEAAP////Pz8////////yH5BAEAAAIALAAAAAAFAAUAAAIIlI+hKgFxoCgAOw==) 6px 10px no-repeat;cursor:pointer;border-bottom:1px solid rgba(255,255,255,0.2)}.dg .closed li.title{background-image:url(data:image/gif;base64,R0lGODlhBQAFAJEAAP////Pz8////////yH5BAEAAAIALAAAAAAFAAUAAAIIlGIWqMCbWAEAOw==)}.dg .cr.boolean{border-left:3px solid #806787}.dg .cr.function{border-left:3px solid #e61d5f}.dg .cr.number{border-left:3px solid #2fa1d6}.dg .cr.number input[type=text]{color:#2fa1d6}.dg .cr.string{border-left:3px solid #1ed36f}.dg .cr.string input[type=text]{color:#1ed36f}.dg .cr.function:hover,.dg .cr.boolean:hover{background:#111}.dg .c input[type=text]{background:#303030;outline:none}.dg .c input[type=text]:hover{background:#3c3c3c}.dg .c input[type=text]:focus{background:#494949;color:#fff}.dg .c .slider{background:#303030;cursor:ew-resize}.dg .c .slider-fg{background:#2fa1d6}.dg .c .slider:hover{background:#3c3c3c}.dg .c .slider:hover .slider-fg{background:#44abda}\n");var x,C,F="Default",R=function(){try{return"localStorage"in window&&null!==window.localStorage}catch(e){return!1}}(),O=!0,I=!1,k=[],N=function(e){function t(){localStorage.setItem(w(n,"gui"),JSON.stringify(n.getSaveObject()))}var n=this;this.domElement=document.createElement("div"),this.__ul=document.createElement("ul"),this.domElement.appendChild(this.__ul),m.addClass(this.domElement,"dg"),this.__folders={},this.__controllers=[],this.__rememberedObjects=[],this.__rememberedObjectIndecesToControllers=[],this.__listening=[],e=e||{},e=_.defaults(e,{autoPlace:!0,width:N.DEFAULT_WIDTH}),e=_.defaults(e,{resizable:e.autoPlace,hideable:e.autoPlace}),_.isUndefined(e.load)?e.load={preset:F}:e.preset&&(e.load.preset=e.preset),_.isUndefined(e.parent)&&e.hideable&&k.push(this),e.resizable=_.isUndefined(e.parent)&&e.resizable,e.autoPlace&&_.isUndefined(e.scrollable)&&(e.scrollable=!0);var r=R&&"true"===localStorage.getItem(w(this,"isLocal"));if(Object.defineProperties(this,{parent:{get:function(){return e.parent}},scrollable:{get:function(){return e.scrollable}},autoPlace:{get:function(){return e.autoPlace}},preset:{get:function(){return n.parent?n.getRoot().preset:e.load.preset},set:function(t){n.parent?n.getRoot().preset=t:e.load.preset=t,T(this),n.revert()}},width:{get:function(){return e.width},set:function(t){e.width=t,b(n,t)}},name:{get:function(){return e.name},set:function(t){e.name=t,o&&(o.innerHTML=e.name)}},closed:{get:function(){return e.closed},set:function(t){e.closed=t,e.closed?m.addClass(n.__ul,N.CLASS_CLOSED):m.removeClass(n.__ul,N.CLASS_CLOSED),this.onResize(),n.__closeButton&&(n.__closeButton.innerHTML=t?N.TEXT_OPEN:N.TEXT_CLOSED)}},load:{get:function(){return e.load}},useLocalStorage:{get:function(){return r},set:function(e){R&&(r=e,e?m.bind(window,"unload",t):m.unbind(window,"unload",t),localStorage.setItem(w(n,"isLocal"),e))}}}),_.isUndefined(e.parent)){if(e.closed=!1,m.addClass(this.domElement,N.CLASS_MAIN),m.makeSelectable(this.domElement,!1),R&&r){n.useLocalStorage=!0;var i=localStorage.getItem(w(this,"gui"));i&&(e.load=JSON.parse(i))}this.__closeButton=document.createElement("div"),this.__closeButton.innerHTML=N.TEXT_CLOSED,m.addClass(this.__closeButton,N.CLASS_CLOSE_BUTTON),this.domElement.appendChild(this.__closeButton),m.bind(this.__closeButton,"click",function(){n.closed=!n.closed})}else{void 0===e.closed&&(e.closed=!0);var o=document.createTextNode(e.name);m.addClass(o,"controller-name");var a=h(n,o),s=function(e){return e.preventDefault(),n.closed=!n.closed,!1};m.addClass(this.__ul,N.CLASS_CLOSED),m.addClass(a,"title"),m.bind(a,"click",s),e.closed||(this.closed=!1)}e.autoPlace&&(_.isUndefined(e.parent)&&(O&&(C=document.createElement("div"),m.addClass(C,"dg"),m.addClass(C,N.CLASS_AUTO_PLACE_CONTAINER),document.body.appendChild(C),O=!1),C.appendChild(this.domElement),m.addClass(this.domElement,N.CLASS_AUTO_PLACE)),this.parent||b(n,e.width)),m.bind(window,"resize",function(){n.onResize()}),m.bind(this.__ul,"webkitTransitionEnd",function(){n.onResize()}),m.bind(this.__ul,"transitionend",function(){n.onResize()}),m.bind(this.__ul,"oTransitionEnd",function(){n.onResize()}),this.onResize(),e.resizable&&E(this);n.getRoot();e.parent||function(){var e=n.getRoot();e.width+=1,_.defer(function(){e.width-=1})}()};return N.toggleHide=function(){I=!I,_.each(k,function(e){e.domElement.style.zIndex=I?-999:999,e.domElement.style.opacity=I?0:1})},N.CLASS_AUTO_PLACE="a",N.CLASS_AUTO_PLACE_CONTAINER="ac",N.CLASS_MAIN="main",N.CLASS_CONTROLLER_ROW="cr",N.CLASS_TOO_TALL="taller-than-window",N.CLASS_CLOSED="closed",N.CLASS_CLOSE_BUTTON="close-button",N.CLASS_DRAG="drag",N.DEFAULT_WIDTH=245,N.TEXT_CLOSED="Close Controls",N.TEXT_OPEN="Open Controls",m.bind(window,"keydown",function(e){"text"===document.activeElement.type||72!==e.which&&72!=e.keyCode||N.toggleHide()},!1),_.extend(N.prototype,{add:function(e,t){return p(this,e,t,{factoryArgs:Array.prototype.slice.call(arguments,2)})},addColor:function(e,t){return p(this,e,t,{color:!0})},remove:function(e){this.__ul.removeChild(e.__li),this.__controllers.slice(this.__controllers.indexOf(e),1);var t=this;_.defer(function(){t.onResize()})},destroy:function(){this.autoPlace&&C.removeChild(this.domElement)},addFolder:function(e){if(void 0!==this.__folders[e])throw new Error('You already have a folder in this GUI by the name "'+e+'"');var t={name:e,parent:this};t.autoPlace=this.autoPlace,this.load&&this.load.folders&&this.load.folders[e]&&(t.closed=this.load.folders[e].closed,t.load=this.load.folders[e]);var n=new N(t);this.__folders[e]=n;var r=h(this,n.domElement);return m.addClass(r,"folder"),n},open:function(){this.closed=!1},close:function(){this.closed=!0},onResize:function(){var e=this.getRoot();if(e.scrollable){var t=m.getOffset(e.__ul).top,n=0;_.each(e.__ul.childNodes,function(t){e.autoPlace&&t===e.__save_row||(n+=m.getHeight(t))}),window.innerHeight-t-20<n?(m.addClass(e.domElement,N.CLASS_TOO_TALL),e.__ul.style.height=window.innerHeight-t-20+"px"):(m.removeClass(e.domElement,N.CLASS_TOO_TALL),e.__ul.style.height="auto")}e.__resize_handle&&_.defer(function(){e.__resize_handle.style.height=e.__ul.offsetHeight+"px"}),e.__closeButton&&(e.__closeButton.style.width=e.width+"px")},remember:function(){if(_.isUndefined(x)&&(x=new f,x.domElement.innerHTML='<div id="dg-save" class="dg dialogue">\n\n  Here\'s the new load parameter for your <code>GUI</code>\'s constructor:\n\n  <textarea id="dg-new-constructor"></textarea>\n\n  <div id="dg-save-locally">\n\n    <input id="dg-local-storage" type="checkbox"/> Automatically save\n    values to <code>localStorage</code> on exit.\n\n    <div id="dg-local-explain">The values saved to <code>localStorage</code> will\n      override those passed to <code>dat.GUI</code>\'s constructor. This makes it\n      easier to work incrementally, but <code>localStorage</code> is fragile,\n      and your friends may not see the same values you do.\n      \n    </div>\n    \n  </div>\n\n</div>'),this.parent)throw new Error("You can only call remember on a top level GUI.");var e=this;_.each(Array.prototype.slice.call(arguments),function(t){0==e.__rememberedObjects.length&&y(e),-1==e.__rememberedObjects.indexOf(t)&&e.__rememberedObjects.push(t)}),this.autoPlace&&b(this,this.width)},getRoot:function(){for(var e=this;e.parent;)e=e.parent;return e},getSaveObject:function(){var e=this.load;return e.closed=this.closed,this.__rememberedObjects.length>0&&(e.preset=this.preset,e.remembered||(e.remembered={}),e.remembered[this.preset]=M(this)),e.folders={},_.each(this.__folders,function(t,n){e.folders[n]=t.getSaveObject()}),e},save:function(){this.load.remembered||(this.load.remembered={}),this.load.remembered[this.preset]=M(this),S(this,!1)},saveAs:function(e){this.load.remembered||(this.load.remembered={},this.load.remembered[F]=M(this,!0)),this.load.remembered[e]=M(this),this.preset=e,A(this,e,!0)},revert:function(e){_.each(this.__controllers,function(t){this.getRoot().load.remembered?v(e||this.getRoot(),t):t.setValue(t.initialValue)},this),_.each(this.__folders,function(e){e.revert(e)}),e||S(this.getRoot(),!1)},listen:function(e){var t=0==this.__listening.length;this.__listening.push(e),t&&L(this.__listening)}}),N}(n.utils.css,0,0,n.controllers.factory=function(e,t,n,r,i,o,a){return function(s,u){var l=s[u];return a.isArray(arguments[2])||a.isObject(arguments[2])?new e(s,u,arguments[2]):a.isNumber(l)?a.isNumber(arguments[2])&&a.isNumber(arguments[3])?new n(s,u,arguments[2],arguments[3]):new t(s,u,{min:arguments[2],max:arguments[3]}):a.isString(l)?new r(s,u):a.isFunction(l)?new i(s,u,""):a.isBoolean(l)?new o(s,u):void 0}}(n.controllers.OptionController,n.controllers.NumberControllerBox,n.controllers.NumberControllerSlider,n.controllers.StringController=function(e,t,n){var r=function(e,n){function i(){a.setValue(a.__input.value)}function o(){a.__onFinishChange&&a.__onFinishChange.call(a,a.getValue())}r.superclass.call(this,e,n);var a=this;this.__input=document.createElement("input"),this.__input.setAttribute("type","text"),t.bind(this.__input,"keyup",i),t.bind(this.__input,"change",i),t.bind(this.__input,"blur",o),t.bind(this.__input,"keydown",function(e){13===e.keyCode&&this.blur()}),this.updateDisplay(),this.domElement.appendChild(this.__input)};return r.superclass=e,n.extend(r.prototype,e.prototype,{updateDisplay:function(){return t.isActive(this.__input)||(this.__input.value=this.getValue()),r.superclass.prototype.updateDisplay.call(this)}}),r}(n.controllers.Controller,n.dom.dom,n.utils.common),n.controllers.FunctionController,n.controllers.BooleanController,n.utils.common),n.controllers.Controller,n.controllers.BooleanController,n.controllers.FunctionController,n.controllers.NumberControllerBox,n.controllers.NumberControllerSlider,n.controllers.OptionController,n.controllers.ColorController=function(e,t,n,r,i){function o(e,t,n,r){e.style.background="",i.each(u,function(i){e.style.cssText+="background: "+i+"linear-gradient("+t+", "+n+" 0%, "+r+" 100%); "})}function a(e){e.style.background="",e.style.cssText+="background: -moz-linear-gradient(top,  #ff0000 0%, #ff00ff 17%, #0000ff 34%, #00ffff 50%, #00ff00 67%, #ffff00 84%, #ff0000 100%);",e.style.cssText+="background: -webkit-linear-gradient(top,  #ff0000 0%,#ff00ff 17%,#0000ff 34%,#00ffff 50%,#00ff00 67%,#ffff00 84%,#ff0000 100%);",e.style.cssText+="background: -o-linear-gradient(top,  #ff0000 0%,#ff00ff 17%,#0000ff 34%,#00ffff 50%,#00ff00 67%,#ffff00 84%,#ff0000 100%);",e.style.cssText+="background: -ms-linear-gradient(top,  #ff0000 0%,#ff00ff 17%,#0000ff 34%,#00ffff 50%,#00ff00 67%,#ffff00 84%,#ff0000 100%);",e.style.cssText+="background: linear-gradient(top,  #ff0000 0%,#ff00ff 17%,#0000ff 34%,#00ffff 50%,#00ff00 67%,#ffff00 84%,#ff0000 100%);"}var s=function(e,u){function l(e){m(e),t.bind(window,"mousemove",m),t.bind(window,"mouseup",c)}function c(){t.unbind(window,"mousemove",m),t.unbind(window,"mouseup",c)}function d(){var e=r(this.value);!1!==e?(p.__color.__state=e,p.setValue(p.__color.toOriginal())):this.value=p.__color.toString()}function f(){t.unbind(window,"mousemove",_),t.unbind(window,"mouseup",f)}function m(e){e.preventDefault();var n=t.getWidth(p.__saturation_field),r=t.getOffset(p.__saturation_field),i=(e.clientX-r.left+document.body.scrollLeft)/n,o=1-(e.clientY-r.top+document.body.scrollTop)/n;return o>1?o=1:o<0&&(o=0),i>1?i=1:i<0&&(i=0),p.__color.v=o,p.__color.s=i,p.setValue(p.__color.toOriginal()),!1}function _(e){e.preventDefault();var n=t.getHeight(p.__hue_field),r=t.getOffset(p.__hue_field),i=1-(e.clientY-r.top+document.body.scrollTop)/n;return i>1?i=1:i<0&&(i=0),p.__color.h=360*i,p.setValue(p.__color.toOriginal()),!1}s.superclass.call(this,e,u),this.__color=new n(this.getValue()),this.__temp=new n(0);var p=this;this.domElement=document.createElement("div"),t.makeSelectable(this.domElement,!1),this.__selector=document.createElement("div"),this.__selector.className="selector",this.__saturation_field=document.createElement("div"),this.__saturation_field.className="saturation-field",this.__field_knob=document.createElement("div"),this.__field_knob.className="field-knob",this.__field_knob_border="2px solid ",this.__hue_knob=document.createElement("div"),this.__hue_knob.className="hue-knob",this.__hue_field=document.createElement("div"),this.__hue_field.className="hue-field",this.__input=document.createElement("input"),this.__input.type="text",this.__input_textShadow="0 1px 1px ",t.bind(this.__input,"keydown",function(e){13===e.keyCode&&d.call(this)}),t.bind(this.__input,"blur",d),t.bind(this.__selector,"mousedown",function(e){t.addClass(this,"drag").bind(window,"mouseup",function(e){t.removeClass(p.__selector,"drag")})});var h=document.createElement("div");i.extend(this.__selector.style,{width:"122px",height:"102px",padding:"3px",backgroundColor:"#222",boxShadow:"0px 1px 3px rgba(0,0,0,0.3)"}),i.extend(this.__field_knob.style,{position:"absolute",width:"12px",height:"12px",border:this.__field_knob_border+(this.__color.v<.5?"#fff":"#000"),boxShadow:"0px 1px 3px rgba(0,0,0,0.5)",borderRadius:"12px",zIndex:1}),i.extend(this.__hue_knob.style,{position:"absolute",width:"15px",height:"2px",borderRight:"4px solid #fff",zIndex:1}),i.extend(this.__saturation_field.style,{width:"100px",height:"100px",border:"1px solid #555",marginRight:"3px",display:"inline-block",cursor:"pointer"}),i.extend(h.style,{width:"100%",height:"100%",background:"none"}),o(h,"top","rgba(0,0,0,0)","#000"),i.extend(this.__hue_field.style,{width:"15px",height:"100px",display:"inline-block",border:"1px solid #555",cursor:"ns-resize"}),a(this.__hue_field),i.extend(this.__input.style,{outline:"none",textAlign:"center",color:"#fff",border:0,fontWeight:"bold",textShadow:this.__input_textShadow+"rgba(0,0,0,0.7)"}),t.bind(this.__saturation_field,"mousedown",l),t.bind(this.__field_knob,"mousedown",l),t.bind(this.__hue_field,"mousedown",function(e){_(e),t.bind(window,"mousemove",_),t.bind(window,"mouseup",f)}),this.__saturation_field.appendChild(h),this.__selector.appendChild(this.__field_knob),this.__selector.appendChild(this.__saturation_field),this.__selector.appendChild(this.__hue_field),this.__hue_field.appendChild(this.__hue_knob),this.domElement.appendChild(this.__input),this.domElement.appendChild(this.__selector),this.updateDisplay()};s.superclass=e,i.extend(s.prototype,e.prototype,{updateDisplay:function(){var e=r(this.getValue());if(!1!==e){var t=!1;i.each(n.COMPONENTS,function(n){if(!i.isUndefined(e[n])&&!i.isUndefined(this.__color.__state[n])&&e[n]!==this.__color.__state[n])return t=!0,{}},this),t&&i.extend(this.__color.__state,e)}i.extend(this.__temp.__state,this.__color.__state),this.__temp.a=1;var a=this.__color.v<.5||this.__color.s>.5?255:0,s=255-a;i.extend(this.__field_knob.style,{marginLeft:100*this.__color.s-7+"px",marginTop:100*(1-this.__color.v)-7+"px",backgroundColor:this.__temp.toString(),border:this.__field_knob_border+"rgb("+a+","+a+","+a+")"}),this.__hue_knob.style.marginTop=100*(1-this.__color.h/360)+"px",this.__temp.s=1,this.__temp.v=1,o(this.__saturation_field,"left","#fff",this.__temp.toString()),i.extend(this.__input.style,{backgroundColor:this.__input.value=this.__color.toString(),color:"rgb("+a+","+a+","+a+")",textShadow:this.__input_textShadow+"rgba("+s+","+s+","+s+",.7)"})}});var u=["-moz-","-o-","-webkit-","-ms-",""];return s}(n.controllers.Controller,n.dom.dom,n.color.Color=function(e,t,n,r){function i(e,t,n){Object.defineProperty(e,t,{get:function(){return"RGB"===this.__state.space?this.__state[t]:(a(this,t,n),this.__state[t])},set:function(e){"RGB"!==this.__state.space&&(a(this,t,n),this.__state.space="RGB"),this.__state[t]=e}})}function o(e,t){Object.defineProperty(e,t,{get:function(){return"HSV"===this.__state.space?this.__state[t]:(s(this),this.__state[t])},set:function(e){"HSV"!==this.__state.space&&(s(this),this.__state.space="HSV"),this.__state[t]=e}})}function a(e,n,i){if("HEX"===e.__state.space)e.__state[n]=t.component_from_hex(e.__state.hex,i);else{if("HSV"!==e.__state.space)throw"Corrupted color state";r.extend(e.__state,t.hsv_to_rgb(e.__state.h,e.__state.s,e.__state.v))}}function s(e){var n=t.rgb_to_hsv(e.r,e.g,e.b);r.extend(e.__state,{s:n.s,v:n.v}),r.isNaN(n.h)?r.isUndefined(e.__state.h)&&(e.__state.h=0):e.__state.h=n.h}var u=function(){if(this.__state=e.apply(this,arguments),!1===this.__state)throw"Failed to interpret color arguments";this.__state.a=this.__state.a||1};return u.COMPONENTS=["r","g","b","h","s","v","hex","a"],r.extend(u.prototype,{toString:function(){return n(this)},toOriginal:function(){return this.__state.conversion.write(this)}}),i(u.prototype,"r",2),i(u.prototype,"g",1),i(u.prototype,"b",0),o(u.prototype,"h"),o(u.prototype,"s"),o(u.prototype,"v"),Object.defineProperty(u.prototype,"a",{get:function(){return this.__state.a},set:function(e){this.__state.a=e}}),Object.defineProperty(u.prototype,"hex",{get:function(){return"HEX"!==!this.__state.space&&(this.__state.hex=t.rgb_to_hex(this.r,this.g,this.b)),this.__state.hex},set:function(e){this.__state.space="HEX",this.__state.hex=e}}),u}(n.color.interpret,n.color.math=function(){var e;return{hsv_to_rgb:function(e,t,n){var r=Math.floor(e/60)%6,i=e/60-Math.floor(e/60),o=n*(1-t),a=n*(1-i*t),s=n*(1-(1-i)*t),u=[[n,s,o],[a,n,o],[o,n,s],[o,a,n],[s,o,n],[n,o,a]][r];return{r:255*u[0],g:255*u[1],b:255*u[2]}},rgb_to_hsv:function(e,t,n){var r,i,o=Math.min(e,t,n),a=Math.max(e,t,n),s=a-o;return 0==a?{h:NaN,s:0,v:0}:(i=s/a,r=e==a?(t-n)/s:t==a?2+(n-e)/s:4+(e-t)/s,r/=6,r<0&&(r+=1),{h:360*r,s:i,v:a/255})},rgb_to_hex:function(e,t,n){var r=this.hex_with_component(0,2,e);return r=this.hex_with_component(r,1,t),r=this.hex_with_component(r,0,n)},component_from_hex:function(e,t){return e>>8*t&255},hex_with_component:function(t,n,r){return r<<(e=8*n)|t&~(255<<e)}}}(),n.color.toString,n.utils.common),n.color.interpret,n.utils.common),n.utils.requestAnimationFrame=function(){return window.webkitRequestAnimationFrame||window.mozRequestAnimationFrame||window.oRequestAnimationFrame||window.msRequestAnimationFrame||function(e,t){window.setTimeout(e,1e3/60)}}(),n.dom.CenteredDiv=function(e,t){var n=function(){this.backgroundElement=document.createElement("div"),t.extend(this.backgroundElement.style,{backgroundColor:"rgba(0,0,0,0.8)",top:0,left:0,display:"none",zIndex:"1000",opacity:0,WebkitTransition:"opacity 0.2s linear"}),e.makeFullscreen(this.backgroundElement),this.backgroundElement.style.position="fixed",this.domElement=document.createElement("div"),t.extend(this.domElement.style,{position:"fixed",display:"none",zIndex:"1001",opacity:0,WebkitTransition:"-webkit-transform 0.2s ease-out, opacity 0.2s linear"}),document.body.appendChild(this.backgroundElement),document.body.appendChild(this.domElement);var n=this;e.bind(this.backgroundElement,"click",function(){n.hide()})};return n.prototype.show=function(){var e=this;this.backgroundElement.style.display="block",this.domElement.style.display="block",this.domElement.style.opacity=0,this.domElement.style.webkitTransform="scale(1.1)",this.layout(),t.defer(function(){e.backgroundElement.style.opacity=1,e.domElement.style.opacity=1,e.domElement.style.webkitTransform="scale(1)"})},n.prototype.hide=function(){var t=this,n=function(){t.domElement.style.display="none",t.backgroundElement.style.display="none",e.unbind(t.domElement,"webkitTransitionEnd",n),e.unbind(t.domElement,"transitionend",n),e.unbind(t.domElement,"oTransitionEnd",n)};e.bind(this.domElement,"webkitTransitionEnd",n),e.bind(this.domElement,"transitionend",n),e.bind(this.domElement,"oTransitionEnd",n),this.backgroundElement.style.opacity=0,this.domElement.style.opacity=0,this.domElement.style.webkitTransform="scale(1.1)"},n.prototype.layout=function(){this.domElement.style.left=window.innerWidth/2-e.getWidth(this.domElement)/2+"px",this.domElement.style.top=window.innerHeight/2-e.getHeight(this.domElement)/2+"px"},n}(n.dom.dom,n.utils.common),n.dom.dom,n.utils.common)},function(e,t){var n=e.exports=n||{};n.color=n.color||{},n.utils=n.utils||{},n.utils.common=function(){var e=Array.prototype.forEach,t=Array.prototype.slice;return{BREAK:{},extend:function(e){return this.each(t.call(arguments,1),function(t){for(var n in t)this.isUndefined(t[n])||(e[n]=t[n])},this),e},defaults:function(e){return this.each(t.call(arguments,1),function(t){for(var n in t)this.isUndefined(e[n])&&(e[n]=t[n])},this),e},compose:function(){var e=t.call(arguments);return function(){for(var n=t.call(arguments),r=e.length-1;r>=0;r--)n=[e[r].apply(this,n)];return n[0]}},each:function(t,n,r){if(e&&t.forEach===e)t.forEach(n,r);else if(t.length===t.length+0){for(var i=0,o=t.length;i<o;i++)if(i in t&&n.call(r,t[i],i)===this.BREAK)return}else for(var i in t)if(n.call(r,t[i],i)===this.BREAK)return},defer:function(e){setTimeout(e,0)},toArray:function(e){return e.toArray?e.toArray():t.call(e)},isUndefined:function(e){return void 0===e},isNull:function(e){return null===e},isNaN:function(e){return e!==e},isArray:Array.isArray||function(e){return e.constructor===Array},isObject:function(e){return e===Object(e)},isNumber:function(e){return e===e+0},isString:function(e){return e===e+""},isBoolean:function(e){return!1===e||!0===e},isFunction:function(e){return"[object Function]"===Object.prototype.toString.call(e)}}}(),n.color.toString=function(e){return function(t){if(1==t.a||e.isUndefined(t.a)){for(var n=t.hex.toString(16);n.length<6;)n="0"+n;return"#"+n}return"rgba("+Math.round(t.r)+","+Math.round(t.g)+","+Math.round(t.b)+","+t.a+")"}}(n.utils.common),n.Color=n.color.Color=function(e,t,n,r){function i(e,t,n){Object.defineProperty(e,t,{get:function(){return"RGB"===this.__state.space?this.__state[t]:(a(this,t,n),this.__state[t])},set:function(e){"RGB"!==this.__state.space&&(a(this,t,n),this.__state.space="RGB"),this.__state[t]=e}})}function o(e,t){Object.defineProperty(e,t,{get:function(){return"HSV"===this.__state.space?this.__state[t]:(s(this),this.__state[t])},set:function(e){"HSV"!==this.__state.space&&(s(this),this.__state.space="HSV"),this.__state[t]=e}})}function a(e,n,i){if("HEX"===e.__state.space)e.__state[n]=t.component_from_hex(e.__state.hex,i);else{if("HSV"!==e.__state.space)throw"Corrupted color state";r.extend(e.__state,t.hsv_to_rgb(e.__state.h,e.__state.s,e.__state.v))}}function s(e){var n=t.rgb_to_hsv(e.r,e.g,e.b);r.extend(e.__state,{s:n.s,v:n.v}),r.isNaN(n.h)?r.isUndefined(e.__state.h)&&(e.__state.h=0):e.__state.h=n.h}var u=function(){if(this.__state=e.apply(this,arguments),!1===this.__state)throw"Failed to interpret color arguments";this.__state.a=this.__state.a||1};return u.COMPONENTS=["r","g","b","h","s","v","hex","a"],r.extend(u.prototype,{toString:function(){return n(this)},toOriginal:function(){return this.__state.conversion.write(this)}}),i(u.prototype,"r",2),i(u.prototype,"g",1),i(u.prototype,"b",0),o(u.prototype,"h"),o(u.prototype,"s"),o(u.prototype,"v"),Object.defineProperty(u.prototype,"a",{get:function(){return this.__state.a},set:function(e){this.__state.a=e}}),Object.defineProperty(u.prototype,"hex",{get:function(){return"HEX"!==!this.__state.space&&(this.__state.hex=t.rgb_to_hex(this.r,this.g,this.b)),this.__state.hex},set:function(e){this.__state.space="HEX",this.__state.hex=e}}),u}(n.color.interpret=function(e,t){var n,r,i=function(){r=!1;var e=arguments.length>1?t.toArray(arguments):arguments[0];return t.each(o,function(i){if(i.litmus(e))return t.each(i.conversions,function(i,o){if(n=i.read(e),!1===r&&!1!==n)return r=n,n.conversionName=o,n.conversion=i,t.BREAK}),t.BREAK}),r},o=[{litmus:t.isString,conversions:{THREE_CHAR_HEX:{read:function(e){var t=e.match(/^#([A-F0-9])([A-F0-9])([A-F0-9])$/i);return null!==t&&{space:"HEX",hex:parseInt("0x"+t[1].toString()+t[1].toString()+t[2].toString()+t[2].toString()+t[3].toString()+t[3].toString())}},write:e},SIX_CHAR_HEX:{read:function(e){var t=e.match(/^#([A-F0-9]{6})$/i);return null!==t&&{space:"HEX",hex:parseInt("0x"+t[1].toString())}},write:e},CSS_RGB:{read:function(e){var t=e.match(/^rgb\(\s*(.+)\s*,\s*(.+)\s*,\s*(.+)\s*\)/);return null!==t&&{space:"RGB",r:parseFloat(t[1]),g:parseFloat(t[2]),b:parseFloat(t[3])}},write:e},CSS_RGBA:{read:function(e){var t=e.match(/^rgba\(\s*(.+)\s*,\s*(.+)\s*,\s*(.+)\s*\,\s*(.+)\s*\)/);return null!==t&&{space:"RGB",r:parseFloat(t[1]),g:parseFloat(t[2]),b:parseFloat(t[3]),a:parseFloat(t[4])}},write:e}}},{litmus:t.isNumber,conversions:{HEX:{read:function(e){return{space:"HEX",hex:e,conversionName:"HEX"}},write:function(e){return e.hex}}}},{litmus:t.isArray,conversions:{RGB_ARRAY:{read:function(e){return 3==e.length&&{space:"RGB",r:e[0],g:e[1],b:e[2]}},write:function(e){return[e.r,e.g,e.b]}},RGBA_ARRAY:{read:function(e){return 4==e.length&&{space:"RGB",r:e[0],g:e[1],b:e[2],a:e[3]}},write:function(e){return[e.r,e.g,e.b,e.a]}}}},{litmus:t.isObject,conversions:{RGBA_OBJ:{read:function(e){return!!(t.isNumber(e.r)&&t.isNumber(e.g)&&t.isNumber(e.b)&&t.isNumber(e.a))&&{space:"RGB",r:e.r,g:e.g,b:e.b,a:e.a}},write:function(e){return{r:e.r,g:e.g,b:e.b,a:e.a}}},RGB_OBJ:{read:function(e){return!!(t.isNumber(e.r)&&t.isNumber(e.g)&&t.isNumber(e.b))&&{space:"RGB",r:e.r,g:e.g,b:e.b}},write:function(e){return{r:e.r,g:e.g,b:e.b}}},HSVA_OBJ:{read:function(e){return!!(t.isNumber(e.h)&&t.isNumber(e.s)&&t.isNumber(e.v)&&t.isNumber(e.a))&&{space:"HSV",h:e.h,s:e.s,v:e.v,a:e.a}},write:function(e){return{h:e.h,s:e.s,v:e.v,a:e.a}}},HSV_OBJ:{read:function(e){return!!(t.isNumber(e.h)&&t.isNumber(e.s)&&t.isNumber(e.v))&&{space:"HSV",h:e.h,s:e.s,v:e.v}},write:function(e){return{h:e.h,s:e.s,v:e.v}}}}}];return i}(n.color.toString,n.utils.common),n.color.math=function(){var e;return{hsv_to_rgb:function(e,t,n){var r=Math.floor(e/60)%6,i=e/60-Math.floor(e/60),o=n*(1-t),a=n*(1-i*t),s=n*(1-(1-i)*t),u=[[n,s,o],[a,n,o],[o,n,s],[o,a,n],[s,o,n],[n,o,a]][r];return{r:255*u[0],g:255*u[1],b:255*u[2]}},rgb_to_hsv:function(e,t,n){var r,i,o=Math.min(e,t,n),a=Math.max(e,t,n),s=a-o;return 0==a?{h:NaN,s:0,v:0}:(i=s/a,r=e==a?(t-n)/s:t==a?2+(n-e)/s:4+(e-t)/s,r/=6,r<0&&(r+=1),{h:360*r,s:i,v:a/255})},rgb_to_hex:function(e,t,n){var r=this.hex_with_component(0,2,e);return r=this.hex_with_component(r,1,t),r=this.hex_with_component(r,0,n)},component_from_hex:function(e,t){return e>>8*t&255},hex_with_component:function(t,n,r){return r<<(e=8*n)|t&~(255<<e)}}}(),n.color.toString,n.utils.common)},function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0});var r=n(9),i=n.n(r),o=n(3);const a=document.getElementById("canvas");a.addEventListener("webglcontextlost",function(e){alert("WebGL context lost. You will need to reload the page."),e.preventDefault()},!1);const s={frequency:1},u=new i.a({canvas:a,arguments:[window.innerWidth.toString(),window.innerHeight.toString()],onRuntimeInitialized:function(){l.updateFrequency(s.frequency),Object(o.b)(u)}}),l={updateFrequency:u.cwrap("updateFrequency","number",["number"])};Object(o.a)().add(s,"frequency",0,1).onChange(l.updateFrequency)},function(module,exports,__webpack_require__){(function(process){var Module=function(Module){function globalEval(e){eval.call(null,e)}function assert(e,t){e||abort("Assertion failed: "+t)}function getCFunc(ident){var func=Module["_"+ident];if(!func)try{func=eval("_"+ident)}catch(e){}return assert(func,"Cannot call unknown function "+ident+" (perhaps LLVM optimizations or closure removed it?)"),func}function setValue(e,t,n,r){switch(n=n||"i8","*"===n.charAt(n.length-1)&&(n="i32"),n){case"i1":case"i8":HEAP8[e>>0]=t;break;case"i16":HEAP16[e>>1]=t;break;case"i32":HEAP32[e>>2]=t;break;case"i64":tempI64=[t>>>0,(tempDouble=t,+Math_abs(tempDouble)>=1?tempDouble>0?(0|Math_min(+Math_floor(tempDouble/4294967296),4294967295))>>>0:~~+Math_ceil((tempDouble-+(~~tempDouble>>>0))/4294967296)>>>0:0)],HEAP32[e>>2]=tempI64[0],HEAP32[e+4>>2]=tempI64[1];break;case"float":HEAPF32[e>>2]=t;break;case"double":HEAPF64[e>>3]=t;break;default:abort("invalid type for setValue: "+n)}}function getValue(e,t,n){switch(t=t||"i8","*"===t.charAt(t.length-1)&&(t="i32"),t){case"i1":case"i8":return HEAP8[e>>0];case"i16":return HEAP16[e>>1];case"i32":case"i64":return HEAP32[e>>2];case"float":return HEAPF32[e>>2];case"double":return HEAPF64[e>>3];default:abort("invalid type for setValue: "+t)}return null}function allocate(e,t,n,r){var i,o;"number"==typeof e?(i=!0,o=e):(i=!1,o=e.length);var a,s="string"==typeof t?t:null;if(a=n==ALLOC_NONE?r:["function"==typeof _malloc?_malloc:Runtime.staticAlloc,Runtime.stackAlloc,Runtime.staticAlloc,Runtime.dynamicAlloc][void 0===n?ALLOC_STATIC:n](Math.max(o,s?1:t.length)),i){var u,r=a;for(assert(0==(3&a)),u=a+(-4&o);r<u;r+=4)HEAP32[r>>2]=0;for(u=a+o;r<u;)HEAP8[r++>>0]=0;return a}if("i8"===s)return e.subarray||e.slice?HEAPU8.set(e,a):HEAPU8.set(new Uint8Array(e),a),a;for(var l,c,d,f=0;f<o;){var m=e[f];"function"==typeof m&&(m=Runtime.getFunctionIndex(m)),l=s||t[f],0!==l?(assert(l,"Must know what type to store in allocate!"),"i64"==l&&(l="i32"),setValue(a+f,m,l),d!==l&&(c=Runtime.getNativeTypeSize(l),d=l),f+=c):f++}return a}function getMemory(e){return staticSealed?runtimeInitialized?_malloc(e):Runtime.dynamicAlloc(e):Runtime.staticAlloc(e)}function Pointer_stringify(e,t){if(0===t||!e)return"";for(var n,r=0,i=0;;){if(assert(e+i<TOTAL_MEMORY),n=HEAPU8[e+i>>0],r|=n,0==n&&!t)break;if(i++,t&&i==t)break}t||(t=i);var o="";if(r<128){for(var a;t>0;)a=String.fromCharCode.apply(String,HEAPU8.subarray(e,e+Math.min(t,1024))),o=o?o+a:a,e+=1024,t-=1024;return o}return Module.UTF8ToString(e)}function AsciiToString(e){for(var t="";;){var n=HEAP8[e++>>0];if(!n)return t;t+=String.fromCharCode(n)}}function stringToAscii(e,t){return writeAsciiToMemory(e,t,!1)}function UTF8ArrayToString(e,t){for(var n=t;e[n];)++n;if(n-t>16&&e.subarray&&UTF8Decoder)return UTF8Decoder.decode(e.subarray(t,n));for(var r,i,o,a,s,u,l="";;){if(!(r=e[t++]))return l;if(128&r)if(i=63&e[t++],192!=(224&r))if(o=63&e[t++],224==(240&r)?r=(15&r)<<12|i<<6|o:(a=63&e[t++],240==(248&r)?r=(7&r)<<18|i<<12|o<<6|a:(s=63&e[t++],248==(252&r)?r=(3&r)<<24|i<<18|o<<12|a<<6|s:(u=63&e[t++],r=(1&r)<<30|i<<24|o<<18|a<<12|s<<6|u))),r<65536)l+=String.fromCharCode(r);else{var c=r-65536;l+=String.fromCharCode(55296|c>>10,56320|1023&c)}else l+=String.fromCharCode((31&r)<<6|i);else l+=String.fromCharCode(r)}}function UTF8ToString(e){return UTF8ArrayToString(HEAPU8,e)}function stringToUTF8Array(e,t,n,r){if(!(r>0))return 0;for(var i=n,o=n+r-1,a=0;a<e.length;++a){var s=e.charCodeAt(a);if(s>=55296&&s<=57343&&(s=65536+((1023&s)<<10)|1023&e.charCodeAt(++a)),s<=127){if(n>=o)break;t[n++]=s}else if(s<=2047){if(n+1>=o)break;t[n++]=192|s>>6,t[n++]=128|63&s}else if(s<=65535){if(n+2>=o)break;t[n++]=224|s>>12,t[n++]=128|s>>6&63,t[n++]=128|63&s}else if(s<=2097151){if(n+3>=o)break;t[n++]=240|s>>18,t[n++]=128|s>>12&63,t[n++]=128|s>>6&63,t[n++]=128|63&s}else if(s<=67108863){if(n+4>=o)break;t[n++]=248|s>>24,t[n++]=128|s>>18&63,t[n++]=128|s>>12&63,t[n++]=128|s>>6&63,t[n++]=128|63&s}else{if(n+5>=o)break;t[n++]=252|s>>30,t[n++]=128|s>>24&63,t[n++]=128|s>>18&63,t[n++]=128|s>>12&63,t[n++]=128|s>>6&63,t[n++]=128|63&s}}return t[n]=0,n-i}function stringToUTF8(e,t,n){return assert("number"==typeof n,"stringToUTF8(str, outPtr, maxBytesToWrite) is missing the third parameter that specifies the length of the output buffer!"),stringToUTF8Array(e,HEAPU8,t,n)}function lengthBytesUTF8(e){for(var t=0,n=0;n<e.length;++n){var r=e.charCodeAt(n);r>=55296&&r<=57343&&(r=65536+((1023&r)<<10)|1023&e.charCodeAt(++n)),r<=127?++t:t+=r<=2047?2:r<=65535?3:r<=2097151?4:r<=67108863?5:6}return t}function demangle(e){var t=Module.___cxa_demangle||Module.__cxa_demangle;if(t){try{var n=e.substr(1),r=lengthBytesUTF8(n)+1,i=_malloc(r);stringToUTF8(n,i,r);var o=_malloc(4),a=t(i,0,0,o);if(0===getValue(o,"i32")&&a)return Pointer_stringify(a)}catch(e){}finally{i&&_free(i),o&&_free(o),a&&_free(a)}return e}return Runtime.warnOnce("warning: build with  -s DEMANGLE_SUPPORT=1  to link in libcxxabi demangling"),e}function demangleAll(e){var t=/__Z[\w\d_]+/g;return e.replace(t,function(e){var t=demangle(e);return e===t?e:e+" ["+t+"]"})}function jsStackTrace(){var e=new Error;if(!e.stack){try{throw new Error(0)}catch(t){e=t}if(!e.stack)return"(no stack trace available)"}return e.stack.toString()}function stackTrace(){var e=jsStackTrace();return Module.extraStackTrace&&(e+="\n"+Module.extraStackTrace()),demangleAll(e)}function alignUp(e,t){return e%t>0&&(e+=t-e%t),e}function updateGlobalBuffer(e){Module.buffer=buffer=e}function updateGlobalBufferViews(){Module.HEAP8=HEAP8=new Int8Array(buffer),Module.HEAP16=HEAP16=new Int16Array(buffer),Module.HEAP32=HEAP32=new Int32Array(buffer),Module.HEAPU8=HEAPU8=new Uint8Array(buffer),Module.HEAPU16=HEAPU16=new Uint16Array(buffer),Module.HEAPU32=HEAPU32=new Uint32Array(buffer),Module.HEAPF32=HEAPF32=new Float32Array(buffer),Module.HEAPF64=HEAPF64=new Float64Array(buffer)}function writeStackCookie(){assert(0==(3&STACK_MAX)),HEAPU32[(STACK_MAX>>2)-1]=34821223,HEAPU32[(STACK_MAX>>2)-2]=2310721022}function checkStackCookie(){if(34821223==HEAPU32[(STACK_MAX>>2)-1]&&2310721022==HEAPU32[(STACK_MAX>>2)-2]||abort("Stack overflow! Stack cookie has been overwritten, expected hex dwords 0x89BACDFE and 0x02135467, but received 0x"+HEAPU32[(STACK_MAX>>2)-2].toString(16)+" "+HEAPU32[(STACK_MAX>>2)-1].toString(16)),1668509029!==HEAP32[0])throw"Runtime error: The application has corrupted its heap memory area (address zero)!"}function abortStackOverflow(e){abort("Stack overflow! Attempted to allocate "+e+" bytes on the stack, but stack has only "+(STACK_MAX-Module.asm.stackSave()+e)+" bytes available!")}function abortOnCannotGrowMemory(){abort("Cannot enlarge memory arrays. Either (1) compile with  -s TOTAL_MEMORY=X  with X higher than the current value "+TOTAL_MEMORY+", (2) compile with  -s ALLOW_MEMORY_GROWTH=1  which allows increasing the size at runtime, or (3) if you want malloc to return NULL (0) instead of this abort, compile with  -s ABORTING_MALLOC=0 ")}function enlargeMemory(){assert(HEAP32[DYNAMICTOP_PTR>>2]>TOTAL_MEMORY);var e=Module.usingWasm?WASM_PAGE_SIZE:ASMJS_PAGE_SIZE,t=2147483648-e;if(HEAP32[DYNAMICTOP_PTR>>2]>t)return Module.printErr("Cannot enlarge memory, asked to go up to "+HEAP32[DYNAMICTOP_PTR>>2]+" bytes, but the limit is "+t+" bytes!"),!1;var n=TOTAL_MEMORY;for(TOTAL_MEMORY=Math.max(TOTAL_MEMORY,MIN_TOTAL_MEMORY);TOTAL_MEMORY<HEAP32[DYNAMICTOP_PTR>>2];)TOTAL_MEMORY=TOTAL_MEMORY<=536870912?alignUp(2*TOTAL_MEMORY,e):Math.min(alignUp((3*TOTAL_MEMORY+2147483648)/4,e),t);var r=Date.now(),i=Module.reallocBuffer(TOTAL_MEMORY);return i&&i.byteLength==TOTAL_MEMORY?(updateGlobalBuffer(i),updateGlobalBufferViews(),Module.printErr("enlarged memory arrays from "+n+" to "+TOTAL_MEMORY+", took "+(Date.now()-r)+" ms (has ArrayBuffer.transfer? "+!!ArrayBuffer.transfer+")"),Module.usingWasm||Module.printErr("Warning: Enlarging memory arrays, this is not fast! "+[n,TOTAL_MEMORY]),!0):(Module.printErr("Failed to grow the heap from "+n+" bytes to "+TOTAL_MEMORY+" bytes, not enough memory!"),i&&Module.printErr("Expected to get back a buffer of size "+TOTAL_MEMORY+" bytes, but instead got back a buffer of size "+i.byteLength),TOTAL_MEMORY=n,!1)}function getTotalMemory(){return TOTAL_MEMORY}function callRuntimeCallbacks(e){for(;e.length>0;){var t=e.shift();if("function"!=typeof t){var n=t.func;"number"==typeof n?void 0===t.arg?Module.dynCall_v(n):Module.dynCall_vi(n,t.arg):n(void 0===t.arg?null:t.arg)}else t()}}function preRun(){if(Module.preRun)for("function"==typeof Module.preRun&&(Module.preRun=[Module.preRun]);Module.preRun.length;)addOnPreRun(Module.preRun.shift());callRuntimeCallbacks(__ATPRERUN__)}function ensureInitRuntime(){checkStackCookie(),runtimeInitialized||(runtimeInitialized=!0,callRuntimeCallbacks(__ATINIT__))}function preMain(){checkStackCookie(),callRuntimeCallbacks(__ATMAIN__)}function exitRuntime(){checkStackCookie(),callRuntimeCallbacks(__ATEXIT__),runtimeExited=!0}function postRun(){if(checkStackCookie(),Module.postRun)for("function"==typeof Module.postRun&&(Module.postRun=[Module.postRun]);Module.postRun.length;)addOnPostRun(Module.postRun.shift());callRuntimeCallbacks(__ATPOSTRUN__)}function addOnPreRun(e){__ATPRERUN__.unshift(e)}function addOnInit(e){__ATINIT__.unshift(e)}function addOnPreMain(e){__ATMAIN__.unshift(e)}function addOnExit(e){__ATEXIT__.unshift(e)}function addOnPostRun(e){__ATPOSTRUN__.unshift(e)}function intArrayFromString(e,t,n){var r=n>0?n:lengthBytesUTF8(e)+1,i=new Array(r),o=stringToUTF8Array(e,i,0,i.length);return t&&(i.length=o),i}function intArrayToString(e){for(var t=[],n=0;n<e.length;n++){var r=e[n];r>255&&(assert(!1,"Character code "+r+" ("+String.fromCharCode(r)+")  at offset "+n+" not in 0x00-0xFF."),r&=255),t.push(String.fromCharCode(r))}return t.join("")}function writeStringToMemory(e,t,n){Runtime.warnOnce("writeStringToMemory is deprecated and should not be called! Use stringToUTF8() instead!");var r,i;n&&(i=t+lengthBytesUTF8(e),r=HEAP8[i]),stringToUTF8(e,t,1/0),n&&(HEAP8[i]=r)}function writeArrayToMemory(e,t){assert(e.length>=0,"writeArrayToMemory array must have a length (should be an array or typed array)"),HEAP8.set(e,t)}function writeAsciiToMemory(e,t,n){for(var r=0;r<e.length;++r)assert(e.charCodeAt(r)===e.charCodeAt(r)&255),HEAP8[t++>>0]=e.charCodeAt(r);n||(HEAP8[t>>0]=0)}function getUniqueRunDependency(e){for(var t=e;;){if(!runDependencyTracking[e])return e;e=t+Math.random()}return e}function addRunDependency(e){runDependencies++,Module.monitorRunDependencies&&Module.monitorRunDependencies(runDependencies),e?(assert(!runDependencyTracking[e]),runDependencyTracking[e]=1,null===runDependencyWatcher&&"undefined"!=typeof setInterval&&(runDependencyWatcher=setInterval(function(){if(ABORT)return clearInterval(runDependencyWatcher),void(runDependencyWatcher=null);var e=!1;for(var t in runDependencyTracking)e||(e=!0,Module.printErr("still waiting on run dependencies:")),Module.printErr("dependency: "+t);e&&Module.printErr("(end of list)")},1e4))):Module.printErr("warning: run dependency added without ID")}function removeRunDependency(e){if(runDependencies--,Module.monitorRunDependencies&&Module.monitorRunDependencies(runDependencies),e?(assert(runDependencyTracking[e]),delete runDependencyTracking[e]):Module.printErr("warning: run dependency removed without ID"),0==runDependencies&&(null!==runDependencyWatcher&&(clearInterval(runDependencyWatcher),runDependencyWatcher=null),dependenciesFulfilled)){var t=dependenciesFulfilled;dependenciesFulfilled=null,t()}}function integrateWasmJS(e){function t(t){var n=e.buffer;t.byteLength<n.byteLength&&e.printErr("the new buffer in mergeMemory is smaller than the previous one. in native wasm, we should grow memory here");var r=new Int8Array(n),i=new Int8Array(t);memoryInitializer||r.set(i.subarray(e.STATIC_BASE,e.STATIC_BASE+e.STATIC_BUMP),e.STATIC_BASE),i.set(r),updateGlobalBuffer(t),updateGlobalBufferViews()}function n(e){return e}function r(){try{var t;if(e.wasmBinary)t=e.wasmBinary,t=new Uint8Array(t);else{if(!e.readBinary)throw"on the web, we need the wasm binary to be preloaded and set on Module['wasmBinary']. emcc.py will do that for you when generating HTML (but not JS)";t=e.readBinary(u)}return t}catch(e){abort(e)}}function i(){return e.wasmBinary||"function"!=typeof fetch?new Promise(function(e,t){e(r())}):fetch(u,{credentials:"same-origin"}).then(function(e){if(!e.ok)throw"failed to load wasm binary file at '"+u+"'";return e.arrayBuffer()})}function o(n,r,o){function a(n){f=n.exports,f.memory&&t(f.memory),e.asm=f,e.usingWasm=!0,removeRunDependency("wasm-instantiate")}if("object"!=typeof WebAssembly)return e.printErr("no native wasm support detected"),!1;if(!(e.wasmMemory instanceof WebAssembly.Memory))return e.printErr("no native wasm Memory in use"),!1;if(r.memory=e.wasmMemory,d.global={NaN:NaN,Infinity:1/0},d["global.Math"]=n.Math,d.env=r,addRunDependency("wasm-instantiate"),e.instantiateWasm)try{return e.instantiateWasm(d,a)}catch(t){return e.printErr("Module.instantiateWasm callback failed with error: "+t),!1}return i().then(function(e){return WebAssembly.instantiate(e,d)}).then(function(e){a(e.instance)}).catch(function(t){e.printErr("failed to asynchronously prepare wasm: "+t),abort(t)}),{}}var a=e.wasmJSMethod||"native-wasm";e.wasmJSMethod=a;var s=e.wasmTextFile||"windowDemo.wast",u=e.wasmBinaryFile||__webpack_require__(10),l=e.asmjsCodeFile||"windowDemo.temp.asm.js";"function"==typeof e.locateFile&&(s=e.locateFile(s),u=e.locateFile(u),l=e.locateFile(l));var c={"f64-rem":function(e,t){return e%t},"f64-to-int":function(e){return 0|e},"i32s-div":function(e,t){return(0|e)/(0|t)|0},"i32u-div":function(e,t){return(e>>>0)/(t>>>0)>>>0},"i32s-rem":function(e,t){return(0|e)%(0|t)|0},"i32u-rem":function(e,t){return(e>>>0)%(t>>>0)>>>0},debugger:function(){}},d={global:null,env:null,asm2wasm:c,parent:e},f=null;e.asmPreload=e.asm;var m=e.reallocBuffer,_=function(t){var n=e.usingWasm?WASM_PAGE_SIZE:ASMJS_PAGE_SIZE;t=alignUp(t,n);var r=e.buffer,i=r.byteLength;if(!e.usingWasm)return f.__growWasmMemory((t-i)/65536),e.buffer!==r?e.buffer:null;try{return-1!==e.wasmMemory.grow((t-i)/65536)?e.buffer=e.wasmMemory.buffer:null}catch(e){return console.error("Module.reallocBuffer: Attempted to grow from "+i+" bytes to "+t+" bytes, but got error: "+e),null}};e.reallocBuffer=function(e){return"asmjs"===p?m(e):_(e)};var p="";e.asm=function(t,r,i){if(t=n(t),r=n(r),!r.table){var a=e.wasmTableSize;void 0===a&&(a=1024);var s=e.wasmMaxTableSize;"object"==typeof WebAssembly&&"function"==typeof WebAssembly.Table?r.table=void 0!==s?new WebAssembly.Table({initial:a,maximum:s,element:"anyfunc"}):new WebAssembly.Table({initial:a,element:"anyfunc"}):r.table=new Array(a),e.wasmTable=r.table}r.memoryBase||(r.memoryBase=e.STATIC_BASE),r.tableBase||(r.tableBase=0);return o(t,r,i)};e.asm}function _glClearColor(e,t,n,r){GLctx.clearColor(e,t,n,r)}function __ZN5flint4ExitEi(){Module.printErr("missing function: _ZN5flint4ExitEi"),abort(-1)}function _emscripten_set_main_loop_timing(e,t){function n(e){e.source===window&&e.data===i&&(e.stopPropagation(),r.shift()())}if(Browser.mainLoop.timingMode=e,Browser.mainLoop.timingValue=t,!Browser.mainLoop.func)return console.error("emscripten_set_main_loop_timing: Cannot set timing mode for main loop since a main loop does not exist! Call emscripten_set_main_loop first to set one up."),1;if(0==e)Browser.mainLoop.scheduler=function(){var e=0|Math.max(0,Browser.mainLoop.tickStartTime+t-_emscripten_get_now());setTimeout(Browser.mainLoop.runner,e)},Browser.mainLoop.method="timeout";else if(1==e)Browser.mainLoop.scheduler=function(){Browser.requestAnimationFrame(Browser.mainLoop.runner)},Browser.mainLoop.method="rAF";else if(2==e){if(!window.setImmediate){var r=[],i="setimmediate";window.addEventListener("message",n,!0),window.setImmediate=function(e){r.push(e),ENVIRONMENT_IS_WORKER?(void 0===Module.setImmediates&&(Module.setImmediates=[]),Module.setImmediates.push(e),window.postMessage({target:i})):window.postMessage(i,"*")}}Browser.mainLoop.scheduler=function(){window.setImmediate(Browser.mainLoop.runner)},Browser.mainLoop.method="immediate"}return 0}function _emscripten_get_now(){abort()}function _emscripten_set_main_loop(e,t,n,r,i){Module.noExitRuntime=!0,assert(!Browser.mainLoop.func,"emscripten_set_main_loop: there can only be one main loop function at once: call emscripten_cancel_main_loop to cancel the previous one before setting a new one with different parameters."),Browser.mainLoop.func=e,Browser.mainLoop.arg=r;var o;o=void 0!==r?function(){Module.dynCall_vi(e,r)}:function(){Module.dynCall_v(e)};var a=Browser.mainLoop.currentlyRunningMainloop;if(Browser.mainLoop.runner=function(){if(!ABORT){if(Browser.mainLoop.queue.length>0){var e=Date.now(),t=Browser.mainLoop.queue.shift();if(t.func(t.arg),Browser.mainLoop.remainingBlockers){var n=Browser.mainLoop.remainingBlockers,r=n%1==0?n-1:Math.floor(n);t.counted?Browser.mainLoop.remainingBlockers=r:(r+=.5,Browser.mainLoop.remainingBlockers=(8*n+r)/9)}if(console.log('main loop blocker "'+t.name+'" took '+(Date.now()-e)+" ms"),Browser.mainLoop.updateStatus(),a<Browser.mainLoop.currentlyRunningMainloop)return;return void setTimeout(Browser.mainLoop.runner,0)}if(!(a<Browser.mainLoop.currentlyRunningMainloop)){if(Browser.mainLoop.currentFrameNumber=Browser.mainLoop.currentFrameNumber+1|0,1==Browser.mainLoop.timingMode&&Browser.mainLoop.timingValue>1&&Browser.mainLoop.currentFrameNumber%Browser.mainLoop.timingValue!=0)return void Browser.mainLoop.scheduler();0==Browser.mainLoop.timingMode&&(Browser.mainLoop.tickStartTime=_emscripten_get_now()),"timeout"===Browser.mainLoop.method&&Module.ctx&&(Module.printErr("Looks like you are rendering without using requestAnimationFrame for the main loop. You should use 0 for the frame rate in emscripten_set_main_loop in order to use requestAnimationFrame, as that can greatly improve your frame rates!"),Browser.mainLoop.method=""),Browser.mainLoop.runIter(o),checkStackCookie(),a<Browser.mainLoop.currentlyRunningMainloop||("object"==typeof SDL&&SDL.audio&&SDL.audio.queueNewAudioData&&SDL.audio.queueNewAudioData(),Browser.mainLoop.scheduler())}}},i||(t&&t>0?_emscripten_set_main_loop_timing(0,1e3/t):_emscripten_set_main_loop_timing(1,1),Browser.mainLoop.scheduler()),n)throw"SimulateInfiniteLoop"}function _emscripten_set_main_loop_arg(e,t,n,r){_emscripten_set_main_loop(e,n,r,t)}function _glfwMakeContextCurrent(e){}function _abort(){Module.abort()}function _pthread_once(e,t){_pthread_once.seen||(_pthread_once.seen={}),e in _pthread_once.seen||(Module.dynCall_v(t),_pthread_once.seen[e]=1)}function _pthread_getspecific(e){return PTHREAD_SPECIFIC[e]||0}function _pthread_key_create(e,t){return 0==e?ERRNO_CODES.EINVAL:(HEAP32[e>>2]=PTHREAD_SPECIFIC_NEXT_KEY,PTHREAD_SPECIFIC[PTHREAD_SPECIFIC_NEXT_KEY]=0,PTHREAD_SPECIFIC_NEXT_KEY++,0)}function _glClear(e){GLctx.clear(e)}function _pthread_setspecific(e,t){return e in PTHREAD_SPECIFIC?(PTHREAD_SPECIFIC[e]=t,0):ERRNO_CODES.EINVAL}function _glfwWindowHint(e,t){GLFW.hints[e]=t}function _glfwCreateWindow(e,t,n,r,i){return GLFW.createWindow(e,t,n,r,i)}function _glViewport(e,t,n,r){GLctx.viewport(e,t,n,r)}function _glfwPollEvents(){}function _glfwSetWindowSizeCallback(e,t){GLFW.setWindowSizeCallback(e,t)}function _glfwDestroyWindow(e){return GLFW.destroyWindow(e)}function _glfwSetErrorCallback(e){GLFW.errorFunc=e}function _glfwTerminate(){window.removeEventListener("gamepadconnected",GLFW.onGamepadConnected,!0),window.removeEventListener("gamepaddisconnected",GLFW.onGamepadDisconnected,!0),window.removeEventListener("keydown",GLFW.onKeydown,!0),window.removeEventListener("keypress",GLFW.onKeyPress,!0),window.removeEventListener("keyup",GLFW.onKeyup,!0),window.removeEventListener("blur",GLFW.onBlur,!0),Module.canvas.removeEventListener("mousemove",GLFW.onMousemove,!0),Module.canvas.removeEventListener("mousedown",GLFW.onMouseButtonDown,!0),Module.canvas.removeEventListener("mouseup",GLFW.onMouseButtonUp,!0),Module.canvas.removeEventListener("wheel",GLFW.onMouseWheel,!0),Module.canvas.removeEventListener("mousewheel",GLFW.onMouseWheel,!0),Module.canvas.removeEventListener("mouseenter",GLFW.onMouseenter,!0),Module.canvas.removeEventListener("mouseleave",GLFW.onMouseleave,!0),Module.canvas.removeEventListener("drop",GLFW.onDrop,!0),Module.canvas.removeEventListener("dragover",GLFW.onDragover,!0),Module.canvas.width=Module.canvas.height=1,GLFW.windows=null,GLFW.active=null}function _emscripten_memcpy_big(e,t,n){return HEAPU8.set(HEAPU8.subarray(t,t+n),e),e}function ___syscall6(e,t){SYSCALLS.varargs=t;try{var n=SYSCALLS.getStreamFromFD();return FS.close(n),0}catch(e){return void 0!==FS&&e instanceof FS.ErrnoError||abort(e),-e.errno}}function ___setErrNo(e){return Module.___errno_location?HEAP32[Module.___errno_location()>>2]=e:Module.printErr("failed to set errno from JS"),e}function __ZSt18uncaught_exceptionv(){return!!__ZSt18uncaught_exceptionv.uncaught_exception}function ___cxa_begin_catch(e){var t=EXCEPTIONS.infos[e];return t&&!t.caught&&(t.caught=!0,__ZSt18uncaught_exceptionv.uncaught_exception--),t&&(t.rethrown=!1),EXCEPTIONS.caught.push(e),EXCEPTIONS.addRef(EXCEPTIONS.deAdjust(e)),e}function ___resumeException(e){throw EXCEPTIONS.last||(EXCEPTIONS.last=e),e+" - Exception catching is disabled, this exception cannot be caught. Compile with -s DISABLE_EXCEPTION_CATCHING=0 or DISABLE_EXCEPTION_CATCHING=2 to catch."}function ___cxa_find_matching_catch(){var e=EXCEPTIONS.last;if(!e)return 0|(Runtime.setTempRet0(0),0);var t=EXCEPTIONS.infos[e],n=t.type;if(!n)return 0|(Runtime.setTempRet0(0),e);var r=Array.prototype.slice.call(arguments);Module.___cxa_is_pointer_type(n);___cxa_find_matching_catch.buffer||(___cxa_find_matching_catch.buffer=_malloc(4)),HEAP32[___cxa_find_matching_catch.buffer>>2]=e,e=___cxa_find_matching_catch.buffer;for(var i=0;i<r.length;i++)if(r[i]&&Module.___cxa_can_catch(r[i],n,e))return e=HEAP32[e>>2],t.adjusted=e,0|(Runtime.setTempRet0(r[i]),e);return e=HEAP32[e>>2],0|(Runtime.setTempRet0(n),e)}function ___gxx_personality_v0(){}function _glfwInit(){return GLFW.windows?1:(GLFW.initialTime=GLFW.getTime(),GLFW.hints=GLFW.defaultHints,GLFW.windows=new Array,GLFW.active=null,window.addEventListener("gamepadconnected",GLFW.onGamepadConnected,!0),window.addEventListener("gamepaddisconnected",GLFW.onGamepadDisconnected,!0),window.addEventListener("keydown",GLFW.onKeydown,!0),window.addEventListener("keypress",GLFW.onKeyPress,!0),window.addEventListener("keyup",GLFW.onKeyup,!0),window.addEventListener("blur",GLFW.onBlur,!0),Module.canvas.addEventListener("mousemove",GLFW.onMousemove,!0),Module.canvas.addEventListener("mousedown",GLFW.onMouseButtonDown,!0),Module.canvas.addEventListener("mouseup",GLFW.onMouseButtonUp,!0),Module.canvas.addEventListener("wheel",GLFW.onMouseWheel,!0),Module.canvas.addEventListener("mousewheel",GLFW.onMouseWheel,!0),Module.canvas.addEventListener("mouseenter",GLFW.onMouseenter,!0),Module.canvas.addEventListener("mouseleave",GLFW.onMouseleave,!0),Module.canvas.addEventListener("drop",GLFW.onDrop,!0),Module.canvas.addEventListener("dragover",GLFW.onDragover,!0),Browser.resizeListeners.push(function(e,t){GLFW.onCanvasResize(e,t)}),1)}function _glfwSwapBuffers(e){GLFW.swapBuffers(e)}function ___syscall140(e,t){SYSCALLS.varargs=t;try{var n=SYSCALLS.getStreamFromFD(),r=(SYSCALLS.get(),SYSCALLS.get()),i=SYSCALLS.get(),o=SYSCALLS.get(),a=r;return FS.llseek(n,a,o),HEAP32[i>>2]=n.position,n.getdents&&0===a&&0===o&&(n.getdents=null),0}catch(e){return void 0!==FS&&e instanceof FS.ErrnoError||abort(e),-e.errno}}function ___syscall146(e,t){SYSCALLS.varargs=t;try{var n=SYSCALLS.get(),r=SYSCALLS.get(),i=SYSCALLS.get(),o=0;___syscall146.buffer||(___syscall146.buffers=[null,[],[]],___syscall146.printChar=function(e,t){var n=___syscall146.buffers[e];assert(n),0===t||10===t?((1===e?Module.print:Module.printErr)(UTF8ArrayToString(n,0)),n.length=0):n.push(t)});for(var a=0;a<i;a++){for(var s=HEAP32[r+8*a>>2],u=HEAP32[r+(8*a+4)>>2],l=0;l<u;l++)___syscall146.printChar(n,HEAPU8[s+l]);o+=u}return o}catch(e){return void 0!==FS&&e instanceof FS.ErrnoError||abort(e),-e.errno}}function nullFunc_iiii(e){Module.printErr("Invalid function pointer called with signature 'iiii'. Perhaps this is an invalid value (e.g. caused by calling a virtual method on a NULL pointer)? Or calling a function with an incorrect type, which will fail? (it is worth building your source files with -Werror (warnings are errors), as warnings can indicate undefined behavior which can cause this)"),Module.printErr("Build with ASSERTIONS=2 for more info."),abort(e)}function nullFunc_viiiii(e){Module.printErr("Invalid function pointer called with signature 'viiiii'. Perhaps this is an invalid value (e.g. caused by calling a virtual method on a NULL pointer)? Or calling a function with an incorrect type, which will fail? (it is worth building your source files with -Werror (warnings are errors), as warnings can indicate undefined behavior which can cause this)"),Module.printErr("Build with ASSERTIONS=2 for more info."),abort(e)}function nullFunc_vi(e){Module.printErr("Invalid function pointer called with signature 'vi'. Perhaps this is an invalid value (e.g. caused by calling a virtual method on a NULL pointer)? Or calling a function with an incorrect type, which will fail? (it is worth building your source files with -Werror (warnings are errors), as warnings can indicate undefined behavior which can cause this)"),Module.printErr("Build with ASSERTIONS=2 for more info."),abort(e)}function nullFunc_vii(e){Module.printErr("Invalid function pointer called with signature 'vii'. Perhaps this is an invalid value (e.g. caused by calling a virtual method on a NULL pointer)? Or calling a function with an incorrect type, which will fail? (it is worth building your source files with -Werror (warnings are errors), as warnings can indicate undefined behavior which can cause this)"),Module.printErr("Build with ASSERTIONS=2 for more info."),abort(e)}function nullFunc_ii(e){Module.printErr("Invalid function pointer called with signature 'ii'. Perhaps this is an invalid value (e.g. caused by calling a virtual method on a NULL pointer)? Or calling a function with an incorrect type, which will fail? (it is worth building your source files with -Werror (warnings are errors), as warnings can indicate undefined behavior which can cause this)"),Module.printErr("Build with ASSERTIONS=2 for more info."),abort(e)}function nullFunc_viii(e){Module.printErr("Invalid function pointer called with signature 'viii'. Perhaps this is an invalid value (e.g. caused by calling a virtual method on a NULL pointer)? Or calling a function with an incorrect type, which will fail? (it is worth building your source files with -Werror (warnings are errors), as warnings can indicate undefined behavior which can cause this)"),Module.printErr("Build with ASSERTIONS=2 for more info."),abort(e)}function nullFunc_v(e){Module.printErr("Invalid function pointer called with signature 'v'. Perhaps this is an invalid value (e.g. caused by calling a virtual method on a NULL pointer)? Or calling a function with an incorrect type, which will fail? (it is worth building your source files with -Werror (warnings are errors), as warnings can indicate undefined behavior which can cause this)"),Module.printErr("Build with ASSERTIONS=2 for more info."),abort(e)}function nullFunc_viiiiii(e){Module.printErr("Invalid function pointer called with signature 'viiiiii'. Perhaps this is an invalid value (e.g. caused by calling a virtual method on a NULL pointer)? Or calling a function with an incorrect type, which will fail? (it is worth building your source files with -Werror (warnings are errors), as warnings can indicate undefined behavior which can cause this)"),Module.printErr("Build with ASSERTIONS=2 for more info."),abort(e)}function nullFunc_viiii(e){Module.printErr("Invalid function pointer called with signature 'viiii'. Perhaps this is an invalid value (e.g. caused by calling a virtual method on a NULL pointer)? Or calling a function with an incorrect type, which will fail? (it is worth building your source files with -Werror (warnings are errors), as warnings can indicate undefined behavior which can cause this)"),Module.printErr("Build with ASSERTIONS=2 for more info."),abort(e)}function invoke_iiii(e,t,n,r){try{return Module.dynCall_iiii(e,t,n,r)}catch(e){if("number"!=typeof e&&"longjmp"!==e)throw e;Module.setThrew(1,0)}}function invoke_viiiii(e,t,n,r,i,o){try{Module.dynCall_viiiii(e,t,n,r,i,o)}catch(e){if("number"!=typeof e&&"longjmp"!==e)throw e;Module.setThrew(1,0)}}function invoke_vi(e,t){try{Module.dynCall_vi(e,t)}catch(e){if("number"!=typeof e&&"longjmp"!==e)throw e;Module.setThrew(1,0)}}function invoke_vii(e,t,n){try{Module.dynCall_vii(e,t,n)}catch(e){if("number"!=typeof e&&"longjmp"!==e)throw e;Module.setThrew(1,0)}}function invoke_ii(e,t){try{return Module.dynCall_ii(e,t)}catch(e){if("number"!=typeof e&&"longjmp"!==e)throw e;Module.setThrew(1,0)}}function invoke_viii(e,t,n,r){try{Module.dynCall_viii(e,t,n,r)}catch(e){if("number"!=typeof e&&"longjmp"!==e)throw e;Module.setThrew(1,0)}}function invoke_v(e){try{Module.dynCall_v(e)}catch(e){if("number"!=typeof e&&"longjmp"!==e)throw e;Module.setThrew(1,0)}}function invoke_viiiiii(e,t,n,r,i,o,a){try{Module.dynCall_viiiiii(e,t,n,r,i,o,a)}catch(e){if("number"!=typeof e&&"longjmp"!==e)throw e;Module.setThrew(1,0)}}function invoke_viiii(e,t,n,r,i){try{Module.dynCall_viiii(e,t,n,r,i)}catch(e){if("number"!=typeof e&&"longjmp"!==e)throw e;Module.setThrew(1,0)}}function doBrowserLoad(){Module.readAsync(memoryInitializer,applyMemoryInitializer,function(){throw"could not load memory initializer "+memoryInitializer})}function useRequest(){var e=Module.memoryInitializerRequest;if(200!==e.status&&0!==e.status)return console.warn("a problem seems to have happened with Module.memoryInitializerRequest, status: "+e.status+", retrying "+memoryInitializer),void doBrowserLoad();applyMemoryInitializer(e.response)}function ExitStatus(e){this.name="ExitStatus",this.message="Program terminated with exit("+e+")",this.status=e}function run(e){function t(){Module.calledRun||(Module.calledRun=!0,ABORT||(ensureInitRuntime(),preMain(),ENVIRONMENT_IS_WEB&&null!==preloadStartTime&&Module.printErr("pre-main prep time: "+(Date.now()-preloadStartTime)+" ms"),Module.onRuntimeInitialized&&Module.onRuntimeInitialized(),Module._main&&shouldRunNow&&Module.callMain(e),postRun()))}e=e||Module.arguments,null===preloadStartTime&&(preloadStartTime=Date.now()),runDependencies>0||(writeStackCookie(),preRun(),runDependencies>0||Module.calledRun||(Module.setStatus?(Module.setStatus("Running..."),setTimeout(function(){setTimeout(function(){Module.setStatus("")},1),t()},1)):t(),checkStackCookie()))}function exit(e,t){if(t&&Module.noExitRuntime)return void Module.printErr("exit("+e+") implicitly called by end of main(), but noExitRuntime, so not exiting the runtime (you can use emscripten_force_exit, if you want to force a true shutdown)");Module.noExitRuntime?Module.printErr("exit("+e+") called, but noExitRuntime, so halting execution but not exiting the runtime or preventing further async execution (you can use emscripten_force_exit, if you want to force a true shutdown)"):(ABORT=!0,EXITSTATUS=e,STACKTOP=initialStackTop,exitRuntime(),Module.onExit&&Module.onExit(e)),ENVIRONMENT_IS_NODE&&process.exit(e),Module.quit(e,new ExitStatus(e))}function abort(e){Module.onAbort&&Module.onAbort(e),void 0!==e?(Module.print(e),Module.printErr(e),e=JSON.stringify(e)):e="",ABORT=!0,EXITSTATUS=1;var t="abort("+e+") at "+stackTrace();throw abortDecorators&&abortDecorators.forEach(function(n){t=n(t,e)}),t}Module=Module||{};var Module=Module,Module;Module||(Module=(void 0!==Module?Module:null)||{});var moduleOverrides={};for(var key in Module)Module.hasOwnProperty(key)&&(moduleOverrides[key]=Module[key]);var ENVIRONMENT_IS_WEB=!1,ENVIRONMENT_IS_WORKER=!1,ENVIRONMENT_IS_NODE=!1,ENVIRONMENT_IS_SHELL=!1;if(Module.ENVIRONMENT)if("WEB"===Module.ENVIRONMENT)ENVIRONMENT_IS_WEB=!0;else if("WORKER"===Module.ENVIRONMENT)ENVIRONMENT_IS_WORKER=!0;else if("NODE"===Module.ENVIRONMENT)ENVIRONMENT_IS_NODE=!0;else{if("SHELL"!==Module.ENVIRONMENT)throw new Error("The provided Module['ENVIRONMENT'] value is not valid. It must be one of: WEB|WORKER|NODE|SHELL.");ENVIRONMENT_IS_SHELL=!0}else ENVIRONMENT_IS_WEB="object"==typeof window,ENVIRONMENT_IS_WORKER="function"==typeof importScripts,ENVIRONMENT_IS_NODE="object"==typeof process&&!0&&!ENVIRONMENT_IS_WEB&&!ENVIRONMENT_IS_WORKER,ENVIRONMENT_IS_SHELL=!ENVIRONMENT_IS_WEB&&!ENVIRONMENT_IS_NODE&&!ENVIRONMENT_IS_WORKER;if(ENVIRONMENT_IS_NODE){Module.print||(Module.print=console.log),Module.printErr||(Module.printErr=console.warn);var nodeFS,nodePath;Module.read=function(e,t){nodeFS||(nodeFS=__webpack_require__(1)),nodePath||(nodePath=__webpack_require__(2)),e=nodePath.normalize(e);var n=nodeFS.readFileSync(e);return t?n:n.toString()},Module.readBinary=function(e){var t=Module.read(e,!0);return t.buffer||(t=new Uint8Array(t)),assert(t.buffer),t},Module.load=function(e){globalEval(read(e))},Module.thisProgram||(process.argv.length>1?Module.thisProgram=process.argv[1].replace(/\\/g,"/"):Module.thisProgram="unknown-program"),Module.arguments=process.argv.slice(2),module.exports=Module,process.on("uncaughtException",function(e){if(!(e instanceof ExitStatus))throw e}),Module.inspect=function(){return"[Emscripten Module object]"}}else if(ENVIRONMENT_IS_SHELL)Module.print||(Module.print=print),"undefined"!=typeof printErr&&(Module.printErr=printErr),"undefined"!=typeof read?Module.read=read:Module.read=function(){throw"no read() available"},Module.readBinary=function(e){if("function"==typeof readbuffer)return new Uint8Array(readbuffer(e));var t=read(e,"binary");return assert("object"==typeof t),t},"undefined"!=typeof scriptArgs?Module.arguments=scriptArgs:void 0!==arguments&&(Module.arguments=arguments),"function"==typeof quit&&(Module.quit=function(e,t){quit(e)});else{if(!ENVIRONMENT_IS_WEB&&!ENVIRONMENT_IS_WORKER)throw"Unknown runtime environment. Where are we?";if(Module.read=function(e){var t=new XMLHttpRequest;return t.open("GET",e,!1),t.send(null),t.responseText},ENVIRONMENT_IS_WORKER&&(Module.readBinary=function(e){var t=new XMLHttpRequest;return t.open("GET",e,!1),t.responseType="arraybuffer",t.send(null),new Uint8Array(t.response)}),Module.readAsync=function(e,t,n){var r=new XMLHttpRequest;r.open("GET",e,!0),r.responseType="arraybuffer",r.onload=function(){200==r.status||0==r.status&&r.response?t(r.response):n()},r.onerror=n,r.send(null)},void 0!==arguments&&(Module.arguments=arguments),"undefined"!=typeof console)Module.print||(Module.print=function(e){console.log(e)}),Module.printErr||(Module.printErr=function(e){console.warn(e)});else{var TRY_USE_DUMP=!1;Module.print||(Module.print=TRY_USE_DUMP&&"undefined"!=typeof dump?function(e){dump(e)}:function(e){})}ENVIRONMENT_IS_WORKER&&(Module.load=importScripts),void 0===Module.setWindowTitle&&(Module.setWindowTitle=function(e){document.title=e})}!Module.load&&Module.read&&(Module.load=function(e){globalEval(Module.read(e))}),Module.print||(Module.print=function(){}),Module.printErr||(Module.printErr=Module.print),Module.arguments||(Module.arguments=[]),Module.thisProgram||(Module.thisProgram="./this.program"),Module.quit||(Module.quit=function(e,t){throw t}),Module.print=Module.print,Module.printErr=Module.printErr,Module.preRun=[],Module.postRun=[];for(var key in moduleOverrides)moduleOverrides.hasOwnProperty(key)&&(Module[key]=moduleOverrides[key]);moduleOverrides=void 0;var Runtime={setTempRet0:function(e){return tempRet0=e,e},getTempRet0:function(){return tempRet0},stackSave:function(){return STACKTOP},stackRestore:function(e){STACKTOP=e},getNativeTypeSize:function(e){switch(e){case"i1":case"i8":return 1;case"i16":return 2;case"i32":return 4;case"i64":return 8;case"float":return 4;case"double":return 8;default:if("*"===e[e.length-1])return Runtime.QUANTUM_SIZE;if("i"===e[0]){var t=parseInt(e.substr(1));return assert(t%8==0),t/8}return 0}},getNativeFieldSize:function(e){return Math.max(Runtime.getNativeTypeSize(e),Runtime.QUANTUM_SIZE)},STACK_ALIGN:16,prepVararg:function(e,t){return"double"===t||"i64"===t?7&e&&(assert(4==(7&e)),e+=4):assert(0==(3&e)),e},getAlignSize:function(e,t,n){return n||"i64"!=e&&"double"!=e?e?Math.min(t||(e?Runtime.getNativeFieldSize(e):0),Runtime.QUANTUM_SIZE):Math.min(t,8):8},dynCall:function(e,t,n){return n&&n.length?(assert(n.length==e.length-1),assert("dynCall_"+e in Module,"bad function pointer type - no table for sig '"+e+"'"),Module["dynCall_"+e].apply(null,[t].concat(n))):(assert(1==e.length),assert("dynCall_"+e in Module,"bad function pointer type - no table for sig '"+e+"'"),Module["dynCall_"+e].call(null,t))},functionPointers:[],addFunction:function(e){for(var t=0;t<Runtime.functionPointers.length;t++)if(!Runtime.functionPointers[t])return Runtime.functionPointers[t]=e,2*(1+t);throw"Finished up all reserved function pointers. Use a higher value for RESERVED_FUNCTION_POINTERS."},removeFunction:function(e){Runtime.functionPointers[(e-2)/2]=null},warnOnce:function(e){Runtime.warnOnce.shown||(Runtime.warnOnce.shown={}),Runtime.warnOnce.shown[e]||(Runtime.warnOnce.shown[e]=1,Module.printErr(e))},funcWrappers:{},getFuncWrapper:function(e,t){assert(t),Runtime.funcWrappers[t]||(Runtime.funcWrappers[t]={});var n=Runtime.funcWrappers[t];return n[e]||(1===t.length?n[e]=function(){return Runtime.dynCall(t,e)}:2===t.length?n[e]=function(n){return Runtime.dynCall(t,e,[n])}:n[e]=function(){return Runtime.dynCall(t,e,Array.prototype.slice.call(arguments))}),n[e]},getCompilerSetting:function(e){throw"You must build with -s RETAIN_COMPILER_SETTINGS=1 for Runtime.getCompilerSetting or emscripten_get_compiler_setting to work"},stackAlloc:function(e){var t=STACKTOP;return STACKTOP=STACKTOP+e|0,STACKTOP=STACKTOP+15&-16,assert((0|STACKTOP)<(0|STACK_MAX)|0),t},staticAlloc:function(e){var t=STATICTOP;return STATICTOP=STATICTOP+(assert(!staticSealed),e)|0,STATICTOP=STATICTOP+15&-16,t},dynamicAlloc:function(e){assert(DYNAMICTOP_PTR);var t=HEAP32[DYNAMICTOP_PTR>>2],n=-16&(t+e+15|0);if(HEAP32[DYNAMICTOP_PTR>>2]=n,n>=TOTAL_MEMORY){if(!enlargeMemory())return HEAP32[DYNAMICTOP_PTR>>2]=t,0}return t},alignMemory:function(e,t){return e=Math.ceil(e/(t||16))*(t||16)},makeBigInt:function(e,t,n){return n?+(e>>>0)+4294967296*+(t>>>0):+(e>>>0)+4294967296*+(0|t)},GLOBAL_BASE:1024,QUANTUM_SIZE:4,__dummy__:0};Module.Runtime=Runtime;var ABORT=0,EXITSTATUS=0,cwrap,ccall;!function(){function parseJSFunc(e){var t=e.toString().match(sourceRegex).slice(1);return{arguments:t[0],body:t[1],returnValue:t[2]}}function ensureJSsource(){if(!JSsource){JSsource={};for(var e in JSfuncs)JSfuncs.hasOwnProperty(e)&&(JSsource[e]=parseJSFunc(JSfuncs[e]))}}var JSfuncs={stackSave:function(){Runtime.stackSave()},stackRestore:function(){Runtime.stackRestore()},arrayToC:function(e){var t=Runtime.stackAlloc(e.length);return writeArrayToMemory(e,t),t},stringToC:function(e){var t=0;if(null!==e&&void 0!==e&&0!==e){var n=1+(e.length<<2);t=Runtime.stackAlloc(n),stringToUTF8(e,t,n)}return t}},toC={string:JSfuncs.stringToC,array:JSfuncs.arrayToC};ccall=function(e,t,n,r,i){var o=getCFunc(e),a=[],s=0;if(assert("array"!==t,'Return type should not be "array".'),r)for(var u=0;u<r.length;u++){var l=toC[n[u]];l?(0===s&&(s=Runtime.stackSave()),a[u]=l(r[u])):a[u]=r[u]}var c=o.apply(null,a);if(i&&i.async||"object"!=typeof EmterpreterAsync||assert(!EmterpreterAsync.state,"cannot start async op with normal JS calling ccall"),i&&i.async&&assert(!t,"async ccalls cannot return values"),"string"===t&&(c=Pointer_stringify(c)),0!==s){if(i&&i.async)return void EmterpreterAsync.asyncFinalizers.push(function(){Runtime.stackRestore(s)});Runtime.stackRestore(s)}return c};var sourceRegex=/^function\s*[a-zA-Z$_0-9]*\s*\(([^)]*)\)\s*{\s*([^*]*?)[\s;]*(?:return\s*(.*?)[;\s]*)?}$/,JSsource=null;cwrap=function cwrap(ident,returnType,argTypes){argTypes=argTypes||[];var cfunc=getCFunc(ident),numericArgs=argTypes.every(function(e){return"number"===e}),numericRet="string"!==returnType;if(numericRet&&numericArgs)return cfunc;var argNames=argTypes.map(function(e,t){return"$"+t}),funcstr="(function("+argNames.join(",")+") {",nargs=argTypes.length;if(!numericArgs){ensureJSsource(),funcstr+="var stack = "+JSsource.stackSave.body+";";for(var i=0;i<nargs;i++){var arg=argNames[i],type=argTypes[i];if("number"!==type){var convertCode=JSsource[type+"ToC"];funcstr+="var "+convertCode.arguments+" = "+arg+";",funcstr+=convertCode.body+";",funcstr+=arg+"=("+convertCode.returnValue+");"}}}var cfuncname=parseJSFunc(function(){return cfunc}).returnValue;if(funcstr+="var ret = "+cfuncname+"("+argNames.join(",")+");",!numericRet){var strgfy=parseJSFunc(function(){return Pointer_stringify}).returnValue;funcstr+="ret = "+strgfy+"(ret);"}return funcstr+="if (typeof EmterpreterAsync === 'object') { assert(!EmterpreterAsync.state, 'cannot start async op with normal JS calling cwrap') }",numericArgs||(ensureJSsource(),funcstr+=JSsource.stackRestore.body.replace("()","(stack)")+";"),funcstr+="return ret})",eval(funcstr)}}(),Module.ccall=ccall,Module.cwrap=cwrap,Module.setValue=setValue,Module.getValue=getValue;var ALLOC_NORMAL=0,ALLOC_STACK=1,ALLOC_STATIC=2,ALLOC_DYNAMIC=3,ALLOC_NONE=4;Module.ALLOC_NORMAL=ALLOC_NORMAL,Module.ALLOC_STACK=ALLOC_STACK,Module.ALLOC_STATIC=ALLOC_STATIC,Module.ALLOC_DYNAMIC=ALLOC_DYNAMIC,Module.ALLOC_NONE=ALLOC_NONE,Module.allocate=allocate,Module.getMemory=getMemory,Module.Pointer_stringify=Pointer_stringify,Module.AsciiToString=AsciiToString,Module.stringToAscii=stringToAscii;var UTF8Decoder="undefined"!=typeof TextDecoder?new TextDecoder("utf8"):void 0;Module.UTF8ArrayToString=UTF8ArrayToString,Module.UTF8ToString=UTF8ToString,Module.stringToUTF8Array=stringToUTF8Array,Module.stringToUTF8=stringToUTF8,Module.lengthBytesUTF8=lengthBytesUTF8;var UTF16Decoder="undefined"!=typeof TextDecoder?new TextDecoder("utf-16le"):void 0;Module.stackTrace=stackTrace;var WASM_PAGE_SIZE=65536,ASMJS_PAGE_SIZE=16777216,MIN_TOTAL_MEMORY=16777216,HEAP,buffer,HEAP8,HEAPU8,HEAP16,HEAPU16,HEAP32,HEAPU32,HEAPF32,HEAPF64,STATIC_BASE,STATICTOP,staticSealed,STACK_BASE,STACKTOP,STACK_MAX,DYNAMIC_BASE,DYNAMICTOP_PTR;STATIC_BASE=STATICTOP=STACK_BASE=STACKTOP=STACK_MAX=DYNAMIC_BASE=DYNAMICTOP_PTR=0,staticSealed=!1,Module.reallocBuffer||(Module.reallocBuffer=function(e){var t;try{if(ArrayBuffer.transfer)t=ArrayBuffer.transfer(buffer,e);else{var n=HEAP8;t=new ArrayBuffer(e);new Int8Array(t).set(n)}}catch(e){return!1}return!!_emscripten_replace_memory(t)&&t});var byteLength;try{byteLength=Function.prototype.call.bind(Object.getOwnPropertyDescriptor(ArrayBuffer.prototype,"byteLength").get),byteLength(new ArrayBuffer(4))}catch(e){byteLength=function(e){return e.byteLength}}var TOTAL_STACK=Module.TOTAL_STACK||5242880,TOTAL_MEMORY=Module.TOTAL_MEMORY||16777216;if(TOTAL_MEMORY<TOTAL_STACK&&Module.printErr("TOTAL_MEMORY should be larger than TOTAL_STACK, was "+TOTAL_MEMORY+"! (TOTAL_STACK="+TOTAL_STACK+")"),assert("undefined"!=typeof Int32Array&&"undefined"!=typeof Float64Array&&void 0!==Int32Array.prototype.subarray&&void 0!==Int32Array.prototype.set,"JS engine does not provide full typed array support"),Module.buffer?(buffer=Module.buffer,assert(buffer.byteLength===TOTAL_MEMORY,"provided buffer should be "+TOTAL_MEMORY+" bytes, but it is "+buffer.byteLength)):("object"==typeof WebAssembly&&"function"==typeof WebAssembly.Memory?(assert(TOTAL_MEMORY%WASM_PAGE_SIZE==0),Module.wasmMemory=new WebAssembly.Memory({initial:TOTAL_MEMORY/WASM_PAGE_SIZE}),buffer=Module.wasmMemory.buffer):buffer=new ArrayBuffer(TOTAL_MEMORY),assert(buffer.byteLength===TOTAL_MEMORY)),updateGlobalBufferViews(),HEAP32[0]=1668509029,HEAP16[1]=25459,115!==HEAPU8[2]||99!==HEAPU8[3])throw"Runtime error: expected the system to be little-endian!";Module.HEAP=HEAP,Module.buffer=buffer,Module.HEAP8=HEAP8,Module.HEAP16=HEAP16,Module.HEAP32=HEAP32,Module.HEAPU8=HEAPU8,Module.HEAPU16=HEAPU16,Module.HEAPU32=HEAPU32,Module.HEAPF32=HEAPF32,Module.HEAPF64=HEAPF64;var __ATPRERUN__=[],__ATINIT__=[],__ATMAIN__=[],__ATEXIT__=[],__ATPOSTRUN__=[],runtimeInitialized=!1,runtimeExited=!1;if(Module.addOnPreRun=addOnPreRun,Module.addOnInit=addOnInit,Module.addOnPreMain=addOnPreMain,Module.addOnExit=addOnExit,Module.addOnPostRun=addOnPostRun,Module.intArrayFromString=intArrayFromString,Module.intArrayToString=intArrayToString,Module.writeStringToMemory=writeStringToMemory,Module.writeArrayToMemory=writeArrayToMemory,Module.writeAsciiToMemory=writeAsciiToMemory,Math.imul&&-5===Math.imul(4294967295,5)||(Math.imul=function(e,t){var n=e>>>16,r=65535&e,i=t>>>16,o=65535&t;return r*o+(n*o+r*i<<16)|0}),Math.imul=Math.imul,!Math.fround){var froundBuffer=new Float32Array(1);Math.fround=function(e){return froundBuffer[0]=e,froundBuffer[0]}}Math.fround=Math.fround,Math.clz32||(Math.clz32=function(e){e>>>=0;for(var t=0;t<32;t++)if(e&1<<31-t)return t;return 32}),Math.clz32=Math.clz32,Math.trunc||(Math.trunc=function(e){return e<0?Math.ceil(e):Math.floor(e)}),Math.trunc=Math.trunc;var Math_abs=Math.abs,Math_cos=Math.cos,Math_sin=Math.sin,Math_tan=Math.tan,Math_acos=Math.acos,Math_asin=Math.asin,Math_atan=Math.atan,Math_atan2=Math.atan2,Math_exp=Math.exp,Math_log=Math.log,Math_sqrt=Math.sqrt,Math_ceil=Math.ceil,Math_floor=Math.floor,Math_pow=Math.pow,Math_imul=Math.imul,Math_fround=Math.fround,Math_round=Math.round,Math_min=Math.min,Math_clz32=Math.clz32,Math_trunc=Math.trunc,runDependencies=0,runDependencyWatcher=null,dependenciesFulfilled=null,runDependencyTracking={};Module.addRunDependency=addRunDependency,Module.removeRunDependency=removeRunDependency,Module.preloadedImages={},Module.preloadedAudios={};var memoryInitializer=null,FS={error:function(){abort("Filesystem support (FS) was not included. The problem is that you are using files from JS, but files were not used from C/C++, so filesystem support was not auto-included. You can force-include filesystem support with  -s FORCE_FILESYSTEM=1")},init:function(){FS.error()},createDataFile:function(){FS.error()},createPreloadedFile:function(){FS.error()},createLazyFile:function(){FS.error()},open:function(){FS.error()},mkdev:function(){FS.error()},registerDevice:function(){FS.error()},analyzePath:function(){FS.error()},loadFilesFromDB:function(){FS.error()},ErrnoError:function(){FS.error()}};Module.FS_createDataFile=FS.createDataFile,Module.FS_createPreloadedFile=FS.createPreloadedFile,integrateWasmJS(Module);var ASM_CONSTS=[];STATIC_BASE=Runtime.GLOBAL_BASE,STATICTOP=STATIC_BASE+5552,__ATINIT__.push(),memoryInitializer=Module.wasmJSMethod.indexOf("asmjs")>=0||Module.wasmJSMethod.indexOf("interpret-asm2wasm")>=0?windowDemo.js.mem:null;var STATIC_BUMP=5552;Module.STATIC_BASE=STATIC_BASE,Module.STATIC_BUMP=STATIC_BUMP;var tempDoublePtr=STATICTOP;STATICTOP+=16,assert(tempDoublePtr%8==0);var GL={counter:1,lastError:0,buffers:[],mappedBuffers:{},programs:[],framebuffers:[],renderbuffers:[],textures:[],uniforms:[],shaders:[],vaos:[],contexts:[],currentContext:null,offscreenCanvases:{},timerQueriesEXT:[],queries:[],samplers:[],transformFeedbacks:[],syncs:[],byteSizeByTypeRoot:5120,byteSizeByType:[1,1,2,2,4,4,4,2,3,4,8],programInfos:{},stringCache:{},stringiCache:{},tempFixedLengthArray:[],packAlignment:4,unpackAlignment:4,init:function(){GL.miniTempBuffer=new Float32Array(GL.MINI_TEMP_BUFFER_SIZE);for(var e=0;e<GL.MINI_TEMP_BUFFER_SIZE;e++)GL.miniTempBufferViews[e]=GL.miniTempBuffer.subarray(0,e+1);for(var e=0;e<32;e++)GL.tempFixedLengthArray.push(new Array(e))},recordError:function(e){GL.lastError||(GL.lastError=e)},getNewId:function(e){for(var t=GL.counter++,n=e.length;n<t;n++)e[n]=null;return t},MINI_TEMP_BUFFER_SIZE:256,miniTempBuffer:null,miniTempBufferViews:[0],getSource:function(e,t,n,r){for(var i="",o=0;o<t;++o){var a;if(r){var s=HEAP32[r+4*o>>2];a=s<0?Pointer_stringify(HEAP32[n+4*o>>2]):Pointer_stringify(HEAP32[n+4*o>>2],s)}else a=Pointer_stringify(HEAP32[n+4*o>>2]);i+=a}return i},createContext:function(e,t){function n(e){i=e.statusMessage||i}void 0===t.majorVersion&&void 0===t.minorVersion&&("undefined"!=typeof WebGL2RenderingContext?t.majorVersion=2:t.majorVersion=1,t.minorVersion=0);var r,i="?";try{e.addEventListener("webglcontextcreationerror",n,!1);try{if(1==t.majorVersion&&0==t.minorVersion)r=e.getContext("webgl",t)||e.getContext("experimental-webgl",t);else{if(2!=t.majorVersion||0!=t.minorVersion)throw"Unsupported WebGL context version "+majorVersion+"."+minorVersion+"!";r=e.getContext("webgl2",t)}}finally{e.removeEventListener("webglcontextcreationerror",n,!1)}if(!r)throw":("}catch(e){return Module.print("Could not create canvas: "+[i,e,JSON.stringify(t)]),0}return r?GL.registerContext(r,t):0},registerContext:function(e,t){function n(){var e=navigator.userAgent.match(/Chrom(e|ium)\/([0-9]+)\./);return!!e&&parseInt(e[2],10)}var r=GL.getNewId(GL.contexts),i={handle:r,attributes:t,version:t.majorVersion,GLctx:e};return i.supportsWebGL2EntryPoints=i.version>=2&&(!1===n()||n()>=58),e.canvas&&(e.canvas.GLctxObject=i),GL.contexts[r]=i,(void 0===t.enableExtensionsByDefault||t.enableExtensionsByDefault)&&GL.initExtensions(i),r},makeContextCurrent:function(e){var t=GL.contexts[e];return!!t&&(GLctx=Module.ctx=t.GLctx,GL.currentContext=t,!0)},getContext:function(e){return GL.contexts[e]},deleteContext:function(e){GL.currentContext===GL.contexts[e]&&(GL.currentContext=null),"object"==typeof JSEvents&&JSEvents.removeAllHandlersOnTarget(GL.contexts[e].GLctx.canvas),GL.contexts[e]&&GL.contexts[e].GLctx.canvas&&(GL.contexts[e].GLctx.canvas.GLctxObject=void 0),GL.contexts[e]=null},initExtensions:function(e){if(e||(e=GL.currentContext),!e.initExtensionsDone){e.initExtensionsDone=!0;var t=e.GLctx;if(e.maxVertexAttribs=t.getParameter(t.MAX_VERTEX_ATTRIBS),e.version<2){var n=t.getExtension("ANGLE_instanced_arrays");n&&(t.vertexAttribDivisor=function(e,t){n.vertexAttribDivisorANGLE(e,t)},t.drawArraysInstanced=function(e,t,r,i){n.drawArraysInstancedANGLE(e,t,r,i)},t.drawElementsInstanced=function(e,t,r,i,o){n.drawElementsInstancedANGLE(e,t,r,i,o)});var r=t.getExtension("OES_vertex_array_object");r&&(t.createVertexArray=function(){return r.createVertexArrayOES()},t.deleteVertexArray=function(e){r.deleteVertexArrayOES(e)},t.bindVertexArray=function(e){r.bindVertexArrayOES(e)},t.isVertexArray=function(e){return r.isVertexArrayOES(e)});var i=t.getExtension("WEBGL_draw_buffers");i&&(t.drawBuffers=function(e,t){i.drawBuffersWEBGL(e,t)})}t.disjointTimerQueryExt=t.getExtension("EXT_disjoint_timer_query");var o=["OES_texture_float","OES_texture_half_float","OES_standard_derivatives","OES_vertex_array_object","WEBGL_compressed_texture_s3tc","WEBGL_depth_texture","OES_element_index_uint","EXT_texture_filter_anisotropic","ANGLE_instanced_arrays","OES_texture_float_linear","OES_texture_half_float_linear","WEBGL_compressed_texture_atc","WEBGL_compressed_texture_pvrtc","EXT_color_buffer_half_float","WEBGL_color_buffer_float","EXT_frag_depth","EXT_sRGB","WEBGL_draw_buffers","WEBGL_shared_resources","EXT_shader_texture_lod","EXT_color_buffer_float"],a=t.getSupportedExtensions();a&&a.length>0&&t.getSupportedExtensions().forEach(function(e){-1!=o.indexOf(e)&&t.getExtension(e)})}},populateUniformTable:function(e){var t=GL.programs[e];GL.programInfos[e]={uniforms:{},maxUniformLength:0,maxAttributeLength:-1,maxUniformBlockNameLength:-1};for(var n=GL.programInfos[e],r=n.uniforms,i=GLctx.getProgramParameter(t,GLctx.ACTIVE_UNIFORMS),o=0;o<i;++o){var a=GLctx.getActiveUniform(t,o),s=a.name;if(n.maxUniformLength=Math.max(n.maxUniformLength,s.length+1),-1!==s.indexOf("]",s.length-1)){var u=s.lastIndexOf("[");s=s.slice(0,u)}var l=GLctx.getUniformLocation(t,s);if(null!=l){var c=GL.getNewId(GL.uniforms);r[s]=[a.size,c],GL.uniforms[c]=l;for(var d=1;d<a.size;++d){var f=s+"["+d+"]";l=GLctx.getUniformLocation(t,f),c=GL.getNewId(GL.uniforms),GL.uniforms[c]=l}}}}},Browser={mainLoop:{scheduler:null,method:"",currentlyRunningMainloop:0,func:null,arg:0,timingMode:0,timingValue:0,currentFrameNumber:0,queue:[],pause:function(){Browser.mainLoop.scheduler=null,Browser.mainLoop.currentlyRunningMainloop++},resume:function(){Browser.mainLoop.currentlyRunningMainloop++;var e=Browser.mainLoop.timingMode,t=Browser.mainLoop.timingValue,n=Browser.mainLoop.func;Browser.mainLoop.func=null,_emscripten_set_main_loop(n,0,!1,Browser.mainLoop.arg,!0),_emscripten_set_main_loop_timing(e,t),Browser.mainLoop.scheduler()},updateStatus:function(){if(Module.setStatus){var e=Module.statusMessage||"Please wait...",t=Browser.mainLoop.remainingBlockers,n=Browser.mainLoop.expectedBlockers;t?t<n?Module.setStatus(e+" ("+(n-t)+"/"+n+")"):Module.setStatus(e):Module.setStatus("")}},runIter:function(e){if(!ABORT){if(Module.preMainLoop){if(!1===Module.preMainLoop())return}try{e()}catch(e){if(e instanceof ExitStatus)return;throw e&&"object"==typeof e&&e.stack&&Module.printErr("exception thrown: "+[e,e.stack]),e}Module.postMainLoop&&Module.postMainLoop()}}},isFullscreen:!1,pointerLock:!1,moduleContextCreatedCallbacks:[],workers:[],init:function(){function e(){Browser.pointerLock=document.pointerLockElement===Module.canvas||document.mozPointerLockElement===Module.canvas||document.webkitPointerLockElement===Module.canvas||document.msPointerLockElement===Module.canvas}if(Module.preloadPlugins||(Module.preloadPlugins=[]),!Browser.initted){Browser.initted=!0;try{new Blob,Browser.hasBlobConstructor=!0}catch(e){Browser.hasBlobConstructor=!1,console.log("warning: no blob constructor, cannot create blobs with mimetypes")}Browser.BlobBuilder="undefined"!=typeof MozBlobBuilder?MozBlobBuilder:"undefined"!=typeof WebKitBlobBuilder?WebKitBlobBuilder:Browser.hasBlobConstructor?null:console.log("warning: no BlobBuilder"),Browser.URLObject="undefined"!=typeof window?window.URL?window.URL:window.webkitURL:void 0,Module.noImageDecoding||void 0!==Browser.URLObject||(console.log("warning: Browser does not support creating object URLs. Built-in browser image decoding will not be available."),Module.noImageDecoding=!0);var t={};t.canHandle=function(e){return!Module.noImageDecoding&&/\.(jpg|jpeg|png|bmp)$/i.test(e)},t.handle=function(e,t,n,r){var i=null;if(Browser.hasBlobConstructor)try{i=new Blob([e],{type:Browser.getMimetype(t)}),i.size!==e.length&&(i=new Blob([new Uint8Array(e).buffer],{type:Browser.getMimetype(t)}))}catch(e){Runtime.warnOnce("Blob constructor present but fails: "+e+"; falling back to blob builder")}if(!i){var o=new Browser.BlobBuilder;o.append(new Uint8Array(e).buffer),i=o.getBlob()}var a=Browser.URLObject.createObjectURL(i);assert("string"==typeof a,"createObjectURL must return a url as a string");var s=new Image;s.onload=function(){assert(s.complete,"Image "+t+" could not be decoded");var r=document.createElement("canvas");r.width=s.width,r.height=s.height,r.getContext("2d").drawImage(s,0,0),Module.preloadedImages[t]=r,Browser.URLObject.revokeObjectURL(a),n&&n(e)},s.onerror=function(e){console.log("Image "+a+" could not be decoded"),r&&r()},s.src=a},Module.preloadPlugins.push(t);var n={};n.canHandle=function(e){return!Module.noAudioDecoding&&e.substr(-4)in{".ogg":1,".wav":1,".mp3":1}},n.handle=function(e,t,n,r){function i(r){a||(a=!0,Module.preloadedAudios[t]=r,n&&n(e))}function o(){a||(a=!0,Module.preloadedAudios[t]=new Audio,r&&r())}var a=!1;if(!Browser.hasBlobConstructor)return o();try{var s=new Blob([e],{type:Browser.getMimetype(t)})}catch(e){return o()}var u=Browser.URLObject.createObjectURL(s);assert("string"==typeof u,"createObjectURL must return a url as a string");var l=new Audio;l.addEventListener("canplaythrough",function(){i(l)},!1),l.onerror=function(n){a||(console.log("warning: browser could not fully decode audio "+t+", trying slower base64 approach"),l.src="data:audio/x-"+t.substr(-3)+";base64,"+function(e){for(var t="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",n="",r=0,i=0,o=0;o<e.length;o++)for(r=r<<8|e[o],i+=8;i>=6;){var a=r>>i-6&63;i-=6,n+=t[a]}return 2==i?(n+=t[(3&r)<<4],n+="=="):4==i&&(n+=t[(15&r)<<2],n+="="),n}(e),i(l))},l.src=u,Browser.safeSetTimeout(function(){i(l)},1e4)},Module.preloadPlugins.push(n);var r=Module.canvas;r&&(r.requestPointerLock=r.requestPointerLock||r.mozRequestPointerLock||r.webkitRequestPointerLock||r.msRequestPointerLock||function(){},r.exitPointerLock=document.exitPointerLock||document.mozExitPointerLock||document.webkitExitPointerLock||document.msExitPointerLock||function(){},r.exitPointerLock=r.exitPointerLock.bind(document),document.addEventListener("pointerlockchange",e,!1),document.addEventListener("mozpointerlockchange",e,!1),document.addEventListener("webkitpointerlockchange",e,!1),document.addEventListener("mspointerlockchange",e,!1),Module.elementPointerLock&&r.addEventListener("click",function(e){!Browser.pointerLock&&Module.canvas.requestPointerLock&&(Module.canvas.requestPointerLock(),e.preventDefault())},!1))}},createContext:function(e,t,n,r){if(t&&Module.ctx&&e==Module.canvas)return Module.ctx;var i,o;if(t){var a={antialias:!1,alpha:!1};if(r)for(var s in r)a[s]=r[s];o=GL.createContext(e,a),o&&(i=GL.getContext(o).GLctx)}else i=e.getContext("2d");return i?(n&&(t||assert(void 0===GLctx,"cannot set in module if GLctx is used, but we are a non-GL context that would replace it"),Module.ctx=i,t&&GL.makeContextCurrent(o),Module.useWebGL=t,Browser.moduleContextCreatedCallbacks.forEach(function(e){e()}),Browser.init()),i):null},destroyContext:function(e,t,n){},fullscreenHandlersInstalled:!1,lockPointer:void 0,resizeCanvas:void 0,requestFullscreen:function(e,t,n){function r(){Browser.isFullscreen=!1;var e=i.parentNode;(document.fullscreenElement||document.mozFullScreenElement||document.msFullscreenElement||document.webkitFullscreenElement||document.webkitCurrentFullScreenElement)===e?(i.exitFullscreen=document.exitFullscreen||document.cancelFullScreen||document.mozCancelFullScreen||document.msExitFullscreen||document.webkitCancelFullScreen||function(){},i.exitFullscreen=i.exitFullscreen.bind(document),Browser.lockPointer&&i.requestPointerLock(),Browser.isFullscreen=!0,Browser.resizeCanvas&&Browser.setFullscreenCanvasSize()):(e.parentNode.insertBefore(i,e),e.parentNode.removeChild(e),Browser.resizeCanvas&&Browser.setWindowedCanvasSize()),Module.onFullScreen&&Module.onFullScreen(Browser.isFullscreen),Module.onFullscreen&&Module.onFullscreen(Browser.isFullscreen),Browser.updateCanvasDimensions(i)}Browser.lockPointer=e,Browser.resizeCanvas=t,Browser.vrDevice=n,void 0===Browser.lockPointer&&(Browser.lockPointer=!0),void 0===Browser.resizeCanvas&&(Browser.resizeCanvas=!1),void 0===Browser.vrDevice&&(Browser.vrDevice=null);var i=Module.canvas;Browser.fullscreenHandlersInstalled||(Browser.fullscreenHandlersInstalled=!0,document.addEventListener("fullscreenchange",r,!1),document.addEventListener("mozfullscreenchange",r,!1),document.addEventListener("webkitfullscreenchange",r,!1),document.addEventListener("MSFullscreenChange",r,!1));var o=document.createElement("div");i.parentNode.insertBefore(o,i),o.appendChild(i),o.requestFullscreen=o.requestFullscreen||o.mozRequestFullScreen||o.msRequestFullscreen||(o.webkitRequestFullscreen?function(){o.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT)}:null)||(o.webkitRequestFullScreen?function(){o.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT)}:null),n?o.requestFullscreen({vrDisplay:n}):o.requestFullscreen()},requestFullScreen:function(e,t,n){return Module.printErr("Browser.requestFullScreen() is deprecated. Please call Browser.requestFullscreen instead."),Browser.requestFullScreen=function(e,t,n){return Browser.requestFullscreen(e,t,n)},Browser.requestFullscreen(e,t,n)},nextRAF:0,fakeRequestAnimationFrame:function(e){var t=Date.now();if(0===Browser.nextRAF)Browser.nextRAF=t+1e3/60;else for(;t+2>=Browser.nextRAF;)Browser.nextRAF+=1e3/60;var n=Math.max(Browser.nextRAF-t,0);setTimeout(e,n)},requestAnimationFrame:function(e){"undefined"==typeof window?Browser.fakeRequestAnimationFrame(e):(window.requestAnimationFrame||(window.requestAnimationFrame=window.requestAnimationFrame||window.mozRequestAnimationFrame||window.webkitRequestAnimationFrame||window.msRequestAnimationFrame||window.oRequestAnimationFrame||Browser.fakeRequestAnimationFrame),window.requestAnimationFrame(e))},safeCallback:function(e){return function(){if(!ABORT)return e.apply(null,arguments)}},allowAsyncCallbacks:!0,queuedAsyncCallbacks:[],pauseAsyncCallbacks:function(){Browser.allowAsyncCallbacks=!1},resumeAsyncCallbacks:function(){if(Browser.allowAsyncCallbacks=!0,Browser.queuedAsyncCallbacks.length>0){var e=Browser.queuedAsyncCallbacks;Browser.queuedAsyncCallbacks=[],e.forEach(function(e){e()})}},safeRequestAnimationFrame:function(e){return Browser.requestAnimationFrame(function(){ABORT||(Browser.allowAsyncCallbacks?e():Browser.queuedAsyncCallbacks.push(e))})},safeSetTimeout:function(e,t){return Module.noExitRuntime=!0,setTimeout(function(){ABORT||(Browser.allowAsyncCallbacks?e():Browser.queuedAsyncCallbacks.push(e))},t)},safeSetInterval:function(e,t){return Module.noExitRuntime=!0,setInterval(function(){ABORT||Browser.allowAsyncCallbacks&&e()},t)},getMimetype:function(e){return{jpg:"image/jpeg",jpeg:"image/jpeg",png:"image/png",bmp:"image/bmp",ogg:"audio/ogg",wav:"audio/wav",mp3:"audio/mpeg"}[e.substr(e.lastIndexOf(".")+1)]},getUserMedia:function(e){window.getUserMedia||(window.getUserMedia=navigator.getUserMedia||navigator.mozGetUserMedia),window.getUserMedia(e)},getMovementX:function(e){return e.movementX||e.mozMovementX||e.webkitMovementX||0},getMovementY:function(e){return e.movementY||e.mozMovementY||e.webkitMovementY||0},getMouseWheelDelta:function(e){var t=0;switch(e.type){case"DOMMouseScroll":t=e.detail;break;case"mousewheel":t=e.wheelDelta;break;case"wheel":t=e.deltaY;break;default:throw"unrecognized mouse wheel event: "+e.type}return t},mouseX:0,mouseY:0,mouseMovementX:0,mouseMovementY:0,touches:{},lastTouches:{},calculateMouseEvent:function(e){if(Browser.pointerLock)"mousemove"!=e.type&&"mozMovementX"in e?Browser.mouseMovementX=Browser.mouseMovementY=0:(Browser.mouseMovementX=Browser.getMovementX(e),Browser.mouseMovementY=Browser.getMovementY(e)),"undefined"!=typeof SDL?(Browser.mouseX=SDL.mouseX+Browser.mouseMovementX,Browser.mouseY=SDL.mouseY+Browser.mouseMovementY):(Browser.mouseX+=Browser.mouseMovementX,Browser.mouseY+=Browser.mouseMovementY);else{var t=Module.canvas.getBoundingClientRect(),n=Module.canvas.width,r=Module.canvas.height,i=void 0!==window.scrollX?window.scrollX:window.pageXOffset,o=void 0!==window.scrollY?window.scrollY:window.pageYOffset;if(assert(void 0!==i&&void 0!==o,"Unable to retrieve scroll position, mouse positions likely broken."),"touchstart"===e.type||"touchend"===e.type||"touchmove"===e.type){var a=e.touch;if(void 0===a)return;var s=a.pageX-(i+t.left),u=a.pageY-(o+t.top);s*=n/t.width,u*=r/t.height;var l={x:s,y:u};if("touchstart"===e.type)Browser.lastTouches[a.identifier]=l,Browser.touches[a.identifier]=l;else if("touchend"===e.type||"touchmove"===e.type){var c=Browser.touches[a.identifier];c||(c=l),Browser.lastTouches[a.identifier]=c,Browser.touches[a.identifier]=l}return}var d=e.pageX-(i+t.left),f=e.pageY-(o+t.top);d*=n/t.width,f*=r/t.height,Browser.mouseMovementX=d-Browser.mouseX,Browser.mouseMovementY=f-Browser.mouseY,Browser.mouseX=d,Browser.mouseY=f}},asyncLoad:function(e,t,n,r){var i=r?"":getUniqueRunDependency("al "+e);Module.readAsync(e,function(n){assert(n,'Loading data file "'+e+'" failed (no arrayBuffer).'),t(new Uint8Array(n)),i&&removeRunDependency(i)},function(t){if(!n)throw'Loading data file "'+e+'" failed.';n()}),i&&addRunDependency(i)},resizeListeners:[],updateResizeListeners:function(){var e=Module.canvas;Browser.resizeListeners.forEach(function(t){t(e.width,e.height)})},setCanvasSize:function(e,t,n){var r=Module.canvas;Browser.updateCanvasDimensions(r,e,t),n||Browser.updateResizeListeners()},windowedWidth:0,windowedHeight:0,setFullscreenCanvasSize:function(){if("undefined"!=typeof SDL){var e=HEAPU32[SDL.screen+0*Runtime.QUANTUM_SIZE>>2];e|=8388608,HEAP32[SDL.screen+0*Runtime.QUANTUM_SIZE>>2]=e}Browser.updateResizeListeners()},setWindowedCanvasSize:function(){if("undefined"!=typeof SDL){var e=HEAPU32[SDL.screen+0*Runtime.QUANTUM_SIZE>>2];e&=-8388609,HEAP32[SDL.screen+0*Runtime.QUANTUM_SIZE>>2]=e}Browser.updateResizeListeners()},updateCanvasDimensions:function(e,t,n){t&&n?(e.widthNative=t,e.heightNative=n):(t=e.widthNative,n=e.heightNative);var r=t,i=n;if(Module.forcedAspectRatio&&Module.forcedAspectRatio>0&&(r/i<Module.forcedAspectRatio?r=Math.round(i*Module.forcedAspectRatio):i=Math.round(r/Module.forcedAspectRatio)),(document.fullscreenElement||document.mozFullScreenElement||document.msFullscreenElement||document.webkitFullscreenElement||document.webkitCurrentFullScreenElement)===e.parentNode&&"undefined"!=typeof screen){var o=Math.min(screen.width/r,screen.height/i);r=Math.round(r*o),i=Math.round(i*o)}Browser.resizeCanvas?(e.width!=r&&(e.width=r),e.height!=i&&(e.height=i),void 0!==e.style&&(e.style.removeProperty("width"),e.style.removeProperty("height"))):(e.width!=t&&(e.width=t),e.height!=n&&(e.height=n),void 0!==e.style&&(r!=t||i!=n?(e.style.setProperty("width",r+"px","important"),e.style.setProperty("height",i+"px","important")):(e.style.removeProperty("width"),e.style.removeProperty("height"))))},wgetRequests:{},nextWgetRequestHandle:0,getNextWgetRequestHandle:function(){var e=Browser.nextWgetRequestHandle;return Browser.nextWgetRequestHandle++,e}},GLFW={Window:function(e,t,n,r,i,o){this.id=e,this.x=0,this.y=0,this.fullscreen=!1,this.storedX=0,this.storedY=0,this.width=t,this.height=n,this.storedWidth=t,this.storedHeight=n,this.title=r,this.monitor=i,this.share=o,this.attributes=GLFW.hints,this.inputModes={208897:212993,208898:0,208899:0},this.buttons=0,this.keys=new Array,this.domKeys=new Array,this.shouldClose=0,this.title=null,this.windowPosFunc=null,this.windowSizeFunc=null,this.windowCloseFunc=null,this.windowRefreshFunc=null,this.windowFocusFunc=null,this.windowIconifyFunc=null,this.framebufferSizeFunc=null,this.mouseButtonFunc=null,this.cursorPosFunc=null,this.cursorEnterFunc=null,this.scrollFunc=null,this.dropFunc=null,this.keyFunc=null,this.charFunc=null,this.userptr=null},WindowFromId:function(e){return e<=0||!GLFW.windows?null:GLFW.windows[e-1]},joystickFunc:null,errorFunc:null,monitorFunc:null,active:null,windows:null,monitors:null,monitorString:null,versionString:null,initialTime:null,extensions:null,hints:null,defaultHints:{131073:0,131074:0,131075:1,131076:1,131077:1,135169:8,135170:8,135171:8,135172:8,135173:24,135174:8,135175:0,135176:0,135177:0,135178:0,135179:0,135180:0,135181:0,135182:0,135183:0,139265:196609,139266:1,139267:0,139268:0,139269:0,139270:0,139271:0,139272:0},DOMToGLFWKeyCode:function(e){switch(e){case 32:return 32;case 222:return 39;case 188:return 44;case 173:case 189:return 45;case 190:return 46;case 191:return 47;case 48:return 48;case 49:return 49;case 50:return 50;case 51:return 51;case 52:return 52;case 53:return 53;case 54:return 54;case 55:return 55;case 56:return 56;case 57:return 57;case 59:return 59;case 61:case 187:return 61;case 65:return 65;case 66:return 66;case 67:return 67;case 68:return 68;case 69:return 69;case 70:return 70;case 71:return 71;case 72:return 72;case 73:return 73;case 74:return 74;case 75:return 75;case 76:return 76;case 77:return 77;case 78:return 78;case 79:return 79;case 80:return 80;case 81:return 81;case 82:return 82;case 83:return 83;case 84:return 84;case 85:return 85;case 86:return 86;case 87:return 87;case 88:return 88;case 89:return 89;case 90:return 90;case 219:return 91;case 220:return 92;case 221:return 93;case 192:return 94;case 27:return 256;case 13:return 257;case 9:return 258;case 8:return 259;case 45:return 260;case 46:return 261;case 39:return 262;case 37:return 263;case 40:return 264;case 38:return 265;case 33:return 266;case 34:return 267;case 36:return 268;case 35:return 269;case 20:return 280;case 145:return 281;case 144:return 282;case 44:return 283;case 19:return 284;case 112:return 290;case 113:return 291;case 114:return 292;case 115:return 293;case 116:return 294;case 117:return 295;case 118:return 296;case 119:return 297;case 120:return 298;case 121:return 299;case 122:return 300;case 123:return 301;case 124:return 302;case 125:return 303;case 126:return 304;case 127:return 305;case 128:return 306;case 129:return 307;case 130:return 308;case 131:return 309;case 132:return 310;case 133:return 311;case 134:return 312;case 135:return 313;case 136:return 314;case 96:return 320;case 97:return 321;case 98:return 322;case 99:return 323;case 100:return 324;case 101:return 325;case 102:return 326;case 103:return 327;case 104:return 328;case 105:return 329;case 110:return 330;case 111:return 331;case 106:return 332;case 109:return 333;case 107:return 334;case 16:return 340;case 17:return 341;case 18:return 342;case 91:return 343;case 93:return 348;default:return-1}},getModBits:function(e){var t=0;return e.keys[340]&&(t|=1),e.keys[341]&&(t|=2),e.keys[342]&&(t|=4),e.keys[343]&&(t|=8),t},onKeyPress:function(e){if(GLFW.active&&GLFW.active.charFunc&&!e.ctrlKey&&!e.metaKey){var t=e.charCode;0==t||t>=0&&t<=31||Module.dynCall_vii(GLFW.active.charFunc,GLFW.active.id,t)}},onKeyChanged:function(e,t){if(GLFW.active){var n=GLFW.DOMToGLFWKeyCode(e);if(-1!=n){var r=t&&GLFW.active.keys[n];GLFW.active.keys[n]=t,GLFW.active.domKeys[e]=t,GLFW.active.keyFunc&&(r&&(t=2),Module.dynCall_viiiii(GLFW.active.keyFunc,GLFW.active.id,n,e,t,GLFW.getModBits(GLFW.active)))}}},onGamepadConnected:function(e){GLFW.refreshJoysticks()},onGamepadDisconnected:function(e){GLFW.refreshJoysticks()},onKeydown:function(e){GLFW.onKeyChanged(e.keyCode,1),8!==e.keyCode&&9!==e.keyCode||e.preventDefault()},onKeyup:function(e){GLFW.onKeyChanged(e.keyCode,0)},onBlur:function(e){if(GLFW.active)for(var t=0;t<GLFW.active.domKeys.length;++t)GLFW.active.domKeys[t]&&GLFW.onKeyChanged(t,0)},onMousemove:function(e){GLFW.active&&(Browser.calculateMouseEvent(e),e.target==Module.canvas&&GLFW.active.cursorPosFunc&&Module.dynCall_vidd(GLFW.active.cursorPosFunc,GLFW.active.id,Browser.mouseX,Browser.mouseY))},DOMToGLFWMouseButton:function(e){var t=e.button;return t>0&&(t=1==t?2:1),t},onMouseenter:function(e){GLFW.active&&e.target==Module.canvas&&GLFW.active.cursorEnterFunc&&Module.dynCall_vii(GLFW.active.cursorEnterFunc,GLFW.active.id,1)},onMouseleave:function(e){GLFW.active&&e.target==Module.canvas&&GLFW.active.cursorEnterFunc&&Module.dynCall_vii(GLFW.active.cursorEnterFunc,GLFW.active.id,0)},onMouseButtonChanged:function(e,t){if(GLFW.active&&(Browser.calculateMouseEvent(e),e.target==Module.canvas)){if(eventButton=GLFW.DOMToGLFWMouseButton(e),1==t){GLFW.active.buttons|=1<<eventButton;try{e.target.setCapture()}catch(e){}}else GLFW.active.buttons&=~(1<<eventButton);GLFW.active.mouseButtonFunc&&Module.dynCall_viiii(GLFW.active.mouseButtonFunc,GLFW.active.id,eventButton,t,GLFW.getModBits(GLFW.active))}},onMouseButtonDown:function(e){GLFW.active&&GLFW.onMouseButtonChanged(e,1)},onMouseButtonUp:function(e){GLFW.active&&GLFW.onMouseButtonChanged(e,0)},onMouseWheel:function(e){var t=-Browser.getMouseWheelDelta(e);if(t=0==t?0:t>0?Math.max(t,1):Math.min(t,-1),GLFW.wheelPos+=t,GLFW.active&&GLFW.active.scrollFunc&&e.target==Module.canvas){var n=0,r=0;"mousewheel"==e.type?(n=e.wheelDeltaX,r=e.wheelDeltaY):(n=e.deltaX,r=e.deltaY),Module.dynCall_vidd(GLFW.active.scrollFunc,GLFW.active.id,n,r),e.preventDefault()}},onCanvasResize:function(e,t){if(GLFW.active){var n=!0;document.fullscreen||document.fullScreen||document.mozFullScreen||document.webkitIsFullScreen?(GLFW.active.storedX=GLFW.active.x,GLFW.active.storedY=GLFW.active.y,GLFW.active.storedWidth=GLFW.active.width,GLFW.active.storedHeight=GLFW.active.height,GLFW.active.x=GLFW.active.y=0,GLFW.active.width=screen.width,GLFW.active.height=screen.height,GLFW.active.fullscreen=!0):1==GLFW.active.fullscreen?(GLFW.active.x=GLFW.active.storedX,GLFW.active.y=GLFW.active.storedY,GLFW.active.width=GLFW.active.storedWidth,GLFW.active.height=GLFW.active.storedHeight,GLFW.active.fullscreen=!1):GLFW.active.width!=e||GLFW.active.height!=t?(GLFW.active.width=e,GLFW.active.height=t):n=!1,n&&(Browser.setCanvasSize(GLFW.active.width,GLFW.active.height,!0),GLFW.onWindowSizeChanged(),GLFW.onFramebufferSizeChanged())}},onWindowSizeChanged:function(){GLFW.active&&GLFW.active.windowSizeFunc&&Module.dynCall_viii(GLFW.active.windowSizeFunc,GLFW.active.id,GLFW.active.width,GLFW.active.height)},onFramebufferSizeChanged:function(){GLFW.active&&GLFW.active.framebufferSizeFunc&&Module.dynCall_viii(GLFW.active.framebufferSizeFunc,GLFW.active.id,GLFW.active.width,GLFW.active.height)},requestFullscreen:function(){(Module.canvas.requestFullscreen||Module.canvas.mozRequestFullScreen||Module.canvas.webkitRequestFullScreen||function(){}).apply(Module.canvas,[])},requestFullScreen:function(){return Module.printErr("GLFW.requestFullScreen() is deprecated. Please call GLFW.requestFullscreen instead."),GLFW.requestFullScreen=function(){return GLFW.requestFullscreen()},GLFW.requestFullscreen()},exitFullscreen:function(){(document.exitFullscreen||document.cancelFullScreen||document.mozCancelFullScreen||document.webkitCancelFullScreen||function(){}).apply(document,[])},cancelFullScreen:function(){return Module.printErr("GLFW.cancelFullScreen() is deprecated. Please call GLFW.exitFullscreen instead."),GLFW.cancelFullScreen=function(){return GLFW.exitFullscreen()},GLFW.exitFullscreen()},getTime:function(){return _emscripten_get_now()/1e3},setWindowTitle:function(e,t){var n=GLFW.WindowFromId(e);n&&(n.title=Pointer_stringify(t),GLFW.active.id==n.id&&(document.title=n.title))},setJoystickCallback:function(e){GLFW.joystickFunc=e,GLFW.refreshJoysticks()},joys:{},lastGamepadState:null,lastGamepadStateFrame:null,refreshJoysticks:function(){if(Browser.mainLoop.currentFrameNumber!==GLFW.lastGamepadStateFrame||!Browser.mainLoop.currentFrameNumber){GLFW.lastGamepadState=navigator.getGamepads?navigator.getGamepads():navigator.webkitGetGamepads?navigator.webkitGetGamepads:null,GLFW.lastGamepadStateFrame=Browser.mainLoop.currentFrameNumber;for(var e=0;e<GLFW.lastGamepadState.length;++e){var t=GLFW.lastGamepadState[e];if(t){GLFW.joys[e]||(console.log("glfw joystick connected:",e),GLFW.joys[e]={id:allocate(intArrayFromString(t.id),"i8",ALLOC_NORMAL),buttonsCount:t.buttons.length,axesCount:t.axes.length,buttons:allocate(new Array(t.buttons.length),"i8",ALLOC_NORMAL),axes:allocate(new Array(4*t.axes.length),"float",ALLOC_NORMAL)},GLFW.joystickFunc&&Module.dynCall_vii(GLFW.joystickFunc,e,262145));for(var n=GLFW.joys[e],r=0;r<t.buttons.length;++r)setValue(n.buttons+r,t.buttons[r].pressed,"i8");for(var r=0;r<t.axes.length;++r)setValue(n.axes+4*r,t.axes[r],"float")}else GLFW.joys[e]&&(console.log("glfw joystick disconnected",e),GLFW.joystickFunc&&Module.dynCall_vii(GLFW.joystickFunc,e,262146),_free(GLFW.joys[e].id),_free(GLFW.joys[e].buttons),_free(GLFW.joys[e].axes),delete GLFW.joys[e])}}},setKeyCallback:function(e,t){var n=GLFW.WindowFromId(e);n&&(n.keyFunc=t)},setCharCallback:function(e,t){var n=GLFW.WindowFromId(e);n&&(n.charFunc=t)},setMouseButtonCallback:function(e,t){var n=GLFW.WindowFromId(e);n&&(n.mouseButtonFunc=t)},setCursorPosCallback:function(e,t){var n=GLFW.WindowFromId(e);n&&(n.cursorPosFunc=t)},setScrollCallback:function(e,t){var n=GLFW.WindowFromId(e);n&&(n.scrollFunc=t)},setDropCallback:function(e,t){var n=GLFW.WindowFromId(e);n&&(n.dropFunc=t)},onDrop:function(e){if(GLFW.active&&GLFW.active.dropFunc&&e.dataTransfer&&e.dataTransfer.files&&0!=e.dataTransfer.files.length){e.preventDefault();var t=allocate(new Array(4*e.dataTransfer.files.length),"i8*",ALLOC_NORMAL),n=[],r=e.dataTransfer.files.length,i=0,o=".glfw_dropped_files";FS.createPath("/",o);for(var a=0;a<r;++a)!function(e){var s="/"+o+"/"+e.name.replace(/\//g,"_"),u=new FileReader;u.onloadend=function(o){if(2!=u.readyState)return++i,void console.log("failed to read dropped file: "+e.name+": "+u.error);var a=o.target.result;if(FS.writeFile(s,new Uint8Array(a),{encoding:"binary"}),++i===r){Module.dynCall_viii(GLFW.active.dropFunc,GLFW.active.id,r,t);for(var l=0;l<n.length;++l)_free(n[l]);_free(t)}},u.readAsArrayBuffer(e);var l=allocate(intArrayFromString(s),"i8",ALLOC_NORMAL);n.push(l),setValue(t+4*a,l,"i8*")}(e.dataTransfer.files[a]);return!1}},onDragover:function(e){if(GLFW.active&&GLFW.active.dropFunc)return e.preventDefault(),!1},setWindowSizeCallback:function(e,t){var n=GLFW.WindowFromId(e);n&&(n.windowSizeFunc=t)},setWindowCloseCallback:function(e,t){var n=GLFW.WindowFromId(e);n&&(n.windowCloseFunc=t)},setWindowRefreshCallback:function(e,t){var n=GLFW.WindowFromId(e);n&&(n.windowRefreshFunc=t)},onClickRequestPointerLock:function(e){!Browser.pointerLock&&Module.canvas.requestPointerLock&&(Module.canvas.requestPointerLock(),e.preventDefault())},setInputMode:function(e,t,n){var r=GLFW.WindowFromId(e);if(r)switch(t){case 208897:switch(n){case 212993:r.inputModes[t]=n,Module.canvas.removeEventListener("click",GLFW.onClickRequestPointerLock,!0),Module.canvas.exitPointerLock();break;case 212994:console.log("glfwSetInputMode called with GLFW_CURSOR_HIDDEN value not implemented.");break;case 212995:r.inputModes[t]=n,Module.canvas.addEventListener("click",GLFW.onClickRequestPointerLock,!0),Module.canvas.requestPointerLock();break;default:console.log("glfwSetInputMode called with unknown value parameter value: "+n+".")}break;case 208898:console.log("glfwSetInputMode called with GLFW_STICKY_KEYS mode not implemented.");break;case 208899:console.log("glfwSetInputMode called with GLFW_STICKY_MOUSE_BUTTONS mode not implemented.");break;default:console.log("glfwSetInputMode called with unknown mode parameter value: "+t+".")}},getKey:function(e,t){var n=GLFW.WindowFromId(e);return n?n.keys[t]:0},getMouseButton:function(e,t){var n=GLFW.WindowFromId(e);return n?(n.buttons&1<<t)>0:0},getCursorPos:function(e,t,n){setValue(t,Browser.mouseX,"double"),setValue(n,Browser.mouseY,"double")},getMousePos:function(e,t,n){setValue(t,Browser.mouseX,"i32"),setValue(n,Browser.mouseY,"i32")},setCursorPos:function(e,t,n){},getWindowPos:function(e,t,n){var r=0,i=0,o=GLFW.WindowFromId(e);o&&(r=o.x,i=o.y),setValue(t,r,"i32"),setValue(n,i,"i32")},setWindowPos:function(e,t,n){var r=GLFW.WindowFromId(e);r&&(r.x=t,r.y=n)},getWindowSize:function(e,t,n){var r=0,i=0,o=GLFW.WindowFromId(e);o&&(r=o.width,i=o.height),setValue(t,r,"i32"),setValue(n,i,"i32")},setWindowSize:function(e,t,n){var r=GLFW.WindowFromId(e);r&&(GLFW.active.id==r.id&&(t==screen.width&&n==screen.height?GLFW.requestFullscreen():(GLFW.exitFullscreen(),Browser.setCanvasSize(t,n),r.width=t,r.height=n)),r.windowSizeFunc&&Module.dynCall_viii(r.windowSizeFunc,r.id,t,n))},createWindow:function(e,t,n,r,i){var o,a;for(o=0;o<GLFW.windows.length&&null!==GLFW.windows[o];o++);if(o>0)throw"glfwCreateWindow only supports one window at time currently";if(a=o+1,e<=0||t<=0)return 0;for(r?GLFW.requestFullscreen():Browser.setCanvasSize(e,t),o=0;o<GLFW.windows.length&&null==GLFW.windows[o];o++);if(o==GLFW.windows.length){var s={antialias:GLFW.hints[135181]>1,depth:GLFW.hints[135173]>0,stencil:GLFW.hints[135174]>0,alpha:GLFW.hints[135172]>0};Module.ctx=Browser.createContext(Module.canvas,!0,!0,s)}if(!Module.ctx)return 0;var u=new GLFW.Window(a,e,t,n,r,i);return a-1==GLFW.windows.length?GLFW.windows.push(u):GLFW.windows[a-1]=u,GLFW.active=u,u.id},destroyWindow:function(e){var t=GLFW.WindowFromId(e);if(t){t.windowCloseFunc&&Module.dynCall_vi(t.windowCloseFunc,t.id),GLFW.windows[t.id-1]=null,GLFW.active.id==t.id&&(GLFW.active=null);for(var n=0;n<GLFW.windows.length;n++)if(null!==GLFW.windows[n])return;Module.ctx=Browser.destroyContext(Module.canvas,!0,!0)}},swapBuffers:function(e){},GLFW2ParamToGLFW3Param:function(e){return table={196609:0,196610:0,196611:0,196612:0,196613:0,196614:0,131073:0,131074:0,131075:0,131076:0,131077:135169,131078:135170,131079:135171,131080:135172,131081:135173,131082:135174,131083:135183,131084:135175,131085:135176,131086:135177,131087:135178,131088:135179,131089:135180,131090:0,131091:135181,131092:139266,131093:139267,131094:139270,131095:139271,131096:139272},table[e]}},PTHREAD_SPECIFIC={},PTHREAD_SPECIFIC_NEXT_KEY=1,ERRNO_CODES={EPERM:1,ENOENT:2,ESRCH:3,EINTR:4,EIO:5,ENXIO:6,E2BIG:7,ENOEXEC:8,EBADF:9,ECHILD:10,EAGAIN:11,EWOULDBLOCK:11,ENOMEM:12,EACCES:13,EFAULT:14,ENOTBLK:15,EBUSY:16,EEXIST:17,EXDEV:18,ENODEV:19,ENOTDIR:20,EISDIR:21,EINVAL:22,ENFILE:23,EMFILE:24,ENOTTY:25,ETXTBSY:26,EFBIG:27,ENOSPC:28,ESPIPE:29,EROFS:30,EMLINK:31,EPIPE:32,EDOM:33,ERANGE:34,ENOMSG:42,EIDRM:43,ECHRNG:44,EL2NSYNC:45,EL3HLT:46,EL3RST:47,ELNRNG:48,EUNATCH:49,ENOCSI:50,EL2HLT:51,EDEADLK:35,ENOLCK:37,EBADE:52,EBADR:53,EXFULL:54,ENOANO:55,EBADRQC:56,EBADSLT:57,EDEADLOCK:35,EBFONT:59,ENOSTR:60,ENODATA:61,ETIME:62,ENOSR:63,ENONET:64,ENOPKG:65,EREMOTE:66,ENOLINK:67,EADV:68,ESRMNT:69,ECOMM:70,EPROTO:71,EMULTIHOP:72,EDOTDOT:73,EBADMSG:74,ENOTUNIQ:76,EBADFD:77,EREMCHG:78,ELIBACC:79,ELIBBAD:80,ELIBSCN:81,ELIBMAX:82,ELIBEXEC:83,ENOSYS:38,ENOTEMPTY:39,ENAMETOOLONG:36,ELOOP:40,EOPNOTSUPP:95,EPFNOSUPPORT:96,ECONNRESET:104,ENOBUFS:105,EAFNOSUPPORT:97,EPROTOTYPE:91,ENOTSOCK:88,ENOPROTOOPT:92,ESHUTDOWN:108,ECONNREFUSED:111,EADDRINUSE:98,ECONNABORTED:103,ENETUNREACH:101,ENETDOWN:100,ETIMEDOUT:110,EHOSTDOWN:112,EHOSTUNREACH:113,EINPROGRESS:115,EALREADY:114,EDESTADDRREQ:89,EMSGSIZE:90,EPROTONOSUPPORT:93,ESOCKTNOSUPPORT:94,EADDRNOTAVAIL:99,ENETRESET:102,EISCONN:106,ENOTCONN:107,ETOOMANYREFS:109,EUSERS:87,EDQUOT:122,ESTALE:116,ENOTSUP:95,ENOMEDIUM:123,EILSEQ:84,EOVERFLOW:75,ECANCELED:125,ENOTRECOVERABLE:131,EOWNERDEAD:130,ESTRPIPE:86},SYSCALLS={varargs:0,get:function(e){return SYSCALLS.varargs+=4,HEAP32[SYSCALLS.varargs-4>>2]},getStr:function(){return Pointer_stringify(SYSCALLS.get())},get64:function(){var e=SYSCALLS.get(),t=SYSCALLS.get();return assert(e>=0?0===t:-1===t),e},getZero:function(){assert(0===SYSCALLS.get())}},EXCEPTIONS={last:0,caught:[],infos:{},deAdjust:function(e){if(!e||EXCEPTIONS.infos[e])return e;for(var t in EXCEPTIONS.infos){if(EXCEPTIONS.infos[t].adjusted===e)return t}return e},addRef:function(e){if(e){EXCEPTIONS.infos[e].refcount++}},decRef:function(e){if(e){var t=EXCEPTIONS.infos[e];assert(t.refcount>0),t.refcount--,0!==t.refcount||t.rethrown||(t.destructor&&Module.dynCall_vi(t.destructor,e),delete EXCEPTIONS.infos[e],___cxa_free_exception(e))}},clearRef:function(e){if(e){EXCEPTIONS.infos[e].refcount=0}}},GLctx;GL.init(),Module.requestFullScreen=function(e,t,n){Module.printErr("Module.requestFullScreen is deprecated. Please call Module.requestFullscreen instead."),Module.requestFullScreen=Module.requestFullscreen,Browser.requestFullScreen(e,t,n)},Module.requestFullscreen=function(e,t,n){Browser.requestFullscreen(e,t,n)},Module.requestAnimationFrame=function(e){Browser.requestAnimationFrame(e)},Module.setCanvasSize=function(e,t,n){Browser.setCanvasSize(e,t,n)},Module.pauseMainLoop=function(){Browser.mainLoop.pause()},Module.resumeMainLoop=function(){Browser.mainLoop.resume()},Module.getUserMedia=function(){Browser.getUserMedia()},Module.createContext=function(e,t,n,r){return Browser.createContext(e,t,n,r)},_emscripten_get_now=ENVIRONMENT_IS_NODE?function(){var e=process.hrtime();return 1e3*e[0]+e[1]/1e6}:"undefined"!=typeof dateNow?dateNow:"object"==typeof self&&self.performance&&"function"==typeof self.performance.now?function(){return self.performance.now()}:"object"==typeof performance&&"function"==typeof performance.now?function(){return performance.now()}:Date.now,__ATEXIT__.push(function(){var e=Module._fflush;e&&e(0);var t=___syscall146.printChar;if(t){var n=___syscall146.buffers;n[1].length&&t(1,10),n[2].length&&t(2,10)}}),DYNAMICTOP_PTR=allocate(1,"i32",ALLOC_STATIC),STACK_BASE=STACKTOP=Runtime.alignMemory(STATICTOP),STACK_MAX=STACK_BASE+TOTAL_STACK,DYNAMIC_BASE=Runtime.alignMemory(STACK_MAX),HEAP32[DYNAMICTOP_PTR>>2]=DYNAMIC_BASE,staticSealed=!0,assert(DYNAMIC_BASE<TOTAL_MEMORY,"TOTAL_MEMORY not big enough for stack"),Module.wasmTableSize=34,Module.wasmMaxTableSize=34,Module.asmGlobalArg={Math:Math,Int8Array:Int8Array,Int16Array:Int16Array,Int32Array:Int32Array,Uint8Array:Uint8Array,Uint16Array:Uint16Array,Uint32Array:Uint32Array,Float32Array:Float32Array,Float64Array:Float64Array,NaN:NaN,Infinity:1/0,byteLength:byteLength},Module.asmLibraryArg={abort:abort,assert:assert,enlargeMemory:enlargeMemory,getTotalMemory:getTotalMemory,abortOnCannotGrowMemory:abortOnCannotGrowMemory,abortStackOverflow:abortStackOverflow,nullFunc_iiii:nullFunc_iiii,nullFunc_viiiii:nullFunc_viiiii,nullFunc_vi:nullFunc_vi,nullFunc_vii:nullFunc_vii,nullFunc_ii:nullFunc_ii,nullFunc_viii:nullFunc_viii,nullFunc_v:nullFunc_v,nullFunc_viiiiii:nullFunc_viiiiii,nullFunc_viiii:nullFunc_viiii,invoke_iiii:invoke_iiii,invoke_viiiii:invoke_viiiii,invoke_vi:invoke_vi,invoke_vii:invoke_vii,invoke_ii:invoke_ii,invoke_viii:invoke_viii,invoke_v:invoke_v,invoke_viiiiii:invoke_viiiiii,invoke_viiii:invoke_viiii,_glfwCreateWindow:_glfwCreateWindow,___resumeException:___resumeException,_glfwPollEvents:_glfwPollEvents,_abort:_abort,_emscripten_set_main_loop_timing:_emscripten_set_main_loop_timing,___gxx_personality_v0:___gxx_personality_v0,___cxa_find_matching_catch:___cxa_find_matching_catch,_glfwMakeContextCurrent:_glfwMakeContextCurrent,__ZN5flint4ExitEi:__ZN5flint4ExitEi,_glViewport:_glViewport,___setErrNo:___setErrNo,_glClearColor:_glClearColor,_glClear:_glClear,_emscripten_memcpy_big:_emscripten_memcpy_big,_emscripten_set_main_loop_arg:_emscripten_set_main_loop_arg,__ZSt18uncaught_exceptionv:__ZSt18uncaught_exceptionv,___cxa_begin_catch:___cxa_begin_catch,_pthread_getspecific:_pthread_getspecific,_pthread_once:_pthread_once,_glfwSetWindowSizeCallback:_glfwSetWindowSizeCallback,_pthread_key_create:_pthread_key_create,_glfwInit:_glfwInit,_glfwSwapBuffers:_glfwSwapBuffers,_emscripten_set_main_loop:_emscripten_set_main_loop,_emscripten_get_now:_emscripten_get_now,_glfwWindowHint:_glfwWindowHint,_glfwTerminate:_glfwTerminate,_pthread_setspecific:_pthread_setspecific,___syscall6:___syscall6,___syscall140:___syscall140,_glfwSetErrorCallback:_glfwSetErrorCallback,_glfwDestroyWindow:_glfwDestroyWindow,___syscall146:___syscall146,DYNAMICTOP_PTR:DYNAMICTOP_PTR,tempDoublePtr:tempDoublePtr,ABORT:ABORT,STACKTOP:STACKTOP,STACK_MAX:STACK_MAX};var asm=Module.asm(Module.asmGlobalArg,Module.asmLibraryArg,buffer),real__malloc=asm._malloc;asm._malloc=function(){return assert(runtimeInitialized,"you need to wait for the runtime to be ready (e.g. wait for main() to be called)"),assert(!runtimeExited,"the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)"),real__malloc.apply(null,arguments)};var real____cxa_can_catch=asm.___cxa_can_catch;asm.___cxa_can_catch=function(){return assert(runtimeInitialized,"you need to wait for the runtime to be ready (e.g. wait for main() to be called)"),assert(!runtimeExited,"the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)"),real____cxa_can_catch.apply(null,arguments)};var real_getTempRet0=asm.getTempRet0;asm.getTempRet0=function(){return assert(runtimeInitialized,"you need to wait for the runtime to be ready (e.g. wait for main() to be called)"),assert(!runtimeExited,"the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)"),real_getTempRet0.apply(null,arguments)};var real__free=asm._free;asm._free=function(){return assert(runtimeInitialized,"you need to wait for the runtime to be ready (e.g. wait for main() to be called)"),assert(!runtimeExited,"the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)"),real__free.apply(null,arguments)};var real__main=asm._main;asm._main=function(){return assert(runtimeInitialized,"you need to wait for the runtime to be ready (e.g. wait for main() to be called)"),assert(!runtimeExited,"the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)"),real__main.apply(null,arguments)};var real_setTempRet0=asm.setTempRet0;asm.setTempRet0=function(){return assert(runtimeInitialized,"you need to wait for the runtime to be ready (e.g. wait for main() to be called)"),assert(!runtimeExited,"the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)"),real_setTempRet0.apply(null,arguments)};var real____cxa_is_pointer_type=asm.___cxa_is_pointer_type;asm.___cxa_is_pointer_type=function(){return assert(runtimeInitialized,"you need to wait for the runtime to be ready (e.g. wait for main() to be called)"),assert(!runtimeExited,"the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)"),real____cxa_is_pointer_type.apply(null,arguments)};var real____errno_location=asm.___errno_location;asm.___errno_location=function(){return assert(runtimeInitialized,"you need to wait for the runtime to be ready (e.g. wait for main() to be called)"),assert(!runtimeExited,"the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)"),real____errno_location.apply(null,arguments)};var real_stackSave=asm.stackSave;asm.stackSave=function(){return assert(runtimeInitialized,"you need to wait for the runtime to be ready (e.g. wait for main() to be called)"),assert(!runtimeExited,"the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)"),real_stackSave.apply(null,arguments)};var real__sbrk=asm._sbrk;asm._sbrk=function(){return assert(runtimeInitialized,"you need to wait for the runtime to be ready (e.g. wait for main() to be called)"),assert(!runtimeExited,"the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)"),real__sbrk.apply(null,arguments)};var real_establishStackSpace=asm.establishStackSpace;asm.establishStackSpace=function(){return assert(runtimeInitialized,"you need to wait for the runtime to be ready (e.g. wait for main() to be called)"),assert(!runtimeExited,"the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)"),real_establishStackSpace.apply(null,arguments)};var real__emscripten_get_global_libc=asm._emscripten_get_global_libc;asm._emscripten_get_global_libc=function(){return assert(runtimeInitialized,"you need to wait for the runtime to be ready (e.g. wait for main() to be called)"),assert(!runtimeExited,"the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)"),real__emscripten_get_global_libc.apply(null,arguments)};var real__updateFrequency=asm._updateFrequency;asm._updateFrequency=function(){return assert(runtimeInitialized,"you need to wait for the runtime to be ready (e.g. wait for main() to be called)"),assert(!runtimeExited,"the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)"),real__updateFrequency.apply(null,arguments)};var real_setThrew=asm.setThrew;asm.setThrew=function(){return assert(runtimeInitialized,"you need to wait for the runtime to be ready (e.g. wait for main() to be called)"),assert(!runtimeExited,"the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)"),real_setThrew.apply(null,arguments)};var real_stackAlloc=asm.stackAlloc;asm.stackAlloc=function(){return assert(runtimeInitialized,"you need to wait for the runtime to be ready (e.g. wait for main() to be called)"),assert(!runtimeExited,"the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)"),real_stackAlloc.apply(null,arguments)};var real_stackRestore=asm.stackRestore;asm.stackRestore=function(){return assert(runtimeInitialized,"you need to wait for the runtime to be ready (e.g. wait for main() to be called)"),assert(!runtimeExited,"the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)"),real_stackRestore.apply(null,arguments)};var real__llvm_bswap_i32=asm._llvm_bswap_i32;asm._llvm_bswap_i32=function(){return assert(runtimeInitialized,"you need to wait for the runtime to be ready (e.g. wait for main() to be called)"),assert(!runtimeExited,"the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)"),real__llvm_bswap_i32.apply(null,arguments)},Module.asm=asm;var _malloc=Module._malloc=function(){return assert(runtimeInitialized,"you need to wait for the runtime to be ready (e.g. wait for main() to be called)"),assert(!runtimeExited,"the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)"),Module.asm._malloc.apply(null,arguments)},___cxa_can_catch=Module.___cxa_can_catch=function(){return assert(runtimeInitialized,"you need to wait for the runtime to be ready (e.g. wait for main() to be called)"),assert(!runtimeExited,"the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)"),Module.asm.___cxa_can_catch.apply(null,arguments)},getTempRet0=Module.getTempRet0=function(){return assert(runtimeInitialized,"you need to wait for the runtime to be ready (e.g. wait for main() to be called)"),assert(!runtimeExited,"the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)"),Module.asm.getTempRet0.apply(null,arguments)},_free=Module._free=function(){return assert(runtimeInitialized,"you need to wait for the runtime to be ready (e.g. wait for main() to be called)"),assert(!runtimeExited,"the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)"),Module.asm._free.apply(null,arguments)},_main=Module._main=function(){return assert(runtimeInitialized,"you need to wait for the runtime to be ready (e.g. wait for main() to be called)"),assert(!runtimeExited,"the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)"),Module.asm._main.apply(null,arguments)},setTempRet0=Module.setTempRet0=function(){return assert(runtimeInitialized,"you need to wait for the runtime to be ready (e.g. wait for main() to be called)"),assert(!runtimeExited,"the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)"),Module.asm.setTempRet0.apply(null,arguments)},___cxa_is_pointer_type=Module.___cxa_is_pointer_type=function(){return assert(runtimeInitialized,"you need to wait for the runtime to be ready (e.g. wait for main() to be called)"),assert(!runtimeExited,"the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)"),Module.asm.___cxa_is_pointer_type.apply(null,arguments)},___errno_location=Module.___errno_location=function(){return assert(runtimeInitialized,"you need to wait for the runtime to be ready (e.g. wait for main() to be called)"),assert(!runtimeExited,"the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)"),Module.asm.___errno_location.apply(null,arguments)},stackSave=Module.stackSave=function(){return assert(runtimeInitialized,"you need to wait for the runtime to be ready (e.g. wait for main() to be called)"),assert(!runtimeExited,"the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)"),Module.asm.stackSave.apply(null,arguments)},_memset=Module._memset=function(){return assert(runtimeInitialized,"you need to wait for the runtime to be ready (e.g. wait for main() to be called)"),assert(!runtimeExited,"the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)"),Module.asm._memset.apply(null,arguments)},_sbrk=Module._sbrk=function(){return assert(runtimeInitialized,"you need to wait for the runtime to be ready (e.g. wait for main() to be called)"),assert(!runtimeExited,"the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)"),Module.asm._sbrk.apply(null,arguments)},establishStackSpace=Module.establishStackSpace=function(){return assert(runtimeInitialized,"you need to wait for the runtime to be ready (e.g. wait for main() to be called)"),assert(!runtimeExited,"the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)"),Module.asm.establishStackSpace.apply(null,arguments)},_emscripten_get_global_libc=Module._emscripten_get_global_libc=function(){return assert(runtimeInitialized,"you need to wait for the runtime to be ready (e.g. wait for main() to be called)"),assert(!runtimeExited,"the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)"),Module.asm._emscripten_get_global_libc.apply(null,arguments)},_memcpy=Module._memcpy=function(){return assert(runtimeInitialized,"you need to wait for the runtime to be ready (e.g. wait for main() to be called)"),assert(!runtimeExited,"the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)"),Module.asm._memcpy.apply(null,arguments)},_emscripten_replace_memory=Module._emscripten_replace_memory=function(){return assert(runtimeInitialized,"you need to wait for the runtime to be ready (e.g. wait for main() to be called)"),assert(!runtimeExited,"the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)"),Module.asm._emscripten_replace_memory.apply(null,arguments)},_updateFrequency=Module._updateFrequency=function(){return assert(runtimeInitialized,"you need to wait for the runtime to be ready (e.g. wait for main() to be called)"),assert(!runtimeExited,"the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)"),Module.asm._updateFrequency.apply(null,arguments)},setThrew=Module.setThrew=function(){return assert(runtimeInitialized,"you need to wait for the runtime to be ready (e.g. wait for main() to be called)"),assert(!runtimeExited,"the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)"),Module.asm.setThrew.apply(null,arguments)},stackAlloc=Module.stackAlloc=function(){return assert(runtimeInitialized,"you need to wait for the runtime to be ready (e.g. wait for main() to be called)"),assert(!runtimeExited,"the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)"),Module.asm.stackAlloc.apply(null,arguments)},stackRestore=Module.stackRestore=function(){return assert(runtimeInitialized,"you need to wait for the runtime to be ready (e.g. wait for main() to be called)"),assert(!runtimeExited,"the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)"),Module.asm.stackRestore.apply(null,arguments)},_llvm_bswap_i32=Module._llvm_bswap_i32=function(){return assert(runtimeInitialized,"you need to wait for the runtime to be ready (e.g. wait for main() to be called)"),assert(!runtimeExited,"the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)"),Module.asm._llvm_bswap_i32.apply(null,arguments)},runPostSets=Module.runPostSets=function(){return assert(runtimeInitialized,"you need to wait for the runtime to be ready (e.g. wait for main() to be called)"),assert(!runtimeExited,"the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)"),Module.asm.runPostSets.apply(null,arguments)},dynCall_iiii=Module.dynCall_iiii=function(){return assert(runtimeInitialized,"you need to wait for the runtime to be ready (e.g. wait for main() to be called)"),assert(!runtimeExited,"the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)"),Module.asm.dynCall_iiii.apply(null,arguments)},dynCall_viiiii=Module.dynCall_viiiii=function(){return assert(runtimeInitialized,"you need to wait for the runtime to be ready (e.g. wait for main() to be called)"),assert(!runtimeExited,"the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)"),Module.asm.dynCall_viiiii.apply(null,arguments)},dynCall_vi=Module.dynCall_vi=function(){return assert(runtimeInitialized,"you need to wait for the runtime to be ready (e.g. wait for main() to be called)"),assert(!runtimeExited,"the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)"),Module.asm.dynCall_vi.apply(null,arguments)},dynCall_vii=Module.dynCall_vii=function(){return assert(runtimeInitialized,"you need to wait for the runtime to be ready (e.g. wait for main() to be called)"),assert(!runtimeExited,"the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)"),Module.asm.dynCall_vii.apply(null,arguments)},dynCall_ii=Module.dynCall_ii=function(){return assert(runtimeInitialized,"you need to wait for the runtime to be ready (e.g. wait for main() to be called)"),assert(!runtimeExited,"the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)"),Module.asm.dynCall_ii.apply(null,arguments)},dynCall_viii=Module.dynCall_viii=function(){return assert(runtimeInitialized,"you need to wait for the runtime to be ready (e.g. wait for main() to be called)"),assert(!runtimeExited,"the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)"),Module.asm.dynCall_viii.apply(null,arguments)},dynCall_v=Module.dynCall_v=function(){return assert(runtimeInitialized,"you need to wait for the runtime to be ready (e.g. wait for main() to be called)"),assert(!runtimeExited,"the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)"),Module.asm.dynCall_v.apply(null,arguments)},dynCall_viiiiii=Module.dynCall_viiiiii=function(){return assert(runtimeInitialized,"you need to wait for the runtime to be ready (e.g. wait for main() to be called)"),assert(!runtimeExited,"the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)"),Module.asm.dynCall_viiiiii.apply(null,arguments)},dynCall_viiii=Module.dynCall_viiii=function(){return assert(runtimeInitialized,"you need to wait for the runtime to be ready (e.g. wait for main() to be called)"),assert(!runtimeExited,"the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)"),Module.asm.dynCall_viiii.apply(null,arguments)};if(Runtime.stackAlloc=Module.stackAlloc,Runtime.stackSave=Module.stackSave,Runtime.stackRestore=Module.stackRestore,Runtime.establishStackSpace=Module.establishStackSpace,Runtime.setTempRet0=Module.setTempRet0,Runtime.getTempRet0=Module.getTempRet0,Module.asm=asm,memoryInitializer)if("function"==typeof Module.locateFile?memoryInitializer=Module.locateFile(memoryInitializer):Module.memoryInitializerPrefixURL&&(memoryInitializer=Module.memoryInitializerPrefixURL+memoryInitializer),ENVIRONMENT_IS_NODE||ENVIRONMENT_IS_SHELL){var data=Module.readBinary(memoryInitializer);HEAPU8.set(data,Runtime.GLOBAL_BASE)}else{addRunDependency("memory initializer");var applyMemoryInitializer=function(e){e.byteLength&&(e=new Uint8Array(e));for(var t=0;t<e.length;t++)assert(0===HEAPU8[Runtime.GLOBAL_BASE+t],"area for memory initializer should not have been touched before it's loaded");HEAPU8.set(e,Runtime.GLOBAL_BASE),Module.memoryInitializerRequest&&delete Module.memoryInitializerRequest.response,removeRunDependency("memory initializer")};Module.memoryInitializerRequest?Module.memoryInitializerRequest.response?setTimeout(useRequest,0):Module.memoryInitializerRequest.addEventListener("load",useRequest):doBrowserLoad()}Module.then=function(e){if(Module.calledRun)e(Module);else{var t=Module.onRuntimeInitialized;Module.onRuntimeInitialized=function(){t&&t(),e(Module)}}return Module},ExitStatus.prototype=new Error,ExitStatus.prototype.constructor=ExitStatus;var initialStackTop,preloadStartTime=null,calledMain=!1;dependenciesFulfilled=function e(){Module.calledRun||run(),Module.calledRun||(dependenciesFulfilled=e)},Module.callMain=Module.callMain=function(e){function t(){for(var e=0;e<3;e++)r.push(0)}assert(0==runDependencies,"cannot call main when async dependencies remain! (listen on __ATMAIN__)"),assert(0==__ATPRERUN__.length,"cannot call main when preRun functions remain to be called"),e=e||[],ensureInitRuntime();var n=e.length+1,r=[allocate(intArrayFromString(Module.thisProgram),"i8",ALLOC_NORMAL)];t();for(var i=0;i<n-1;i+=1)r.push(allocate(intArrayFromString(e[i]),"i8",ALLOC_NORMAL)),t();r.push(0),r=allocate(r,"i32",ALLOC_NORMAL);try{exit(Module._main(n,r,0),!0)}catch(e){if(e instanceof ExitStatus)return;if("SimulateInfiniteLoop"==e)return void(Module.noExitRuntime=!0);var o=e;e&&"object"==typeof e&&e.stack&&(o=[e,e.stack]),Module.printErr("exception thrown: "+o),Module.quit(1,e)}finally{calledMain=!0}},Module.run=Module.run=run,Module.exit=Module.exit=exit;var abortDecorators=[];if(Module.abort=Module.abort=abort,Module.preInit)for("function"==typeof Module.preInit&&(Module.preInit=[Module.preInit]);Module.preInit.length>0;)Module.preInit.pop()();var shouldRunNow=!0;return Module.noInitialRun&&(shouldRunNow=!1),Module.noExitRuntime=!0,run(),Module};"object"==typeof module&&module.exports&&(module.exports=Module)}).call(exports,__webpack_require__(0))},function(e,t){e.exports="../examples/windowDemo.wasm"}]);
+/******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+/******/
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId]) {
+/******/ 			return installedModules[moduleId].exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			i: moduleId,
+/******/ 			l: false,
+/******/ 			exports: {}
+/******/ 		};
+/******/
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/
+/******/ 		// Flag the module as loaded
+/******/ 		module.l = true;
+/******/
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/
+/******/
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+/******/
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+/******/
+/******/ 	// define getter function for harmony exports
+/******/ 	__webpack_require__.d = function(exports, name, getter) {
+/******/ 		if(!__webpack_require__.o(exports, name)) {
+/******/ 			Object.defineProperty(exports, name, {
+/******/ 				configurable: false,
+/******/ 				enumerable: true,
+/******/ 				get: getter
+/******/ 			});
+/******/ 		}
+/******/ 	};
+/******/
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = function(module) {
+/******/ 		var getter = module && module.__esModule ?
+/******/ 			function getDefault() { return module['default']; } :
+/******/ 			function getModuleExports() { return module; };
+/******/ 		__webpack_require__.d(getter, 'a', getter);
+/******/ 		return getter;
+/******/ 	};
+/******/
+/******/ 	// Object.prototype.hasOwnProperty.call
+/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
+/******/
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "";
+/******/
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(__webpack_require__.s = 8);
+/******/ })
+/************************************************************************/
+/******/ ([
+/* 0 */
+/***/ (function(module, exports) {
+
+// shim for using process in browser
+var process = module.exports = {};
+
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
+
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout () {
+    throw new Error('clearTimeout has not been defined');
+}
+(function () {
+    try {
+        if (typeof setTimeout === 'function') {
+            cachedSetTimeout = setTimeout;
+        } else {
+            cachedSetTimeout = defaultSetTimout;
+        }
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
+    }
+    try {
+        if (typeof clearTimeout === 'function') {
+            cachedClearTimeout = clearTimeout;
+        } else {
+            cachedClearTimeout = defaultClearTimeout;
+        }
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
+    }
+} ())
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
+        return setTimeout(fun, 0);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedSetTimeout(fun, 0);
+    } catch(e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+            return cachedSetTimeout.call(null, fun, 0);
+        } catch(e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+            return cachedSetTimeout.call(this, fun, 0);
+        }
+    }
+
+
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
+        return clearTimeout(marker);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedClearTimeout(marker);
+    } catch (e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+            return cachedClearTimeout.call(null, marker);
+        } catch (e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+            return cachedClearTimeout.call(this, marker);
+        }
+    }
+
+
+
+}
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
+
+function drainQueue() {
+    if (draining) {
+        return;
+    }
+    var timeout = runTimeout(cleanUpNextTick);
+    draining = true;
+
+    var len = queue.length;
+    while(len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
+        }
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    runClearTimeout(timeout);
+}
+
+process.nextTick = function (fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        runTimeout(drainQueue);
+    }
+};
+
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+process.prependListener = noop;
+process.prependOnceListener = noop;
+
+process.listeners = function (name) { return [] }
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
+
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+process.umask = function() { return 0; };
+
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports) {
+
+
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(process) {// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+// resolves . and .. elements in a path array with directory names there
+// must be no slashes, empty elements, or device names (c:\) in the array
+// (so also no leading and trailing slashes - it does not distinguish
+// relative and absolute paths)
+function normalizeArray(parts, allowAboveRoot) {
+  // if the path tries to go above the root, `up` ends up > 0
+  var up = 0;
+  for (var i = parts.length - 1; i >= 0; i--) {
+    var last = parts[i];
+    if (last === '.') {
+      parts.splice(i, 1);
+    } else if (last === '..') {
+      parts.splice(i, 1);
+      up++;
+    } else if (up) {
+      parts.splice(i, 1);
+      up--;
+    }
+  }
+
+  // if the path is allowed to go above the root, restore leading ..s
+  if (allowAboveRoot) {
+    for (; up--; up) {
+      parts.unshift('..');
+    }
+  }
+
+  return parts;
+}
+
+// Split a filename into [root, dir, basename, ext], unix version
+// 'root' is just a slash, or nothing.
+var splitPathRe =
+    /^(\/?|)([\s\S]*?)((?:\.{1,2}|[^\/]+?|)(\.[^.\/]*|))(?:[\/]*)$/;
+var splitPath = function(filename) {
+  return splitPathRe.exec(filename).slice(1);
+};
+
+// path.resolve([from ...], to)
+// posix version
+exports.resolve = function() {
+  var resolvedPath = '',
+      resolvedAbsolute = false;
+
+  for (var i = arguments.length - 1; i >= -1 && !resolvedAbsolute; i--) {
+    var path = (i >= 0) ? arguments[i] : process.cwd();
+
+    // Skip empty and invalid entries
+    if (typeof path !== 'string') {
+      throw new TypeError('Arguments to path.resolve must be strings');
+    } else if (!path) {
+      continue;
+    }
+
+    resolvedPath = path + '/' + resolvedPath;
+    resolvedAbsolute = path.charAt(0) === '/';
+  }
+
+  // At this point the path should be resolved to a full absolute path, but
+  // handle relative paths to be safe (might happen when process.cwd() fails)
+
+  // Normalize the path
+  resolvedPath = normalizeArray(filter(resolvedPath.split('/'), function(p) {
+    return !!p;
+  }), !resolvedAbsolute).join('/');
+
+  return ((resolvedAbsolute ? '/' : '') + resolvedPath) || '.';
+};
+
+// path.normalize(path)
+// posix version
+exports.normalize = function(path) {
+  var isAbsolute = exports.isAbsolute(path),
+      trailingSlash = substr(path, -1) === '/';
+
+  // Normalize the path
+  path = normalizeArray(filter(path.split('/'), function(p) {
+    return !!p;
+  }), !isAbsolute).join('/');
+
+  if (!path && !isAbsolute) {
+    path = '.';
+  }
+  if (path && trailingSlash) {
+    path += '/';
+  }
+
+  return (isAbsolute ? '/' : '') + path;
+};
+
+// posix version
+exports.isAbsolute = function(path) {
+  return path.charAt(0) === '/';
+};
+
+// posix version
+exports.join = function() {
+  var paths = Array.prototype.slice.call(arguments, 0);
+  return exports.normalize(filter(paths, function(p, index) {
+    if (typeof p !== 'string') {
+      throw new TypeError('Arguments to path.join must be strings');
+    }
+    return p;
+  }).join('/'));
+};
+
+
+// path.relative(from, to)
+// posix version
+exports.relative = function(from, to) {
+  from = exports.resolve(from).substr(1);
+  to = exports.resolve(to).substr(1);
+
+  function trim(arr) {
+    var start = 0;
+    for (; start < arr.length; start++) {
+      if (arr[start] !== '') break;
+    }
+
+    var end = arr.length - 1;
+    for (; end >= 0; end--) {
+      if (arr[end] !== '') break;
+    }
+
+    if (start > end) return [];
+    return arr.slice(start, end - start + 1);
+  }
+
+  var fromParts = trim(from.split('/'));
+  var toParts = trim(to.split('/'));
+
+  var length = Math.min(fromParts.length, toParts.length);
+  var samePartsLength = length;
+  for (var i = 0; i < length; i++) {
+    if (fromParts[i] !== toParts[i]) {
+      samePartsLength = i;
+      break;
+    }
+  }
+
+  var outputParts = [];
+  for (var i = samePartsLength; i < fromParts.length; i++) {
+    outputParts.push('..');
+  }
+
+  outputParts = outputParts.concat(toParts.slice(samePartsLength));
+
+  return outputParts.join('/');
+};
+
+exports.sep = '/';
+exports.delimiter = ':';
+
+exports.dirname = function(path) {
+  var result = splitPath(path),
+      root = result[0],
+      dir = result[1];
+
+  if (!root && !dir) {
+    // No dirname whatsoever
+    return '.';
+  }
+
+  if (dir) {
+    // It has a dirname, strip trailing slash
+    dir = dir.substr(0, dir.length - 1);
+  }
+
+  return root + dir;
+};
+
+
+exports.basename = function(path, ext) {
+  var f = splitPath(path)[2];
+  // TODO: make this comparison case-insensitive on windows?
+  if (ext && f.substr(-1 * ext.length) === ext) {
+    f = f.substr(0, f.length - ext.length);
+  }
+  return f;
+};
+
+
+exports.extname = function(path) {
+  return splitPath(path)[3];
+};
+
+function filter (xs, f) {
+    if (xs.filter) return xs.filter(f);
+    var res = [];
+    for (var i = 0; i < xs.length; i++) {
+        if (f(xs[i], i, xs)) res.push(xs[i]);
+    }
+    return res;
+}
+
+// String.prototype.substr - negative index don't work in IE8
+var substr = 'ab'.substr(-1) === 'b'
+    ? function (str, start, len) { return str.substr(start, len) }
+    : function (str, start, len) {
+        if (start < 0) start = str.length + start;
+        return str.substr(start, len);
+    }
+;
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
+
+/***/ }),
+/* 3 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(process) {/* harmony export (immutable) */ __webpack_exports__["a"] = createStatsAndGUI;
+/* harmony export (immutable) */ __webpack_exports__["b"] = setCanvasToWindowSize;
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_stats_js__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_stats_js___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_stats_js__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_dat_gui__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_dat_gui___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_dat_gui__);
+
+
+
+function createStatsAndGUI() {
+  const stats = new __WEBPACK_IMPORTED_MODULE_0_stats_js___default.a();
+  stats.setMode(1);
+  stats.domElement.style.position = 'absolute';
+  stats.domElement.style.left = '0px';
+  stats.domElement.style.top = '0px';
+  document.body.appendChild(stats.domElement);
+
+  const _requestAnimationFrame = requestAnimationFrame;
+  stats.begin();
+  requestAnimationFrame = function(cb) {
+    stats.end();
+    _requestAnimationFrame(cb);
+    stats.begin();
+  }
+
+  const gui = new __WEBPACK_IMPORTED_MODULE_1_dat_gui___default.a.GUI();
+
+  return gui;
+}
+
+function setCanvasToWindowSize(Module) {
+  function resizeCanvas() {
+    Module.canvas.width = window.innerWidth;
+    Module.canvas.height = window.innerHeight;
+  }
+
+  window.addEventListener('resize', resizeCanvas);
+
+  // Strange, but for some reason the size doesn't get initialized immediately
+  (function initializeSize() {
+    resizeCanvas();
+    process.nextTick(function() {
+      if (window.innerWidth !== parseInt(Module.canvas.getAttribute('width'))) {
+        setTimeout(initializeSize, 100);
+      }
+    });
+  })();
+}
+
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(0)))
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports) {
+
+// stats.js - http://github.com/mrdoob/stats.js
+var Stats=function(){var l=Date.now(),m=l,g=0,n=Infinity,o=0,h=0,p=Infinity,q=0,r=0,s=0,f=document.createElement("div");f.id="stats";f.addEventListener("mousedown",function(b){b.preventDefault();t(++s%2)},!1);f.style.cssText="width:80px;opacity:0.9;cursor:pointer";var a=document.createElement("div");a.id="fps";a.style.cssText="padding:0 0 3px 3px;text-align:left;background-color:#002";f.appendChild(a);var i=document.createElement("div");i.id="fpsText";i.style.cssText="color:#0ff;font-family:Helvetica,Arial,sans-serif;font-size:9px;font-weight:bold;line-height:15px";
+i.innerHTML="FPS";a.appendChild(i);var c=document.createElement("div");c.id="fpsGraph";c.style.cssText="position:relative;width:74px;height:30px;background-color:#0ff";for(a.appendChild(c);74>c.children.length;){var j=document.createElement("span");j.style.cssText="width:1px;height:30px;float:left;background-color:#113";c.appendChild(j)}var d=document.createElement("div");d.id="ms";d.style.cssText="padding:0 0 3px 3px;text-align:left;background-color:#020;display:none";f.appendChild(d);var k=document.createElement("div");
+k.id="msText";k.style.cssText="color:#0f0;font-family:Helvetica,Arial,sans-serif;font-size:9px;font-weight:bold;line-height:15px";k.innerHTML="MS";d.appendChild(k);var e=document.createElement("div");e.id="msGraph";e.style.cssText="position:relative;width:74px;height:30px;background-color:#0f0";for(d.appendChild(e);74>e.children.length;)j=document.createElement("span"),j.style.cssText="width:1px;height:30px;float:left;background-color:#131",e.appendChild(j);var t=function(b){s=b;switch(s){case 0:a.style.display=
+"block";d.style.display="none";break;case 1:a.style.display="none",d.style.display="block"}};return{REVISION:12,domElement:f,setMode:t,begin:function(){l=Date.now()},end:function(){var b=Date.now();g=b-l;n=Math.min(n,g);o=Math.max(o,g);k.textContent=g+" MS ("+n+"-"+o+")";var a=Math.min(30,30-30*(g/200));e.appendChild(e.firstChild).style.height=a+"px";r++;b>m+1E3&&(h=Math.round(1E3*r/(b-m)),p=Math.min(p,h),q=Math.max(q,h),i.textContent=h+" FPS ("+p+"-"+q+")",a=Math.min(30,30-30*(h/100)),c.appendChild(c.firstChild).style.height=
+a+"px",m=b,r=0);return b},update:function(){l=this.end()}}};"object"===typeof module&&(module.exports=Stats);
+
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(6)
+module.exports.color = __webpack_require__(7)
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports) {
+
+/**
+ * dat-gui JavaScript Controller Library
+ * http://code.google.com/p/dat-gui
+ *
+ * Copyright 2011 Data Arts Team, Google Creative Lab
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
+
+/** @namespace */
+var dat = module.exports = dat || {};
+
+/** @namespace */
+dat.gui = dat.gui || {};
+
+/** @namespace */
+dat.utils = dat.utils || {};
+
+/** @namespace */
+dat.controllers = dat.controllers || {};
+
+/** @namespace */
+dat.dom = dat.dom || {};
+
+/** @namespace */
+dat.color = dat.color || {};
+
+dat.utils.css = (function () {
+  return {
+    load: function (url, doc) {
+      doc = doc || document;
+      var link = doc.createElement('link');
+      link.type = 'text/css';
+      link.rel = 'stylesheet';
+      link.href = url;
+      doc.getElementsByTagName('head')[0].appendChild(link);
+    },
+    inject: function(css, doc) {
+      doc = doc || document;
+      var injected = document.createElement('style');
+      injected.type = 'text/css';
+      injected.innerHTML = css;
+      doc.getElementsByTagName('head')[0].appendChild(injected);
+    }
+  }
+})();
+
+
+dat.utils.common = (function () {
+  
+  var ARR_EACH = Array.prototype.forEach;
+  var ARR_SLICE = Array.prototype.slice;
+
+  /**
+   * Band-aid methods for things that should be a lot easier in JavaScript.
+   * Implementation and structure inspired by underscore.js
+   * http://documentcloud.github.com/underscore/
+   */
+
+  return { 
+    
+    BREAK: {},
+  
+    extend: function(target) {
+      
+      this.each(ARR_SLICE.call(arguments, 1), function(obj) {
+        
+        for (var key in obj)
+          if (!this.isUndefined(obj[key])) 
+            target[key] = obj[key];
+        
+      }, this);
+      
+      return target;
+      
+    },
+    
+    defaults: function(target) {
+      
+      this.each(ARR_SLICE.call(arguments, 1), function(obj) {
+        
+        for (var key in obj)
+          if (this.isUndefined(target[key])) 
+            target[key] = obj[key];
+        
+      }, this);
+      
+      return target;
+    
+    },
+    
+    compose: function() {
+      var toCall = ARR_SLICE.call(arguments);
+            return function() {
+              var args = ARR_SLICE.call(arguments);
+              for (var i = toCall.length -1; i >= 0; i--) {
+                args = [toCall[i].apply(this, args)];
+              }
+              return args[0];
+            }
+    },
+    
+    each: function(obj, itr, scope) {
+
+      
+      if (ARR_EACH && obj.forEach === ARR_EACH) { 
+        
+        obj.forEach(itr, scope);
+        
+      } else if (obj.length === obj.length + 0) { // Is number but not NaN
+        
+        for (var key = 0, l = obj.length; key < l; key++)
+          if (key in obj && itr.call(scope, obj[key], key) === this.BREAK) 
+            return;
+            
+      } else {
+
+        for (var key in obj) 
+          if (itr.call(scope, obj[key], key) === this.BREAK)
+            return;
+            
+      }
+            
+    },
+    
+    defer: function(fnc) {
+      setTimeout(fnc, 0);
+    },
+    
+    toArray: function(obj) {
+      if (obj.toArray) return obj.toArray();
+      return ARR_SLICE.call(obj);
+    },
+
+    isUndefined: function(obj) {
+      return obj === undefined;
+    },
+    
+    isNull: function(obj) {
+      return obj === null;
+    },
+    
+    isNaN: function(obj) {
+      return obj !== obj;
+    },
+    
+    isArray: Array.isArray || function(obj) {
+      return obj.constructor === Array;
+    },
+    
+    isObject: function(obj) {
+      return obj === Object(obj);
+    },
+    
+    isNumber: function(obj) {
+      return obj === obj+0;
+    },
+    
+    isString: function(obj) {
+      return obj === obj+'';
+    },
+    
+    isBoolean: function(obj) {
+      return obj === false || obj === true;
+    },
+    
+    isFunction: function(obj) {
+      return Object.prototype.toString.call(obj) === '[object Function]';
+    }
+  
+  };
+    
+})();
+
+
+dat.controllers.Controller = (function (common) {
+
+  /**
+   * @class An "abstract" class that represents a given property of an object.
+   *
+   * @param {Object} object The object to be manipulated
+   * @param {string} property The name of the property to be manipulated
+   *
+   * @member dat.controllers
+   */
+  var Controller = function(object, property) {
+
+    this.initialValue = object[property];
+
+    /**
+     * Those who extend this class will put their DOM elements in here.
+     * @type {DOMElement}
+     */
+    this.domElement = document.createElement('div');
+
+    /**
+     * The object to manipulate
+     * @type {Object}
+     */
+    this.object = object;
+
+    /**
+     * The name of the property to manipulate
+     * @type {String}
+     */
+    this.property = property;
+
+    /**
+     * The function to be called on change.
+     * @type {Function}
+     * @ignore
+     */
+    this.__onChange = undefined;
+
+    /**
+     * The function to be called on finishing change.
+     * @type {Function}
+     * @ignore
+     */
+    this.__onFinishChange = undefined;
+
+  };
+
+  common.extend(
+
+      Controller.prototype,
+
+      /** @lends dat.controllers.Controller.prototype */
+      {
+
+        /**
+         * Specify that a function fire every time someone changes the value with
+         * this Controller.
+         *
+         * @param {Function} fnc This function will be called whenever the value
+         * is modified via this Controller.
+         * @returns {dat.controllers.Controller} this
+         */
+        onChange: function(fnc) {
+          this.__onChange = fnc;
+          return this;
+        },
+
+        /**
+         * Specify that a function fire every time someone "finishes" changing
+         * the value wih this Controller. Useful for values that change
+         * incrementally like numbers or strings.
+         *
+         * @param {Function} fnc This function will be called whenever
+         * someone "finishes" changing the value via this Controller.
+         * @returns {dat.controllers.Controller} this
+         */
+        onFinishChange: function(fnc) {
+          this.__onFinishChange = fnc;
+          return this;
+        },
+
+        /**
+         * Change the value of <code>object[property]</code>
+         *
+         * @param {Object} newValue The new value of <code>object[property]</code>
+         */
+        setValue: function(newValue) {
+          this.object[this.property] = newValue;
+          if (this.__onChange) {
+            this.__onChange.call(this, newValue);
+          }
+          this.updateDisplay();
+          return this;
+        },
+
+        /**
+         * Gets the value of <code>object[property]</code>
+         *
+         * @returns {Object} The current value of <code>object[property]</code>
+         */
+        getValue: function() {
+          return this.object[this.property];
+        },
+
+        /**
+         * Refreshes the visual display of a Controller in order to keep sync
+         * with the object's current value.
+         * @returns {dat.controllers.Controller} this
+         */
+        updateDisplay: function() {
+          return this;
+        },
+
+        /**
+         * @returns {Boolean} true if the value has deviated from initialValue
+         */
+        isModified: function() {
+          return this.initialValue !== this.getValue()
+        }
+
+      }
+
+  );
+
+  return Controller;
+
+
+})(dat.utils.common);
+
+
+dat.dom.dom = (function (common) {
+
+  var EVENT_MAP = {
+    'HTMLEvents': ['change'],
+    'MouseEvents': ['click','mousemove','mousedown','mouseup', 'mouseover'],
+    'KeyboardEvents': ['keydown']
+  };
+
+  var EVENT_MAP_INV = {};
+  common.each(EVENT_MAP, function(v, k) {
+    common.each(v, function(e) {
+      EVENT_MAP_INV[e] = k;
+    });
+  });
+
+  var CSS_VALUE_PIXELS = /(\d+(\.\d+)?)px/;
+
+  function cssValueToPixels(val) {
+
+    if (val === '0' || common.isUndefined(val)) return 0;
+
+    var match = val.match(CSS_VALUE_PIXELS);
+
+    if (!common.isNull(match)) {
+      return parseFloat(match[1]);
+    }
+
+    // TODO ...ems? %?
+
+    return 0;
+
+  }
+
+  /**
+   * @namespace
+   * @member dat.dom
+   */
+  var dom = {
+
+    /**
+     * 
+     * @param elem
+     * @param selectable
+     */
+    makeSelectable: function(elem, selectable) {
+
+      if (elem === undefined || elem.style === undefined) return;
+
+      elem.onselectstart = selectable ? function() {
+        return false;
+      } : function() {
+      };
+
+      elem.style.MozUserSelect = selectable ? 'auto' : 'none';
+      elem.style.KhtmlUserSelect = selectable ? 'auto' : 'none';
+      elem.unselectable = selectable ? 'on' : 'off';
+
+    },
+
+    /**
+     *
+     * @param elem
+     * @param horizontal
+     * @param vertical
+     */
+    makeFullscreen: function(elem, horizontal, vertical) {
+
+      if (common.isUndefined(horizontal)) horizontal = true;
+      if (common.isUndefined(vertical)) vertical = true;
+
+      elem.style.position = 'absolute';
+
+      if (horizontal) {
+        elem.style.left = 0;
+        elem.style.right = 0;
+      }
+      if (vertical) {
+        elem.style.top = 0;
+        elem.style.bottom = 0;
+      }
+
+    },
+
+    /**
+     *
+     * @param elem
+     * @param eventType
+     * @param params
+     */
+    fakeEvent: function(elem, eventType, params, aux) {
+      params = params || {};
+      var className = EVENT_MAP_INV[eventType];
+      if (!className) {
+        throw new Error('Event type ' + eventType + ' not supported.');
+      }
+      var evt = document.createEvent(className);
+      switch (className) {
+        case 'MouseEvents':
+          var clientX = params.x || params.clientX || 0;
+          var clientY = params.y || params.clientY || 0;
+          evt.initMouseEvent(eventType, params.bubbles || false,
+              params.cancelable || true, window, params.clickCount || 1,
+              0, //screen X
+              0, //screen Y
+              clientX, //client X
+              clientY, //client Y
+              false, false, false, false, 0, null);
+          break;
+        case 'KeyboardEvents':
+          var init = evt.initKeyboardEvent || evt.initKeyEvent; // webkit || moz
+          common.defaults(params, {
+            cancelable: true,
+            ctrlKey: false,
+            altKey: false,
+            shiftKey: false,
+            metaKey: false,
+            keyCode: undefined,
+            charCode: undefined
+          });
+          init(eventType, params.bubbles || false,
+              params.cancelable, window,
+              params.ctrlKey, params.altKey,
+              params.shiftKey, params.metaKey,
+              params.keyCode, params.charCode);
+          break;
+        default:
+          evt.initEvent(eventType, params.bubbles || false,
+              params.cancelable || true);
+          break;
+      }
+      common.defaults(evt, aux);
+      elem.dispatchEvent(evt);
+    },
+
+    /**
+     *
+     * @param elem
+     * @param event
+     * @param func
+     * @param bool
+     */
+    bind: function(elem, event, func, bool) {
+      bool = bool || false;
+      if (elem.addEventListener)
+        elem.addEventListener(event, func, bool);
+      else if (elem.attachEvent)
+        elem.attachEvent('on' + event, func);
+      return dom;
+    },
+
+    /**
+     *
+     * @param elem
+     * @param event
+     * @param func
+     * @param bool
+     */
+    unbind: function(elem, event, func, bool) {
+      bool = bool || false;
+      if (elem.removeEventListener)
+        elem.removeEventListener(event, func, bool);
+      else if (elem.detachEvent)
+        elem.detachEvent('on' + event, func);
+      return dom;
+    },
+
+    /**
+     *
+     * @param elem
+     * @param className
+     */
+    addClass: function(elem, className) {
+      if (elem.className === undefined) {
+        elem.className = className;
+      } else if (elem.className !== className) {
+        var classes = elem.className.split(/ +/);
+        if (classes.indexOf(className) == -1) {
+          classes.push(className);
+          elem.className = classes.join(' ').replace(/^\s+/, '').replace(/\s+$/, '');
+        }
+      }
+      return dom;
+    },
+
+    /**
+     *
+     * @param elem
+     * @param className
+     */
+    removeClass: function(elem, className) {
+      if (className) {
+        if (elem.className === undefined) {
+          // elem.className = className;
+        } else if (elem.className === className) {
+          elem.removeAttribute('class');
+        } else {
+          var classes = elem.className.split(/ +/);
+          var index = classes.indexOf(className);
+          if (index != -1) {
+            classes.splice(index, 1);
+            elem.className = classes.join(' ');
+          }
+        }
+      } else {
+        elem.className = undefined;
+      }
+      return dom;
+    },
+
+    hasClass: function(elem, className) {
+      return new RegExp('(?:^|\\s+)' + className + '(?:\\s+|$)').test(elem.className) || false;
+    },
+
+    /**
+     *
+     * @param elem
+     */
+    getWidth: function(elem) {
+
+      var style = getComputedStyle(elem);
+
+      return cssValueToPixels(style['border-left-width']) +
+          cssValueToPixels(style['border-right-width']) +
+          cssValueToPixels(style['padding-left']) +
+          cssValueToPixels(style['padding-right']) +
+          cssValueToPixels(style['width']);
+    },
+
+    /**
+     *
+     * @param elem
+     */
+    getHeight: function(elem) {
+
+      var style = getComputedStyle(elem);
+
+      return cssValueToPixels(style['border-top-width']) +
+          cssValueToPixels(style['border-bottom-width']) +
+          cssValueToPixels(style['padding-top']) +
+          cssValueToPixels(style['padding-bottom']) +
+          cssValueToPixels(style['height']);
+    },
+
+    /**
+     *
+     * @param elem
+     */
+    getOffset: function(elem) {
+      var offset = {left: 0, top:0};
+      if (elem.offsetParent) {
+        do {
+          offset.left += elem.offsetLeft;
+          offset.top += elem.offsetTop;
+        } while (elem = elem.offsetParent);
+      }
+      return offset;
+    },
+
+    // http://stackoverflow.com/posts/2684561/revisions
+    /**
+     * 
+     * @param elem
+     */
+    isActive: function(elem) {
+      return elem === document.activeElement && ( elem.type || elem.href );
+    }
+
+  };
+
+  return dom;
+
+})(dat.utils.common);
+
+
+dat.controllers.OptionController = (function (Controller, dom, common) {
+
+  /**
+   * @class Provides a select input to alter the property of an object, using a
+   * list of accepted values.
+   *
+   * @extends dat.controllers.Controller
+   *
+   * @param {Object} object The object to be manipulated
+   * @param {string} property The name of the property to be manipulated
+   * @param {Object|string[]} options A map of labels to acceptable values, or
+   * a list of acceptable string values.
+   *
+   * @member dat.controllers
+   */
+  var OptionController = function(object, property, options) {
+
+    OptionController.superclass.call(this, object, property);
+
+    var _this = this;
+
+    /**
+     * The drop down menu
+     * @ignore
+     */
+    this.__select = document.createElement('select');
+
+    if (common.isArray(options)) {
+      var map = {};
+      common.each(options, function(element) {
+        map[element] = element;
+      });
+      options = map;
+    }
+
+    common.each(options, function(value, key) {
+
+      var opt = document.createElement('option');
+      opt.innerHTML = key;
+      opt.setAttribute('value', value);
+      _this.__select.appendChild(opt);
+
+    });
+
+    // Acknowledge original value
+    this.updateDisplay();
+
+    dom.bind(this.__select, 'change', function() {
+      var desiredValue = this.options[this.selectedIndex].value;
+      _this.setValue(desiredValue);
+    });
+
+    this.domElement.appendChild(this.__select);
+
+  };
+
+  OptionController.superclass = Controller;
+
+  common.extend(
+
+      OptionController.prototype,
+      Controller.prototype,
+
+      {
+
+        setValue: function(v) {
+          var toReturn = OptionController.superclass.prototype.setValue.call(this, v);
+          if (this.__onFinishChange) {
+            this.__onFinishChange.call(this, this.getValue());
+          }
+          return toReturn;
+        },
+
+        updateDisplay: function() {
+          this.__select.value = this.getValue();
+          return OptionController.superclass.prototype.updateDisplay.call(this);
+        }
+
+      }
+
+  );
+
+  return OptionController;
+
+})(dat.controllers.Controller,
+dat.dom.dom,
+dat.utils.common);
+
+
+dat.controllers.NumberController = (function (Controller, common) {
+
+  /**
+   * @class Represents a given property of an object that is a number.
+   *
+   * @extends dat.controllers.Controller
+   *
+   * @param {Object} object The object to be manipulated
+   * @param {string} property The name of the property to be manipulated
+   * @param {Object} [params] Optional parameters
+   * @param {Number} [params.min] Minimum allowed value
+   * @param {Number} [params.max] Maximum allowed value
+   * @param {Number} [params.step] Increment by which to change value
+   *
+   * @member dat.controllers
+   */
+  var NumberController = function(object, property, params) {
+
+    NumberController.superclass.call(this, object, property);
+
+    params = params || {};
+
+    this.__min = params.min;
+    this.__max = params.max;
+    this.__step = params.step;
+
+    if (common.isUndefined(this.__step)) {
+
+      if (this.initialValue == 0) {
+        this.__impliedStep = 1; // What are we, psychics?
+      } else {
+        // Hey Doug, check this out.
+        this.__impliedStep = Math.pow(10, Math.floor(Math.log(this.initialValue)/Math.LN10))/10;
+      }
+
+    } else {
+
+      this.__impliedStep = this.__step;
+
+    }
+
+    this.__precision = numDecimals(this.__impliedStep);
+
+
+  };
+
+  NumberController.superclass = Controller;
+
+  common.extend(
+
+      NumberController.prototype,
+      Controller.prototype,
+
+      /** @lends dat.controllers.NumberController.prototype */
+      {
+
+        setValue: function(v) {
+
+          if (this.__min !== undefined && v < this.__min) {
+            v = this.__min;
+          } else if (this.__max !== undefined && v > this.__max) {
+            v = this.__max;
+          }
+
+          if (this.__step !== undefined && v % this.__step != 0) {
+            v = Math.round(v / this.__step) * this.__step;
+          }
+
+          return NumberController.superclass.prototype.setValue.call(this, v);
+
+        },
+
+        /**
+         * Specify a minimum value for <code>object[property]</code>.
+         *
+         * @param {Number} minValue The minimum value for
+         * <code>object[property]</code>
+         * @returns {dat.controllers.NumberController} this
+         */
+        min: function(v) {
+          this.__min = v;
+          return this;
+        },
+
+        /**
+         * Specify a maximum value for <code>object[property]</code>.
+         *
+         * @param {Number} maxValue The maximum value for
+         * <code>object[property]</code>
+         * @returns {dat.controllers.NumberController} this
+         */
+        max: function(v) {
+          this.__max = v;
+          return this;
+        },
+
+        /**
+         * Specify a step value that dat.controllers.NumberController
+         * increments by.
+         *
+         * @param {Number} stepValue The step value for
+         * dat.controllers.NumberController
+         * @default if minimum and maximum specified increment is 1% of the
+         * difference otherwise stepValue is 1
+         * @returns {dat.controllers.NumberController} this
+         */
+        step: function(v) {
+          this.__step = v;
+          return this;
+        }
+
+      }
+
+  );
+
+  function numDecimals(x) {
+    x = x.toString();
+    if (x.indexOf('.') > -1) {
+      return x.length - x.indexOf('.') - 1;
+    } else {
+      return 0;
+    }
+  }
+
+  return NumberController;
+
+})(dat.controllers.Controller,
+dat.utils.common);
+
+
+dat.controllers.NumberControllerBox = (function (NumberController, dom, common) {
+
+  /**
+   * @class Represents a given property of an object that is a number and
+   * provides an input element with which to manipulate it.
+   *
+   * @extends dat.controllers.Controller
+   * @extends dat.controllers.NumberController
+   *
+   * @param {Object} object The object to be manipulated
+   * @param {string} property The name of the property to be manipulated
+   * @param {Object} [params] Optional parameters
+   * @param {Number} [params.min] Minimum allowed value
+   * @param {Number} [params.max] Maximum allowed value
+   * @param {Number} [params.step] Increment by which to change value
+   *
+   * @member dat.controllers
+   */
+  var NumberControllerBox = function(object, property, params) {
+
+    this.__truncationSuspended = false;
+
+    NumberControllerBox.superclass.call(this, object, property, params);
+
+    var _this = this;
+
+    /**
+     * {Number} Previous mouse y position
+     * @ignore
+     */
+    var prev_y;
+
+    this.__input = document.createElement('input');
+    this.__input.setAttribute('type', 'text');
+
+    // Makes it so manually specified values are not truncated.
+
+    dom.bind(this.__input, 'change', onChange);
+    dom.bind(this.__input, 'blur', onBlur);
+    dom.bind(this.__input, 'mousedown', onMouseDown);
+    dom.bind(this.__input, 'keydown', function(e) {
+
+      // When pressing entire, you can be as precise as you want.
+      if (e.keyCode === 13) {
+        _this.__truncationSuspended = true;
+        this.blur();
+        _this.__truncationSuspended = false;
+      }
+
+    });
+
+    function onChange() {
+      var attempted = parseFloat(_this.__input.value);
+      if (!common.isNaN(attempted)) _this.setValue(attempted);
+    }
+
+    function onBlur() {
+      onChange();
+      if (_this.__onFinishChange) {
+        _this.__onFinishChange.call(_this, _this.getValue());
+      }
+    }
+
+    function onMouseDown(e) {
+      dom.bind(window, 'mousemove', onMouseDrag);
+      dom.bind(window, 'mouseup', onMouseUp);
+      prev_y = e.clientY;
+    }
+
+    function onMouseDrag(e) {
+
+      var diff = prev_y - e.clientY;
+      _this.setValue(_this.getValue() + diff * _this.__impliedStep);
+
+      prev_y = e.clientY;
+
+    }
+
+    function onMouseUp() {
+      dom.unbind(window, 'mousemove', onMouseDrag);
+      dom.unbind(window, 'mouseup', onMouseUp);
+    }
+
+    this.updateDisplay();
+
+    this.domElement.appendChild(this.__input);
+
+  };
+
+  NumberControllerBox.superclass = NumberController;
+
+  common.extend(
+
+      NumberControllerBox.prototype,
+      NumberController.prototype,
+
+      {
+
+        updateDisplay: function() {
+
+          this.__input.value = this.__truncationSuspended ? this.getValue() : roundToDecimal(this.getValue(), this.__precision);
+          return NumberControllerBox.superclass.prototype.updateDisplay.call(this);
+        }
+
+      }
+
+  );
+
+  function roundToDecimal(value, decimals) {
+    var tenTo = Math.pow(10, decimals);
+    return Math.round(value * tenTo) / tenTo;
+  }
+
+  return NumberControllerBox;
+
+})(dat.controllers.NumberController,
+dat.dom.dom,
+dat.utils.common);
+
+
+dat.controllers.NumberControllerSlider = (function (NumberController, dom, css, common, styleSheet) {
+
+  /**
+   * @class Represents a given property of an object that is a number, contains
+   * a minimum and maximum, and provides a slider element with which to
+   * manipulate it. It should be noted that the slider element is made up of
+   * <code>&lt;div&gt;</code> tags, <strong>not</strong> the html5
+   * <code>&lt;slider&gt;</code> element.
+   *
+   * @extends dat.controllers.Controller
+   * @extends dat.controllers.NumberController
+   * 
+   * @param {Object} object The object to be manipulated
+   * @param {string} property The name of the property to be manipulated
+   * @param {Number} minValue Minimum allowed value
+   * @param {Number} maxValue Maximum allowed value
+   * @param {Number} stepValue Increment by which to change value
+   *
+   * @member dat.controllers
+   */
+  var NumberControllerSlider = function(object, property, min, max, step) {
+
+    NumberControllerSlider.superclass.call(this, object, property, { min: min, max: max, step: step });
+
+    var _this = this;
+
+    this.__background = document.createElement('div');
+    this.__foreground = document.createElement('div');
+    
+
+
+    dom.bind(this.__background, 'mousedown', onMouseDown);
+    
+    dom.addClass(this.__background, 'slider');
+    dom.addClass(this.__foreground, 'slider-fg');
+
+    function onMouseDown(e) {
+
+      dom.bind(window, 'mousemove', onMouseDrag);
+      dom.bind(window, 'mouseup', onMouseUp);
+
+      onMouseDrag(e);
+    }
+
+    function onMouseDrag(e) {
+
+      e.preventDefault();
+
+      var offset = dom.getOffset(_this.__background);
+      var width = dom.getWidth(_this.__background);
+      
+      _this.setValue(
+        map(e.clientX, offset.left, offset.left + width, _this.__min, _this.__max)
+      );
+
+      return false;
+
+    }
+
+    function onMouseUp() {
+      dom.unbind(window, 'mousemove', onMouseDrag);
+      dom.unbind(window, 'mouseup', onMouseUp);
+      if (_this.__onFinishChange) {
+        _this.__onFinishChange.call(_this, _this.getValue());
+      }
+    }
+
+    this.updateDisplay();
+
+    this.__background.appendChild(this.__foreground);
+    this.domElement.appendChild(this.__background);
+
+  };
+
+  NumberControllerSlider.superclass = NumberController;
+
+  /**
+   * Injects default stylesheet for slider elements.
+   */
+  NumberControllerSlider.useDefaultStyles = function() {
+    css.inject(styleSheet);
+  };
+
+  common.extend(
+
+      NumberControllerSlider.prototype,
+      NumberController.prototype,
+
+      {
+
+        updateDisplay: function() {
+          var pct = (this.getValue() - this.__min)/(this.__max - this.__min);
+          this.__foreground.style.width = pct*100+'%';
+          return NumberControllerSlider.superclass.prototype.updateDisplay.call(this);
+        }
+
+      }
+
+
+
+  );
+
+  function map(v, i1, i2, o1, o2) {
+    return o1 + (o2 - o1) * ((v - i1) / (i2 - i1));
+  }
+
+  return NumberControllerSlider;
+  
+})(dat.controllers.NumberController,
+dat.dom.dom,
+dat.utils.css,
+dat.utils.common,
+".slider {\n  box-shadow: inset 0 2px 4px rgba(0,0,0,0.15);\n  height: 1em;\n  border-radius: 1em;\n  background-color: #eee;\n  padding: 0 0.5em;\n  overflow: hidden;\n}\n\n.slider-fg {\n  padding: 1px 0 2px 0;\n  background-color: #aaa;\n  height: 1em;\n  margin-left: -0.5em;\n  padding-right: 0.5em;\n  border-radius: 1em 0 0 1em;\n}\n\n.slider-fg:after {\n  display: inline-block;\n  border-radius: 1em;\n  background-color: #fff;\n  border:  1px solid #aaa;\n  content: '';\n  float: right;\n  margin-right: -1em;\n  margin-top: -1px;\n  height: 0.9em;\n  width: 0.9em;\n}");
+
+
+dat.controllers.FunctionController = (function (Controller, dom, common) {
+
+  /**
+   * @class Provides a GUI interface to fire a specified method, a property of an object.
+   *
+   * @extends dat.controllers.Controller
+   *
+   * @param {Object} object The object to be manipulated
+   * @param {string} property The name of the property to be manipulated
+   *
+   * @member dat.controllers
+   */
+  var FunctionController = function(object, property, text) {
+
+    FunctionController.superclass.call(this, object, property);
+
+    var _this = this;
+
+    this.__button = document.createElement('div');
+    this.__button.innerHTML = text === undefined ? 'Fire' : text;
+    dom.bind(this.__button, 'click', function(e) {
+      e.preventDefault();
+      _this.fire();
+      return false;
+    });
+
+    dom.addClass(this.__button, 'button');
+
+    this.domElement.appendChild(this.__button);
+
+
+  };
+
+  FunctionController.superclass = Controller;
+
+  common.extend(
+
+      FunctionController.prototype,
+      Controller.prototype,
+      {
+        
+        fire: function() {
+          if (this.__onChange) {
+            this.__onChange.call(this);
+          }
+          if (this.__onFinishChange) {
+            this.__onFinishChange.call(this, this.getValue());
+          }
+          this.getValue().call(this.object);
+        }
+      }
+
+  );
+
+  return FunctionController;
+
+})(dat.controllers.Controller,
+dat.dom.dom,
+dat.utils.common);
+
+
+dat.controllers.BooleanController = (function (Controller, dom, common) {
+
+  /**
+   * @class Provides a checkbox input to alter the boolean property of an object.
+   * @extends dat.controllers.Controller
+   *
+   * @param {Object} object The object to be manipulated
+   * @param {string} property The name of the property to be manipulated
+   *
+   * @member dat.controllers
+   */
+  var BooleanController = function(object, property) {
+
+    BooleanController.superclass.call(this, object, property);
+
+    var _this = this;
+    this.__prev = this.getValue();
+
+    this.__checkbox = document.createElement('input');
+    this.__checkbox.setAttribute('type', 'checkbox');
+
+
+    dom.bind(this.__checkbox, 'change', onChange, false);
+
+    this.domElement.appendChild(this.__checkbox);
+
+    // Match original value
+    this.updateDisplay();
+
+    function onChange() {
+      _this.setValue(!_this.__prev);
+    }
+
+  };
+
+  BooleanController.superclass = Controller;
+
+  common.extend(
+
+      BooleanController.prototype,
+      Controller.prototype,
+
+      {
+
+        setValue: function(v) {
+          var toReturn = BooleanController.superclass.prototype.setValue.call(this, v);
+          if (this.__onFinishChange) {
+            this.__onFinishChange.call(this, this.getValue());
+          }
+          this.__prev = this.getValue();
+          return toReturn;
+        },
+
+        updateDisplay: function() {
+          
+          if (this.getValue() === true) {
+            this.__checkbox.setAttribute('checked', 'checked');
+            this.__checkbox.checked = true;    
+          } else {
+              this.__checkbox.checked = false;
+          }
+
+          return BooleanController.superclass.prototype.updateDisplay.call(this);
+
+        }
+
+
+      }
+
+  );
+
+  return BooleanController;
+
+})(dat.controllers.Controller,
+dat.dom.dom,
+dat.utils.common);
+
+
+dat.color.toString = (function (common) {
+
+  return function(color) {
+
+    if (color.a == 1 || common.isUndefined(color.a)) {
+
+      var s = color.hex.toString(16);
+      while (s.length < 6) {
+        s = '0' + s;
+      }
+
+      return '#' + s;
+
+    } else {
+
+      return 'rgba(' + Math.round(color.r) + ',' + Math.round(color.g) + ',' + Math.round(color.b) + ',' + color.a + ')';
+
+    }
+
+  }
+
+})(dat.utils.common);
+
+
+dat.color.interpret = (function (toString, common) {
+
+  var result, toReturn;
+
+  var interpret = function() {
+
+    toReturn = false;
+
+    var original = arguments.length > 1 ? common.toArray(arguments) : arguments[0];
+
+    common.each(INTERPRETATIONS, function(family) {
+
+      if (family.litmus(original)) {
+
+        common.each(family.conversions, function(conversion, conversionName) {
+
+          result = conversion.read(original);
+
+          if (toReturn === false && result !== false) {
+            toReturn = result;
+            result.conversionName = conversionName;
+            result.conversion = conversion;
+            return common.BREAK;
+
+          }
+
+        });
+
+        return common.BREAK;
+
+      }
+
+    });
+
+    return toReturn;
+
+  };
+
+  var INTERPRETATIONS = [
+
+    // Strings
+    {
+
+      litmus: common.isString,
+
+      conversions: {
+
+        THREE_CHAR_HEX: {
+
+          read: function(original) {
+
+            var test = original.match(/^#([A-F0-9])([A-F0-9])([A-F0-9])$/i);
+            if (test === null) return false;
+
+            return {
+              space: 'HEX',
+              hex: parseInt(
+                  '0x' +
+                      test[1].toString() + test[1].toString() +
+                      test[2].toString() + test[2].toString() +
+                      test[3].toString() + test[3].toString())
+            };
+
+          },
+
+          write: toString
+
+        },
+
+        SIX_CHAR_HEX: {
+
+          read: function(original) {
+
+            var test = original.match(/^#([A-F0-9]{6})$/i);
+            if (test === null) return false;
+
+            return {
+              space: 'HEX',
+              hex: parseInt('0x' + test[1].toString())
+            };
+
+          },
+
+          write: toString
+
+        },
+
+        CSS_RGB: {
+
+          read: function(original) {
+
+            var test = original.match(/^rgb\(\s*(.+)\s*,\s*(.+)\s*,\s*(.+)\s*\)/);
+            if (test === null) return false;
+
+            return {
+              space: 'RGB',
+              r: parseFloat(test[1]),
+              g: parseFloat(test[2]),
+              b: parseFloat(test[3])
+            };
+
+          },
+
+          write: toString
+
+        },
+
+        CSS_RGBA: {
+
+          read: function(original) {
+
+            var test = original.match(/^rgba\(\s*(.+)\s*,\s*(.+)\s*,\s*(.+)\s*\,\s*(.+)\s*\)/);
+            if (test === null) return false;
+
+            return {
+              space: 'RGB',
+              r: parseFloat(test[1]),
+              g: parseFloat(test[2]),
+              b: parseFloat(test[3]),
+              a: parseFloat(test[4])
+            };
+
+          },
+
+          write: toString
+
+        }
+
+      }
+
+    },
+
+    // Numbers
+    {
+
+      litmus: common.isNumber,
+
+      conversions: {
+
+        HEX: {
+          read: function(original) {
+            return {
+              space: 'HEX',
+              hex: original,
+              conversionName: 'HEX'
+            }
+          },
+
+          write: function(color) {
+            return color.hex;
+          }
+        }
+
+      }
+
+    },
+
+    // Arrays
+    {
+
+      litmus: common.isArray,
+
+      conversions: {
+
+        RGB_ARRAY: {
+          read: function(original) {
+            if (original.length != 3) return false;
+            return {
+              space: 'RGB',
+              r: original[0],
+              g: original[1],
+              b: original[2]
+            };
+          },
+
+          write: function(color) {
+            return [color.r, color.g, color.b];
+          }
+
+        },
+
+        RGBA_ARRAY: {
+          read: function(original) {
+            if (original.length != 4) return false;
+            return {
+              space: 'RGB',
+              r: original[0],
+              g: original[1],
+              b: original[2],
+              a: original[3]
+            };
+          },
+
+          write: function(color) {
+            return [color.r, color.g, color.b, color.a];
+          }
+
+        }
+
+      }
+
+    },
+
+    // Objects
+    {
+
+      litmus: common.isObject,
+
+      conversions: {
+
+        RGBA_OBJ: {
+          read: function(original) {
+            if (common.isNumber(original.r) &&
+                common.isNumber(original.g) &&
+                common.isNumber(original.b) &&
+                common.isNumber(original.a)) {
+              return {
+                space: 'RGB',
+                r: original.r,
+                g: original.g,
+                b: original.b,
+                a: original.a
+              }
+            }
+            return false;
+          },
+
+          write: function(color) {
+            return {
+              r: color.r,
+              g: color.g,
+              b: color.b,
+              a: color.a
+            }
+          }
+        },
+
+        RGB_OBJ: {
+          read: function(original) {
+            if (common.isNumber(original.r) &&
+                common.isNumber(original.g) &&
+                common.isNumber(original.b)) {
+              return {
+                space: 'RGB',
+                r: original.r,
+                g: original.g,
+                b: original.b
+              }
+            }
+            return false;
+          },
+
+          write: function(color) {
+            return {
+              r: color.r,
+              g: color.g,
+              b: color.b
+            }
+          }
+        },
+
+        HSVA_OBJ: {
+          read: function(original) {
+            if (common.isNumber(original.h) &&
+                common.isNumber(original.s) &&
+                common.isNumber(original.v) &&
+                common.isNumber(original.a)) {
+              return {
+                space: 'HSV',
+                h: original.h,
+                s: original.s,
+                v: original.v,
+                a: original.a
+              }
+            }
+            return false;
+          },
+
+          write: function(color) {
+            return {
+              h: color.h,
+              s: color.s,
+              v: color.v,
+              a: color.a
+            }
+          }
+        },
+
+        HSV_OBJ: {
+          read: function(original) {
+            if (common.isNumber(original.h) &&
+                common.isNumber(original.s) &&
+                common.isNumber(original.v)) {
+              return {
+                space: 'HSV',
+                h: original.h,
+                s: original.s,
+                v: original.v
+              }
+            }
+            return false;
+          },
+
+          write: function(color) {
+            return {
+              h: color.h,
+              s: color.s,
+              v: color.v
+            }
+          }
+
+        }
+
+      }
+
+    }
+
+
+  ];
+
+  return interpret;
+
+
+})(dat.color.toString,
+dat.utils.common);
+
+
+dat.GUI = dat.gui.GUI = (function (css, saveDialogueContents, styleSheet, controllerFactory, Controller, BooleanController, FunctionController, NumberControllerBox, NumberControllerSlider, OptionController, ColorController, requestAnimationFrame, CenteredDiv, dom, common) {
+
+  css.inject(styleSheet);
+
+  /** Outer-most className for GUI's */
+  var CSS_NAMESPACE = 'dg';
+
+  var HIDE_KEY_CODE = 72;
+
+  /** The only value shared between the JS and SCSS. Use caution. */
+  var CLOSE_BUTTON_HEIGHT = 20;
+
+  var DEFAULT_DEFAULT_PRESET_NAME = 'Default';
+
+  var SUPPORTS_LOCAL_STORAGE = (function() {
+    try {
+      return 'localStorage' in window && window['localStorage'] !== null;
+    } catch (e) {
+      return false;
+    }
+  })();
+
+  var SAVE_DIALOGUE;
+
+  /** Have we yet to create an autoPlace GUI? */
+  var auto_place_virgin = true;
+
+  /** Fixed position div that auto place GUI's go inside */
+  var auto_place_container;
+
+  /** Are we hiding the GUI's ? */
+  var hide = false;
+
+  /** GUI's which should be hidden */
+  var hideable_guis = [];
+
+  /**
+   * A lightweight controller library for JavaScript. It allows you to easily
+   * manipulate variables and fire functions on the fly.
+   * @class
+   *
+   * @member dat.gui
+   *
+   * @param {Object} [params]
+   * @param {String} [params.name] The name of this GUI.
+   * @param {Object} [params.load] JSON object representing the saved state of
+   * this GUI.
+   * @param {Boolean} [params.auto=true]
+   * @param {dat.gui.GUI} [params.parent] The GUI I'm nested in.
+   * @param {Boolean} [params.closed] If true, starts closed
+   */
+  var GUI = function(params) {
+
+    var _this = this;
+
+    /**
+     * Outermost DOM Element
+     * @type DOMElement
+     */
+    this.domElement = document.createElement('div');
+    this.__ul = document.createElement('ul');
+    this.domElement.appendChild(this.__ul);
+
+    dom.addClass(this.domElement, CSS_NAMESPACE);
+
+    /**
+     * Nested GUI's by name
+     * @ignore
+     */
+    this.__folders = {};
+
+    this.__controllers = [];
+
+    /**
+     * List of objects I'm remembering for save, only used in top level GUI
+     * @ignore
+     */
+    this.__rememberedObjects = [];
+
+    /**
+     * Maps the index of remembered objects to a map of controllers, only used
+     * in top level GUI.
+     *
+     * @private
+     * @ignore
+     *
+     * @example
+     * [
+     *  {
+     *    propertyName: Controller,
+     *    anotherPropertyName: Controller
+     *  },
+     *  {
+     *    propertyName: Controller
+     *  }
+     * ]
+     */
+    this.__rememberedObjectIndecesToControllers = [];
+
+    this.__listening = [];
+
+    params = params || {};
+
+    // Default parameters
+    params = common.defaults(params, {
+      autoPlace: true,
+      width: GUI.DEFAULT_WIDTH
+    });
+
+    params = common.defaults(params, {
+      resizable: params.autoPlace,
+      hideable: params.autoPlace
+    });
+
+
+    if (!common.isUndefined(params.load)) {
+
+      // Explicit preset
+      if (params.preset) params.load.preset = params.preset;
+
+    } else {
+
+      params.load = { preset: DEFAULT_DEFAULT_PRESET_NAME };
+
+    }
+
+    if (common.isUndefined(params.parent) && params.hideable) {
+      hideable_guis.push(this);
+    }
+
+    // Only root level GUI's are resizable.
+    params.resizable = common.isUndefined(params.parent) && params.resizable;
+
+
+    if (params.autoPlace && common.isUndefined(params.scrollable)) {
+      params.scrollable = true;
+    }
+//    params.scrollable = common.isUndefined(params.parent) && params.scrollable === true;
+
+    // Not part of params because I don't want people passing this in via
+    // constructor. Should be a 'remembered' value.
+    var use_local_storage =
+        SUPPORTS_LOCAL_STORAGE &&
+            localStorage.getItem(getLocalStorageHash(this, 'isLocal')) === 'true';
+
+    Object.defineProperties(this,
+
+        /** @lends dat.gui.GUI.prototype */
+        {
+
+          /**
+           * The parent <code>GUI</code>
+           * @type dat.gui.GUI
+           */
+          parent: {
+            get: function() {
+              return params.parent;
+            }
+          },
+
+          scrollable: {
+            get: function() {
+              return params.scrollable;
+            }
+          },
+
+          /**
+           * Handles <code>GUI</code>'s element placement for you
+           * @type Boolean
+           */
+          autoPlace: {
+            get: function() {
+              return params.autoPlace;
+            }
+          },
+
+          /**
+           * The identifier for a set of saved values
+           * @type String
+           */
+          preset: {
+
+            get: function() {
+              if (_this.parent) {
+                return _this.getRoot().preset;
+              } else {
+                return params.load.preset;
+              }
+            },
+
+            set: function(v) {
+              if (_this.parent) {
+                _this.getRoot().preset = v;
+              } else {
+                params.load.preset = v;
+              }
+              setPresetSelectIndex(this);
+              _this.revert();
+            }
+
+          },
+
+          /**
+           * The width of <code>GUI</code> element
+           * @type Number
+           */
+          width: {
+            get: function() {
+              return params.width;
+            },
+            set: function(v) {
+              params.width = v;
+              setWidth(_this, v);
+            }
+          },
+
+          /**
+           * The name of <code>GUI</code>. Used for folders. i.e
+           * a folder's name
+           * @type String
+           */
+          name: {
+            get: function() {
+              return params.name;
+            },
+            set: function(v) {
+              // TODO Check for collisions among sibling folders
+              params.name = v;
+              if (title_row_name) {
+                title_row_name.innerHTML = params.name;
+              }
+            }
+          },
+
+          /**
+           * Whether the <code>GUI</code> is collapsed or not
+           * @type Boolean
+           */
+          closed: {
+            get: function() {
+              return params.closed;
+            },
+            set: function(v) {
+              params.closed = v;
+              if (params.closed) {
+                dom.addClass(_this.__ul, GUI.CLASS_CLOSED);
+              } else {
+                dom.removeClass(_this.__ul, GUI.CLASS_CLOSED);
+              }
+              // For browsers that aren't going to respect the CSS transition,
+              // Lets just check our height against the window height right off
+              // the bat.
+              this.onResize();
+
+              if (_this.__closeButton) {
+                _this.__closeButton.innerHTML = v ? GUI.TEXT_OPEN : GUI.TEXT_CLOSED;
+              }
+            }
+          },
+
+          /**
+           * Contains all presets
+           * @type Object
+           */
+          load: {
+            get: function() {
+              return params.load;
+            }
+          },
+
+          /**
+           * Determines whether or not to use <a href="https://developer.mozilla.org/en/DOM/Storage#localStorage">localStorage</a> as the means for
+           * <code>remember</code>ing
+           * @type Boolean
+           */
+          useLocalStorage: {
+
+            get: function() {
+              return use_local_storage;
+            },
+            set: function(bool) {
+              if (SUPPORTS_LOCAL_STORAGE) {
+                use_local_storage = bool;
+                if (bool) {
+                  dom.bind(window, 'unload', saveToLocalStorage);
+                } else {
+                  dom.unbind(window, 'unload', saveToLocalStorage);
+                }
+                localStorage.setItem(getLocalStorageHash(_this, 'isLocal'), bool);
+              }
+            }
+
+          }
+
+        });
+
+    // Are we a root level GUI?
+    if (common.isUndefined(params.parent)) {
+
+      params.closed = false;
+
+      dom.addClass(this.domElement, GUI.CLASS_MAIN);
+      dom.makeSelectable(this.domElement, false);
+
+      // Are we supposed to be loading locally?
+      if (SUPPORTS_LOCAL_STORAGE) {
+
+        if (use_local_storage) {
+
+          _this.useLocalStorage = true;
+
+          var saved_gui = localStorage.getItem(getLocalStorageHash(this, 'gui'));
+
+          if (saved_gui) {
+            params.load = JSON.parse(saved_gui);
+          }
+
+        }
+
+      }
+
+      this.__closeButton = document.createElement('div');
+      this.__closeButton.innerHTML = GUI.TEXT_CLOSED;
+      dom.addClass(this.__closeButton, GUI.CLASS_CLOSE_BUTTON);
+      this.domElement.appendChild(this.__closeButton);
+
+      dom.bind(this.__closeButton, 'click', function() {
+
+        _this.closed = !_this.closed;
+
+
+      });
+
+
+      // Oh, you're a nested GUI!
+    } else {
+
+      if (params.closed === undefined) {
+        params.closed = true;
+      }
+
+      var title_row_name = document.createTextNode(params.name);
+      dom.addClass(title_row_name, 'controller-name');
+
+      var title_row = addRow(_this, title_row_name);
+
+      var on_click_title = function(e) {
+        e.preventDefault();
+        _this.closed = !_this.closed;
+        return false;
+      };
+
+      dom.addClass(this.__ul, GUI.CLASS_CLOSED);
+
+      dom.addClass(title_row, 'title');
+      dom.bind(title_row, 'click', on_click_title);
+
+      if (!params.closed) {
+        this.closed = false;
+      }
+
+    }
+
+    if (params.autoPlace) {
+
+      if (common.isUndefined(params.parent)) {
+
+        if (auto_place_virgin) {
+          auto_place_container = document.createElement('div');
+          dom.addClass(auto_place_container, CSS_NAMESPACE);
+          dom.addClass(auto_place_container, GUI.CLASS_AUTO_PLACE_CONTAINER);
+          document.body.appendChild(auto_place_container);
+          auto_place_virgin = false;
+        }
+
+        // Put it in the dom for you.
+        auto_place_container.appendChild(this.domElement);
+
+        // Apply the auto styles
+        dom.addClass(this.domElement, GUI.CLASS_AUTO_PLACE);
+
+      }
+
+
+      // Make it not elastic.
+      if (!this.parent) setWidth(_this, params.width);
+
+    }
+
+    dom.bind(window, 'resize', function() { _this.onResize() });
+    dom.bind(this.__ul, 'webkitTransitionEnd', function() { _this.onResize(); });
+    dom.bind(this.__ul, 'transitionend', function() { _this.onResize() });
+    dom.bind(this.__ul, 'oTransitionEnd', function() { _this.onResize() });
+    this.onResize();
+
+
+    if (params.resizable) {
+      addResizeHandle(this);
+    }
+
+    function saveToLocalStorage() {
+      localStorage.setItem(getLocalStorageHash(_this, 'gui'), JSON.stringify(_this.getSaveObject()));
+    }
+
+    var root = _this.getRoot();
+    function resetWidth() {
+        var root = _this.getRoot();
+        root.width += 1;
+        common.defer(function() {
+          root.width -= 1;
+        });
+      }
+
+      if (!params.parent) {
+        resetWidth();
+      }
+
+  };
+
+  GUI.toggleHide = function() {
+
+    hide = !hide;
+    common.each(hideable_guis, function(gui) {
+      gui.domElement.style.zIndex = hide ? -999 : 999;
+      gui.domElement.style.opacity = hide ? 0 : 1;
+    });
+  };
+
+  GUI.CLASS_AUTO_PLACE = 'a';
+  GUI.CLASS_AUTO_PLACE_CONTAINER = 'ac';
+  GUI.CLASS_MAIN = 'main';
+  GUI.CLASS_CONTROLLER_ROW = 'cr';
+  GUI.CLASS_TOO_TALL = 'taller-than-window';
+  GUI.CLASS_CLOSED = 'closed';
+  GUI.CLASS_CLOSE_BUTTON = 'close-button';
+  GUI.CLASS_DRAG = 'drag';
+
+  GUI.DEFAULT_WIDTH = 245;
+  GUI.TEXT_CLOSED = 'Close Controls';
+  GUI.TEXT_OPEN = 'Open Controls';
+
+  dom.bind(window, 'keydown', function(e) {
+
+    if (document.activeElement.type !== 'text' &&
+        (e.which === HIDE_KEY_CODE || e.keyCode == HIDE_KEY_CODE)) {
+      GUI.toggleHide();
+    }
+
+  }, false);
+
+  common.extend(
+
+      GUI.prototype,
+
+      /** @lends dat.gui.GUI */
+      {
+
+        /**
+         * @param object
+         * @param property
+         * @returns {dat.controllers.Controller} The new controller that was added.
+         * @instance
+         */
+        add: function(object, property) {
+
+          return add(
+              this,
+              object,
+              property,
+              {
+                factoryArgs: Array.prototype.slice.call(arguments, 2)
+              }
+          );
+
+        },
+
+        /**
+         * @param object
+         * @param property
+         * @returns {dat.controllers.ColorController} The new controller that was added.
+         * @instance
+         */
+        addColor: function(object, property) {
+
+          return add(
+              this,
+              object,
+              property,
+              {
+                color: true
+              }
+          );
+
+        },
+
+        /**
+         * @param controller
+         * @instance
+         */
+        remove: function(controller) {
+
+          // TODO listening?
+          this.__ul.removeChild(controller.__li);
+          this.__controllers.slice(this.__controllers.indexOf(controller), 1);
+          var _this = this;
+          common.defer(function() {
+            _this.onResize();
+          });
+
+        },
+
+        destroy: function() {
+
+          if (this.autoPlace) {
+            auto_place_container.removeChild(this.domElement);
+          }
+
+        },
+
+        /**
+         * @param name
+         * @returns {dat.gui.GUI} The new folder.
+         * @throws {Error} if this GUI already has a folder by the specified
+         * name
+         * @instance
+         */
+        addFolder: function(name) {
+
+          // We have to prevent collisions on names in order to have a key
+          // by which to remember saved values
+          if (this.__folders[name] !== undefined) {
+            throw new Error('You already have a folder in this GUI by the' +
+                ' name "' + name + '"');
+          }
+
+          var new_gui_params = { name: name, parent: this };
+
+          // We need to pass down the autoPlace trait so that we can
+          // attach event listeners to open/close folder actions to
+          // ensure that a scrollbar appears if the window is too short.
+          new_gui_params.autoPlace = this.autoPlace;
+
+          // Do we have saved appearance data for this folder?
+
+          if (this.load && // Anything loaded?
+              this.load.folders && // Was my parent a dead-end?
+              this.load.folders[name]) { // Did daddy remember me?
+
+            // Start me closed if I was closed
+            new_gui_params.closed = this.load.folders[name].closed;
+
+            // Pass down the loaded data
+            new_gui_params.load = this.load.folders[name];
+
+          }
+
+          var gui = new GUI(new_gui_params);
+          this.__folders[name] = gui;
+
+          var li = addRow(this, gui.domElement);
+          dom.addClass(li, 'folder');
+          return gui;
+
+        },
+
+        open: function() {
+          this.closed = false;
+        },
+
+        close: function() {
+          this.closed = true;
+        },
+
+        onResize: function() {
+
+          var root = this.getRoot();
+
+          if (root.scrollable) {
+
+            var top = dom.getOffset(root.__ul).top;
+            var h = 0;
+
+            common.each(root.__ul.childNodes, function(node) {
+              if (! (root.autoPlace && node === root.__save_row))
+                h += dom.getHeight(node);
+            });
+
+            if (window.innerHeight - top - CLOSE_BUTTON_HEIGHT < h) {
+              dom.addClass(root.domElement, GUI.CLASS_TOO_TALL);
+              root.__ul.style.height = window.innerHeight - top - CLOSE_BUTTON_HEIGHT + 'px';
+            } else {
+              dom.removeClass(root.domElement, GUI.CLASS_TOO_TALL);
+              root.__ul.style.height = 'auto';
+            }
+
+          }
+
+          if (root.__resize_handle) {
+            common.defer(function() {
+              root.__resize_handle.style.height = root.__ul.offsetHeight + 'px';
+            });
+          }
+
+          if (root.__closeButton) {
+            root.__closeButton.style.width = root.width + 'px';
+          }
+
+        },
+
+        /**
+         * Mark objects for saving. The order of these objects cannot change as
+         * the GUI grows. When remembering new objects, append them to the end
+         * of the list.
+         *
+         * @param {Object...} objects
+         * @throws {Error} if not called on a top level GUI.
+         * @instance
+         */
+        remember: function() {
+
+          if (common.isUndefined(SAVE_DIALOGUE)) {
+            SAVE_DIALOGUE = new CenteredDiv();
+            SAVE_DIALOGUE.domElement.innerHTML = saveDialogueContents;
+          }
+
+          if (this.parent) {
+            throw new Error("You can only call remember on a top level GUI.");
+          }
+
+          var _this = this;
+
+          common.each(Array.prototype.slice.call(arguments), function(object) {
+            if (_this.__rememberedObjects.length == 0) {
+              addSaveMenu(_this);
+            }
+            if (_this.__rememberedObjects.indexOf(object) == -1) {
+              _this.__rememberedObjects.push(object);
+            }
+          });
+
+          if (this.autoPlace) {
+            // Set save row width
+            setWidth(this, this.width);
+          }
+
+        },
+
+        /**
+         * @returns {dat.gui.GUI} the topmost parent GUI of a nested GUI.
+         * @instance
+         */
+        getRoot: function() {
+          var gui = this;
+          while (gui.parent) {
+            gui = gui.parent;
+          }
+          return gui;
+        },
+
+        /**
+         * @returns {Object} a JSON object representing the current state of
+         * this GUI as well as its remembered properties.
+         * @instance
+         */
+        getSaveObject: function() {
+
+          var toReturn = this.load;
+
+          toReturn.closed = this.closed;
+
+          // Am I remembering any values?
+          if (this.__rememberedObjects.length > 0) {
+
+            toReturn.preset = this.preset;
+
+            if (!toReturn.remembered) {
+              toReturn.remembered = {};
+            }
+
+            toReturn.remembered[this.preset] = getCurrentPreset(this);
+
+          }
+
+          toReturn.folders = {};
+          common.each(this.__folders, function(element, key) {
+            toReturn.folders[key] = element.getSaveObject();
+          });
+
+          return toReturn;
+
+        },
+
+        save: function() {
+
+          if (!this.load.remembered) {
+            this.load.remembered = {};
+          }
+
+          this.load.remembered[this.preset] = getCurrentPreset(this);
+          markPresetModified(this, false);
+
+        },
+
+        saveAs: function(presetName) {
+
+          if (!this.load.remembered) {
+
+            // Retain default values upon first save
+            this.load.remembered = {};
+            this.load.remembered[DEFAULT_DEFAULT_PRESET_NAME] = getCurrentPreset(this, true);
+
+          }
+
+          this.load.remembered[presetName] = getCurrentPreset(this);
+          this.preset = presetName;
+          addPresetOption(this, presetName, true);
+
+        },
+
+        revert: function(gui) {
+
+          common.each(this.__controllers, function(controller) {
+            // Make revert work on Default.
+            if (!this.getRoot().load.remembered) {
+              controller.setValue(controller.initialValue);
+            } else {
+              recallSavedValue(gui || this.getRoot(), controller);
+            }
+          }, this);
+
+          common.each(this.__folders, function(folder) {
+            folder.revert(folder);
+          });
+
+          if (!gui) {
+            markPresetModified(this.getRoot(), false);
+          }
+
+
+        },
+
+        listen: function(controller) {
+
+          var init = this.__listening.length == 0;
+          this.__listening.push(controller);
+          if (init) updateDisplays(this.__listening);
+
+        }
+
+      }
+
+  );
+
+  function add(gui, object, property, params) {
+
+    if (object[property] === undefined) {
+      throw new Error("Object " + object + " has no property \"" + property + "\"");
+    }
+
+    var controller;
+
+    if (params.color) {
+
+      controller = new ColorController(object, property);
+
+    } else {
+
+      var factoryArgs = [object,property].concat(params.factoryArgs);
+      controller = controllerFactory.apply(gui, factoryArgs);
+
+    }
+
+    if (params.before instanceof Controller) {
+      params.before = params.before.__li;
+    }
+
+    recallSavedValue(gui, controller);
+
+    dom.addClass(controller.domElement, 'c');
+
+    var name = document.createElement('span');
+    dom.addClass(name, 'property-name');
+    name.innerHTML = controller.property;
+
+    var container = document.createElement('div');
+    container.appendChild(name);
+    container.appendChild(controller.domElement);
+
+    var li = addRow(gui, container, params.before);
+
+    dom.addClass(li, GUI.CLASS_CONTROLLER_ROW);
+    dom.addClass(li, typeof controller.getValue());
+
+    augmentController(gui, li, controller);
+
+    gui.__controllers.push(controller);
+
+    return controller;
+
+  }
+
+  /**
+   * Add a row to the end of the GUI or before another row.
+   *
+   * @param gui
+   * @param [dom] If specified, inserts the dom content in the new row
+   * @param [liBefore] If specified, places the new row before another row
+   */
+  function addRow(gui, dom, liBefore) {
+    var li = document.createElement('li');
+    if (dom) li.appendChild(dom);
+    if (liBefore) {
+      gui.__ul.insertBefore(li, params.before);
+    } else {
+      gui.__ul.appendChild(li);
+    }
+    gui.onResize();
+    return li;
+  }
+
+  function augmentController(gui, li, controller) {
+
+    controller.__li = li;
+    controller.__gui = gui;
+
+    common.extend(controller, {
+
+      options: function(options) {
+
+        if (arguments.length > 1) {
+          controller.remove();
+
+          return add(
+              gui,
+              controller.object,
+              controller.property,
+              {
+                before: controller.__li.nextElementSibling,
+                factoryArgs: [common.toArray(arguments)]
+              }
+          );
+
+        }
+
+        if (common.isArray(options) || common.isObject(options)) {
+          controller.remove();
+
+          return add(
+              gui,
+              controller.object,
+              controller.property,
+              {
+                before: controller.__li.nextElementSibling,
+                factoryArgs: [options]
+              }
+          );
+
+        }
+
+      },
+
+      name: function(v) {
+        controller.__li.firstElementChild.firstElementChild.innerHTML = v;
+        return controller;
+      },
+
+      listen: function() {
+        controller.__gui.listen(controller);
+        return controller;
+      },
+
+      remove: function() {
+        controller.__gui.remove(controller);
+        return controller;
+      }
+
+    });
+
+    // All sliders should be accompanied by a box.
+    if (controller instanceof NumberControllerSlider) {
+
+      var box = new NumberControllerBox(controller.object, controller.property,
+          { min: controller.__min, max: controller.__max, step: controller.__step });
+
+      common.each(['updateDisplay', 'onChange', 'onFinishChange'], function(method) {
+        var pc = controller[method];
+        var pb = box[method];
+        controller[method] = box[method] = function() {
+          var args = Array.prototype.slice.call(arguments);
+          pc.apply(controller, args);
+          return pb.apply(box, args);
+        }
+      });
+
+      dom.addClass(li, 'has-slider');
+      controller.domElement.insertBefore(box.domElement, controller.domElement.firstElementChild);
+
+    }
+    else if (controller instanceof NumberControllerBox) {
+
+      var r = function(returned) {
+
+        // Have we defined both boundaries?
+        if (common.isNumber(controller.__min) && common.isNumber(controller.__max)) {
+
+          // Well, then lets just replace this with a slider.
+          controller.remove();
+          return add(
+              gui,
+              controller.object,
+              controller.property,
+              {
+                before: controller.__li.nextElementSibling,
+                factoryArgs: [controller.__min, controller.__max, controller.__step]
+              });
+
+        }
+
+        return returned;
+
+      };
+
+      controller.min = common.compose(r, controller.min);
+      controller.max = common.compose(r, controller.max);
+
+    }
+    else if (controller instanceof BooleanController) {
+
+      dom.bind(li, 'click', function() {
+        dom.fakeEvent(controller.__checkbox, 'click');
+      });
+
+      dom.bind(controller.__checkbox, 'click', function(e) {
+        e.stopPropagation(); // Prevents double-toggle
+      })
+
+    }
+    else if (controller instanceof FunctionController) {
+
+      dom.bind(li, 'click', function() {
+        dom.fakeEvent(controller.__button, 'click');
+      });
+
+      dom.bind(li, 'mouseover', function() {
+        dom.addClass(controller.__button, 'hover');
+      });
+
+      dom.bind(li, 'mouseout', function() {
+        dom.removeClass(controller.__button, 'hover');
+      });
+
+    }
+    else if (controller instanceof ColorController) {
+
+      dom.addClass(li, 'color');
+      controller.updateDisplay = common.compose(function(r) {
+        li.style.borderLeftColor = controller.__color.toString();
+        return r;
+      }, controller.updateDisplay);
+
+      controller.updateDisplay();
+
+    }
+
+    controller.setValue = common.compose(function(r) {
+      if (gui.getRoot().__preset_select && controller.isModified()) {
+        markPresetModified(gui.getRoot(), true);
+      }
+      return r;
+    }, controller.setValue);
+
+  }
+
+  function recallSavedValue(gui, controller) {
+
+    // Find the topmost GUI, that's where remembered objects live.
+    var root = gui.getRoot();
+
+    // Does the object we're controlling match anything we've been told to
+    // remember?
+    var matched_index = root.__rememberedObjects.indexOf(controller.object);
+
+    // Why yes, it does!
+    if (matched_index != -1) {
+
+      // Let me fetch a map of controllers for thcommon.isObject.
+      var controller_map =
+          root.__rememberedObjectIndecesToControllers[matched_index];
+
+      // Ohp, I believe this is the first controller we've created for this
+      // object. Lets make the map fresh.
+      if (controller_map === undefined) {
+        controller_map = {};
+        root.__rememberedObjectIndecesToControllers[matched_index] =
+            controller_map;
+      }
+
+      // Keep track of this controller
+      controller_map[controller.property] = controller;
+
+      // Okay, now have we saved any values for this controller?
+      if (root.load && root.load.remembered) {
+
+        var preset_map = root.load.remembered;
+
+        // Which preset are we trying to load?
+        var preset;
+
+        if (preset_map[gui.preset]) {
+
+          preset = preset_map[gui.preset];
+
+        } else if (preset_map[DEFAULT_DEFAULT_PRESET_NAME]) {
+
+          // Uhh, you can have the default instead?
+          preset = preset_map[DEFAULT_DEFAULT_PRESET_NAME];
+
+        } else {
+
+          // Nada.
+
+          return;
+
+        }
+
+
+        // Did the loaded object remember thcommon.isObject?
+        if (preset[matched_index] &&
+
+          // Did we remember this particular property?
+            preset[matched_index][controller.property] !== undefined) {
+
+          // We did remember something for this guy ...
+          var value = preset[matched_index][controller.property];
+
+          // And that's what it is.
+          controller.initialValue = value;
+          controller.setValue(value);
+
+        }
+
+      }
+
+    }
+
+  }
+
+  function getLocalStorageHash(gui, key) {
+    // TODO how does this deal with multiple GUI's?
+    return document.location.href + '.' + key;
+
+  }
+
+  function addSaveMenu(gui) {
+
+    var div = gui.__save_row = document.createElement('li');
+
+    dom.addClass(gui.domElement, 'has-save');
+
+    gui.__ul.insertBefore(div, gui.__ul.firstChild);
+
+    dom.addClass(div, 'save-row');
+
+    var gears = document.createElement('span');
+    gears.innerHTML = '&nbsp;';
+    dom.addClass(gears, 'button gears');
+
+    // TODO replace with FunctionController
+    var button = document.createElement('span');
+    button.innerHTML = 'Save';
+    dom.addClass(button, 'button');
+    dom.addClass(button, 'save');
+
+    var button2 = document.createElement('span');
+    button2.innerHTML = 'New';
+    dom.addClass(button2, 'button');
+    dom.addClass(button2, 'save-as');
+
+    var button3 = document.createElement('span');
+    button3.innerHTML = 'Revert';
+    dom.addClass(button3, 'button');
+    dom.addClass(button3, 'revert');
+
+    var select = gui.__preset_select = document.createElement('select');
+
+    if (gui.load && gui.load.remembered) {
+
+      common.each(gui.load.remembered, function(value, key) {
+        addPresetOption(gui, key, key == gui.preset);
+      });
+
+    } else {
+      addPresetOption(gui, DEFAULT_DEFAULT_PRESET_NAME, false);
+    }
+
+    dom.bind(select, 'change', function() {
+
+
+      for (var index = 0; index < gui.__preset_select.length; index++) {
+        gui.__preset_select[index].innerHTML = gui.__preset_select[index].value;
+      }
+
+      gui.preset = this.value;
+
+    });
+
+    div.appendChild(select);
+    div.appendChild(gears);
+    div.appendChild(button);
+    div.appendChild(button2);
+    div.appendChild(button3);
+
+    if (SUPPORTS_LOCAL_STORAGE) {
+
+      var saveLocally = document.getElementById('dg-save-locally');
+      var explain = document.getElementById('dg-local-explain');
+
+      saveLocally.style.display = 'block';
+
+      var localStorageCheckBox = document.getElementById('dg-local-storage');
+
+      if (localStorage.getItem(getLocalStorageHash(gui, 'isLocal')) === 'true') {
+        localStorageCheckBox.setAttribute('checked', 'checked');
+      }
+
+      function showHideExplain() {
+        explain.style.display = gui.useLocalStorage ? 'block' : 'none';
+      }
+
+      showHideExplain();
+
+      // TODO: Use a boolean controller, fool!
+      dom.bind(localStorageCheckBox, 'change', function() {
+        gui.useLocalStorage = !gui.useLocalStorage;
+        showHideExplain();
+      });
+
+    }
+
+    var newConstructorTextArea = document.getElementById('dg-new-constructor');
+
+    dom.bind(newConstructorTextArea, 'keydown', function(e) {
+      if (e.metaKey && (e.which === 67 || e.keyCode == 67)) {
+        SAVE_DIALOGUE.hide();
+      }
+    });
+
+    dom.bind(gears, 'click', function() {
+      newConstructorTextArea.innerHTML = JSON.stringify(gui.getSaveObject(), undefined, 2);
+      SAVE_DIALOGUE.show();
+      newConstructorTextArea.focus();
+      newConstructorTextArea.select();
+    });
+
+    dom.bind(button, 'click', function() {
+      gui.save();
+    });
+
+    dom.bind(button2, 'click', function() {
+      var presetName = prompt('Enter a new preset name.');
+      if (presetName) gui.saveAs(presetName);
+    });
+
+    dom.bind(button3, 'click', function() {
+      gui.revert();
+    });
+
+//    div.appendChild(button2);
+
+  }
+
+  function addResizeHandle(gui) {
+
+    gui.__resize_handle = document.createElement('div');
+
+    common.extend(gui.__resize_handle.style, {
+
+      width: '6px',
+      marginLeft: '-3px',
+      height: '200px',
+      cursor: 'ew-resize',
+      position: 'absolute'
+//      border: '1px solid blue'
+
+    });
+
+    var pmouseX;
+
+    dom.bind(gui.__resize_handle, 'mousedown', dragStart);
+    dom.bind(gui.__closeButton, 'mousedown', dragStart);
+
+    gui.domElement.insertBefore(gui.__resize_handle, gui.domElement.firstElementChild);
+
+    function dragStart(e) {
+
+      e.preventDefault();
+
+      pmouseX = e.clientX;
+
+      dom.addClass(gui.__closeButton, GUI.CLASS_DRAG);
+      dom.bind(window, 'mousemove', drag);
+      dom.bind(window, 'mouseup', dragStop);
+
+      return false;
+
+    }
+
+    function drag(e) {
+
+      e.preventDefault();
+
+      gui.width += pmouseX - e.clientX;
+      gui.onResize();
+      pmouseX = e.clientX;
+
+      return false;
+
+    }
+
+    function dragStop() {
+
+      dom.removeClass(gui.__closeButton, GUI.CLASS_DRAG);
+      dom.unbind(window, 'mousemove', drag);
+      dom.unbind(window, 'mouseup', dragStop);
+
+    }
+
+  }
+
+  function setWidth(gui, w) {
+    gui.domElement.style.width = w + 'px';
+    // Auto placed save-rows are position fixed, so we have to
+    // set the width manually if we want it to bleed to the edge
+    if (gui.__save_row && gui.autoPlace) {
+      gui.__save_row.style.width = w + 'px';
+    }if (gui.__closeButton) {
+      gui.__closeButton.style.width = w + 'px';
+    }
+  }
+
+  function getCurrentPreset(gui, useInitialValues) {
+
+    var toReturn = {};
+
+    // For each object I'm remembering
+    common.each(gui.__rememberedObjects, function(val, index) {
+
+      var saved_values = {};
+
+      // The controllers I've made for thcommon.isObject by property
+      var controller_map =
+          gui.__rememberedObjectIndecesToControllers[index];
+
+      // Remember each value for each property
+      common.each(controller_map, function(controller, property) {
+        saved_values[property] = useInitialValues ? controller.initialValue : controller.getValue();
+      });
+
+      // Save the values for thcommon.isObject
+      toReturn[index] = saved_values;
+
+    });
+
+    return toReturn;
+
+  }
+
+  function addPresetOption(gui, name, setSelected) {
+    var opt = document.createElement('option');
+    opt.innerHTML = name;
+    opt.value = name;
+    gui.__preset_select.appendChild(opt);
+    if (setSelected) {
+      gui.__preset_select.selectedIndex = gui.__preset_select.length - 1;
+    }
+  }
+
+  function setPresetSelectIndex(gui) {
+    for (var index = 0; index < gui.__preset_select.length; index++) {
+      if (gui.__preset_select[index].value == gui.preset) {
+        gui.__preset_select.selectedIndex = index;
+      }
+    }
+  }
+
+  function markPresetModified(gui, modified) {
+    var opt = gui.__preset_select[gui.__preset_select.selectedIndex];
+//    console.log('mark', modified, opt);
+    if (modified) {
+      opt.innerHTML = opt.value + "*";
+    } else {
+      opt.innerHTML = opt.value;
+    }
+  }
+
+  function updateDisplays(controllerArray) {
+
+
+    if (controllerArray.length != 0) {
+
+      requestAnimationFrame(function() {
+        updateDisplays(controllerArray);
+      });
+
+    }
+
+    common.each(controllerArray, function(c) {
+      c.updateDisplay();
+    });
+
+  }
+
+  return GUI;
+
+})(dat.utils.css,
+"<div id=\"dg-save\" class=\"dg dialogue\">\n\n  Here's the new load parameter for your <code>GUI</code>'s constructor:\n\n  <textarea id=\"dg-new-constructor\"></textarea>\n\n  <div id=\"dg-save-locally\">\n\n    <input id=\"dg-local-storage\" type=\"checkbox\"/> Automatically save\n    values to <code>localStorage</code> on exit.\n\n    <div id=\"dg-local-explain\">The values saved to <code>localStorage</code> will\n      override those passed to <code>dat.GUI</code>'s constructor. This makes it\n      easier to work incrementally, but <code>localStorage</code> is fragile,\n      and your friends may not see the same values you do.\n      \n    </div>\n    \n  </div>\n\n</div>",
+".dg ul{list-style:none;margin:0;padding:0;width:100%;clear:both}.dg.ac{position:fixed;top:0;left:0;right:0;height:0;z-index:0}.dg:not(.ac) .main{overflow:hidden}.dg.main{-webkit-transition:opacity 0.1s linear;-o-transition:opacity 0.1s linear;-moz-transition:opacity 0.1s linear;transition:opacity 0.1s linear}.dg.main.taller-than-window{overflow-y:auto}.dg.main.taller-than-window .close-button{opacity:1;margin-top:-1px;border-top:1px solid #2c2c2c}.dg.main ul.closed .close-button{opacity:1 !important}.dg.main:hover .close-button,.dg.main .close-button.drag{opacity:1}.dg.main .close-button{-webkit-transition:opacity 0.1s linear;-o-transition:opacity 0.1s linear;-moz-transition:opacity 0.1s linear;transition:opacity 0.1s linear;border:0;position:absolute;line-height:19px;height:20px;cursor:pointer;text-align:center;background-color:#000}.dg.main .close-button:hover{background-color:#111}.dg.a{float:right;margin-right:15px;overflow-x:hidden}.dg.a.has-save ul{margin-top:27px}.dg.a.has-save ul.closed{margin-top:0}.dg.a .save-row{position:fixed;top:0;z-index:1002}.dg li{-webkit-transition:height 0.1s ease-out;-o-transition:height 0.1s ease-out;-moz-transition:height 0.1s ease-out;transition:height 0.1s ease-out}.dg li:not(.folder){cursor:auto;height:27px;line-height:27px;overflow:hidden;padding:0 4px 0 5px}.dg li.folder{padding:0;border-left:4px solid rgba(0,0,0,0)}.dg li.title{cursor:pointer;margin-left:-4px}.dg .closed li:not(.title),.dg .closed ul li,.dg .closed ul li > *{height:0;overflow:hidden;border:0}.dg .cr{clear:both;padding-left:3px;height:27px}.dg .property-name{cursor:default;float:left;clear:left;width:40%;overflow:hidden;text-overflow:ellipsis}.dg .c{float:left;width:60%}.dg .c input[type=text]{border:0;margin-top:4px;padding:3px;width:100%;float:right}.dg .has-slider input[type=text]{width:30%;margin-left:0}.dg .slider{float:left;width:66%;margin-left:-5px;margin-right:0;height:19px;margin-top:4px}.dg .slider-fg{height:100%}.dg .c input[type=checkbox]{margin-top:9px}.dg .c select{margin-top:5px}.dg .cr.function,.dg .cr.function .property-name,.dg .cr.function *,.dg .cr.boolean,.dg .cr.boolean *{cursor:pointer}.dg .selector{display:none;position:absolute;margin-left:-9px;margin-top:23px;z-index:10}.dg .c:hover .selector,.dg .selector.drag{display:block}.dg li.save-row{padding:0}.dg li.save-row .button{display:inline-block;padding:0px 6px}.dg.dialogue{background-color:#222;width:460px;padding:15px;font-size:13px;line-height:15px}#dg-new-constructor{padding:10px;color:#222;font-family:Monaco, monospace;font-size:10px;border:0;resize:none;box-shadow:inset 1px 1px 1px #888;word-wrap:break-word;margin:12px 0;display:block;width:440px;overflow-y:scroll;height:100px;position:relative}#dg-local-explain{display:none;font-size:11px;line-height:17px;border-radius:3px;background-color:#333;padding:8px;margin-top:10px}#dg-local-explain code{font-size:10px}#dat-gui-save-locally{display:none}.dg{color:#eee;font:11px 'Lucida Grande', sans-serif;text-shadow:0 -1px 0 #111}.dg.main::-webkit-scrollbar{width:5px;background:#1a1a1a}.dg.main::-webkit-scrollbar-corner{height:0;display:none}.dg.main::-webkit-scrollbar-thumb{border-radius:5px;background:#676767}.dg li:not(.folder){background:#1a1a1a;border-bottom:1px solid #2c2c2c}.dg li.save-row{line-height:25px;background:#dad5cb;border:0}.dg li.save-row select{margin-left:5px;width:108px}.dg li.save-row .button{margin-left:5px;margin-top:1px;border-radius:2px;font-size:9px;line-height:7px;padding:4px 4px 5px 4px;background:#c5bdad;color:#fff;text-shadow:0 1px 0 #b0a58f;box-shadow:0 -1px 0 #b0a58f;cursor:pointer}.dg li.save-row .button.gears{background:#c5bdad url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAANCAYAAAB/9ZQ7AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAQJJREFUeNpiYKAU/P//PwGIC/ApCABiBSAW+I8AClAcgKxQ4T9hoMAEUrxx2QSGN6+egDX+/vWT4e7N82AMYoPAx/evwWoYoSYbACX2s7KxCxzcsezDh3evFoDEBYTEEqycggWAzA9AuUSQQgeYPa9fPv6/YWm/Acx5IPb7ty/fw+QZblw67vDs8R0YHyQhgObx+yAJkBqmG5dPPDh1aPOGR/eugW0G4vlIoTIfyFcA+QekhhHJhPdQxbiAIguMBTQZrPD7108M6roWYDFQiIAAv6Aow/1bFwXgis+f2LUAynwoIaNcz8XNx3Dl7MEJUDGQpx9gtQ8YCueB+D26OECAAQDadt7e46D42QAAAABJRU5ErkJggg==) 2px 1px no-repeat;height:7px;width:8px}.dg li.save-row .button:hover{background-color:#bab19e;box-shadow:0 -1px 0 #b0a58f}.dg li.folder{border-bottom:0}.dg li.title{padding-left:16px;background:#000 url(data:image/gif;base64,R0lGODlhBQAFAJEAAP////Pz8////////yH5BAEAAAIALAAAAAAFAAUAAAIIlI+hKgFxoCgAOw==) 6px 10px no-repeat;cursor:pointer;border-bottom:1px solid rgba(255,255,255,0.2)}.dg .closed li.title{background-image:url(data:image/gif;base64,R0lGODlhBQAFAJEAAP////Pz8////////yH5BAEAAAIALAAAAAAFAAUAAAIIlGIWqMCbWAEAOw==)}.dg .cr.boolean{border-left:3px solid #806787}.dg .cr.function{border-left:3px solid #e61d5f}.dg .cr.number{border-left:3px solid #2fa1d6}.dg .cr.number input[type=text]{color:#2fa1d6}.dg .cr.string{border-left:3px solid #1ed36f}.dg .cr.string input[type=text]{color:#1ed36f}.dg .cr.function:hover,.dg .cr.boolean:hover{background:#111}.dg .c input[type=text]{background:#303030;outline:none}.dg .c input[type=text]:hover{background:#3c3c3c}.dg .c input[type=text]:focus{background:#494949;color:#fff}.dg .c .slider{background:#303030;cursor:ew-resize}.dg .c .slider-fg{background:#2fa1d6}.dg .c .slider:hover{background:#3c3c3c}.dg .c .slider:hover .slider-fg{background:#44abda}\n",
+dat.controllers.factory = (function (OptionController, NumberControllerBox, NumberControllerSlider, StringController, FunctionController, BooleanController, common) {
+
+      return function(object, property) {
+
+        var initialValue = object[property];
+
+        // Providing options?
+        if (common.isArray(arguments[2]) || common.isObject(arguments[2])) {
+          return new OptionController(object, property, arguments[2]);
+        }
+
+        // Providing a map?
+
+        if (common.isNumber(initialValue)) {
+
+          if (common.isNumber(arguments[2]) && common.isNumber(arguments[3])) {
+
+            // Has min and max.
+            return new NumberControllerSlider(object, property, arguments[2], arguments[3]);
+
+          } else {
+
+            return new NumberControllerBox(object, property, { min: arguments[2], max: arguments[3] });
+
+          }
+
+        }
+
+        if (common.isString(initialValue)) {
+          return new StringController(object, property);
+        }
+
+        if (common.isFunction(initialValue)) {
+          return new FunctionController(object, property, '');
+        }
+
+        if (common.isBoolean(initialValue)) {
+          return new BooleanController(object, property);
+        }
+
+      }
+
+    })(dat.controllers.OptionController,
+dat.controllers.NumberControllerBox,
+dat.controllers.NumberControllerSlider,
+dat.controllers.StringController = (function (Controller, dom, common) {
+
+  /**
+   * @class Provides a text input to alter the string property of an object.
+   *
+   * @extends dat.controllers.Controller
+   *
+   * @param {Object} object The object to be manipulated
+   * @param {string} property The name of the property to be manipulated
+   *
+   * @member dat.controllers
+   */
+  var StringController = function(object, property) {
+
+    StringController.superclass.call(this, object, property);
+
+    var _this = this;
+
+    this.__input = document.createElement('input');
+    this.__input.setAttribute('type', 'text');
+
+    dom.bind(this.__input, 'keyup', onChange);
+    dom.bind(this.__input, 'change', onChange);
+    dom.bind(this.__input, 'blur', onBlur);
+    dom.bind(this.__input, 'keydown', function(e) {
+      if (e.keyCode === 13) {
+        this.blur();
+      }
+    });
+    
+
+    function onChange() {
+      _this.setValue(_this.__input.value);
+    }
+
+    function onBlur() {
+      if (_this.__onFinishChange) {
+        _this.__onFinishChange.call(_this, _this.getValue());
+      }
+    }
+
+    this.updateDisplay();
+
+    this.domElement.appendChild(this.__input);
+
+  };
+
+  StringController.superclass = Controller;
+
+  common.extend(
+
+      StringController.prototype,
+      Controller.prototype,
+
+      {
+
+        updateDisplay: function() {
+          // Stops the caret from moving on account of:
+          // keyup -> setValue -> updateDisplay
+          if (!dom.isActive(this.__input)) {
+            this.__input.value = this.getValue();
+          }
+          return StringController.superclass.prototype.updateDisplay.call(this);
+        }
+
+      }
+
+  );
+
+  return StringController;
+
+})(dat.controllers.Controller,
+dat.dom.dom,
+dat.utils.common),
+dat.controllers.FunctionController,
+dat.controllers.BooleanController,
+dat.utils.common),
+dat.controllers.Controller,
+dat.controllers.BooleanController,
+dat.controllers.FunctionController,
+dat.controllers.NumberControllerBox,
+dat.controllers.NumberControllerSlider,
+dat.controllers.OptionController,
+dat.controllers.ColorController = (function (Controller, dom, Color, interpret, common) {
+
+  var ColorController = function(object, property) {
+
+    ColorController.superclass.call(this, object, property);
+
+    this.__color = new Color(this.getValue());
+    this.__temp = new Color(0);
+
+    var _this = this;
+
+    this.domElement = document.createElement('div');
+
+    dom.makeSelectable(this.domElement, false);
+
+    this.__selector = document.createElement('div');
+    this.__selector.className = 'selector';
+
+    this.__saturation_field = document.createElement('div');
+    this.__saturation_field.className = 'saturation-field';
+
+    this.__field_knob = document.createElement('div');
+    this.__field_knob.className = 'field-knob';
+    this.__field_knob_border = '2px solid ';
+
+    this.__hue_knob = document.createElement('div');
+    this.__hue_knob.className = 'hue-knob';
+
+    this.__hue_field = document.createElement('div');
+    this.__hue_field.className = 'hue-field';
+
+    this.__input = document.createElement('input');
+    this.__input.type = 'text';
+    this.__input_textShadow = '0 1px 1px ';
+
+    dom.bind(this.__input, 'keydown', function(e) {
+      if (e.keyCode === 13) { // on enter
+        onBlur.call(this);
+      }
+    });
+
+    dom.bind(this.__input, 'blur', onBlur);
+
+    dom.bind(this.__selector, 'mousedown', function(e) {
+
+      dom
+        .addClass(this, 'drag')
+        .bind(window, 'mouseup', function(e) {
+          dom.removeClass(_this.__selector, 'drag');
+        });
+
+    });
+
+    var value_field = document.createElement('div');
+
+    common.extend(this.__selector.style, {
+      width: '122px',
+      height: '102px',
+      padding: '3px',
+      backgroundColor: '#222',
+      boxShadow: '0px 1px 3px rgba(0,0,0,0.3)'
+    });
+
+    common.extend(this.__field_knob.style, {
+      position: 'absolute',
+      width: '12px',
+      height: '12px',
+      border: this.__field_knob_border + (this.__color.v < .5 ? '#fff' : '#000'),
+      boxShadow: '0px 1px 3px rgba(0,0,0,0.5)',
+      borderRadius: '12px',
+      zIndex: 1
+    });
+    
+    common.extend(this.__hue_knob.style, {
+      position: 'absolute',
+      width: '15px',
+      height: '2px',
+      borderRight: '4px solid #fff',
+      zIndex: 1
+    });
+
+    common.extend(this.__saturation_field.style, {
+      width: '100px',
+      height: '100px',
+      border: '1px solid #555',
+      marginRight: '3px',
+      display: 'inline-block',
+      cursor: 'pointer'
+    });
+
+    common.extend(value_field.style, {
+      width: '100%',
+      height: '100%',
+      background: 'none'
+    });
+    
+    linearGradient(value_field, 'top', 'rgba(0,0,0,0)', '#000');
+
+    common.extend(this.__hue_field.style, {
+      width: '15px',
+      height: '100px',
+      display: 'inline-block',
+      border: '1px solid #555',
+      cursor: 'ns-resize'
+    });
+
+    hueGradient(this.__hue_field);
+
+    common.extend(this.__input.style, {
+      outline: 'none',
+//      width: '120px',
+      textAlign: 'center',
+//      padding: '4px',
+//      marginBottom: '6px',
+      color: '#fff',
+      border: 0,
+      fontWeight: 'bold',
+      textShadow: this.__input_textShadow + 'rgba(0,0,0,0.7)'
+    });
+
+    dom.bind(this.__saturation_field, 'mousedown', fieldDown);
+    dom.bind(this.__field_knob, 'mousedown', fieldDown);
+
+    dom.bind(this.__hue_field, 'mousedown', function(e) {
+      setH(e);
+      dom.bind(window, 'mousemove', setH);
+      dom.bind(window, 'mouseup', unbindH);
+    });
+
+    function fieldDown(e) {
+      setSV(e);
+      // document.body.style.cursor = 'none';
+      dom.bind(window, 'mousemove', setSV);
+      dom.bind(window, 'mouseup', unbindSV);
+    }
+
+    function unbindSV() {
+      dom.unbind(window, 'mousemove', setSV);
+      dom.unbind(window, 'mouseup', unbindSV);
+      // document.body.style.cursor = 'default';
+    }
+
+    function onBlur() {
+      var i = interpret(this.value);
+      if (i !== false) {
+        _this.__color.__state = i;
+        _this.setValue(_this.__color.toOriginal());
+      } else {
+        this.value = _this.__color.toString();
+      }
+    }
+
+    function unbindH() {
+      dom.unbind(window, 'mousemove', setH);
+      dom.unbind(window, 'mouseup', unbindH);
+    }
+
+    this.__saturation_field.appendChild(value_field);
+    this.__selector.appendChild(this.__field_knob);
+    this.__selector.appendChild(this.__saturation_field);
+    this.__selector.appendChild(this.__hue_field);
+    this.__hue_field.appendChild(this.__hue_knob);
+
+    this.domElement.appendChild(this.__input);
+    this.domElement.appendChild(this.__selector);
+
+    this.updateDisplay();
+
+    function setSV(e) {
+
+      e.preventDefault();
+
+      var w = dom.getWidth(_this.__saturation_field);
+      var o = dom.getOffset(_this.__saturation_field);
+      var s = (e.clientX - o.left + document.body.scrollLeft) / w;
+      var v = 1 - (e.clientY - o.top + document.body.scrollTop) / w;
+
+      if (v > 1) v = 1;
+      else if (v < 0) v = 0;
+
+      if (s > 1) s = 1;
+      else if (s < 0) s = 0;
+
+      _this.__color.v = v;
+      _this.__color.s = s;
+
+      _this.setValue(_this.__color.toOriginal());
+
+
+      return false;
+
+    }
+
+    function setH(e) {
+
+      e.preventDefault();
+
+      var s = dom.getHeight(_this.__hue_field);
+      var o = dom.getOffset(_this.__hue_field);
+      var h = 1 - (e.clientY - o.top + document.body.scrollTop) / s;
+
+      if (h > 1) h = 1;
+      else if (h < 0) h = 0;
+
+      _this.__color.h = h * 360;
+
+      _this.setValue(_this.__color.toOriginal());
+
+      return false;
+
+    }
+
+  };
+
+  ColorController.superclass = Controller;
+
+  common.extend(
+
+      ColorController.prototype,
+      Controller.prototype,
+
+      {
+
+        updateDisplay: function() {
+
+          var i = interpret(this.getValue());
+
+          if (i !== false) {
+
+            var mismatch = false;
+
+            // Check for mismatch on the interpreted value.
+
+            common.each(Color.COMPONENTS, function(component) {
+              if (!common.isUndefined(i[component]) &&
+                  !common.isUndefined(this.__color.__state[component]) &&
+                  i[component] !== this.__color.__state[component]) {
+                mismatch = true;
+                return {}; // break
+              }
+            }, this);
+
+            // If nothing diverges, we keep our previous values
+            // for statefulness, otherwise we recalculate fresh
+            if (mismatch) {
+              common.extend(this.__color.__state, i);
+            }
+
+          }
+
+          common.extend(this.__temp.__state, this.__color.__state);
+
+          this.__temp.a = 1;
+
+          var flip = (this.__color.v < .5 || this.__color.s > .5) ? 255 : 0;
+          var _flip = 255 - flip;
+
+          common.extend(this.__field_knob.style, {
+            marginLeft: 100 * this.__color.s - 7 + 'px',
+            marginTop: 100 * (1 - this.__color.v) - 7 + 'px',
+            backgroundColor: this.__temp.toString(),
+            border: this.__field_knob_border + 'rgb(' + flip + ',' + flip + ',' + flip +')'
+          });
+
+          this.__hue_knob.style.marginTop = (1 - this.__color.h / 360) * 100 + 'px'
+
+          this.__temp.s = 1;
+          this.__temp.v = 1;
+
+          linearGradient(this.__saturation_field, 'left', '#fff', this.__temp.toString());
+
+          common.extend(this.__input.style, {
+            backgroundColor: this.__input.value = this.__color.toString(),
+            color: 'rgb(' + flip + ',' + flip + ',' + flip +')',
+            textShadow: this.__input_textShadow + 'rgba(' + _flip + ',' + _flip + ',' + _flip +',.7)'
+          });
+
+        }
+
+      }
+
+  );
+  
+  var vendors = ['-moz-','-o-','-webkit-','-ms-',''];
+  
+  function linearGradient(elem, x, a, b) {
+    elem.style.background = '';
+    common.each(vendors, function(vendor) {
+      elem.style.cssText += 'background: ' + vendor + 'linear-gradient('+x+', '+a+' 0%, ' + b + ' 100%); ';
+    });
+  }
+  
+  function hueGradient(elem) {
+    elem.style.background = '';
+    elem.style.cssText += 'background: -moz-linear-gradient(top,  #ff0000 0%, #ff00ff 17%, #0000ff 34%, #00ffff 50%, #00ff00 67%, #ffff00 84%, #ff0000 100%);'
+    elem.style.cssText += 'background: -webkit-linear-gradient(top,  #ff0000 0%,#ff00ff 17%,#0000ff 34%,#00ffff 50%,#00ff00 67%,#ffff00 84%,#ff0000 100%);'
+    elem.style.cssText += 'background: -o-linear-gradient(top,  #ff0000 0%,#ff00ff 17%,#0000ff 34%,#00ffff 50%,#00ff00 67%,#ffff00 84%,#ff0000 100%);'
+    elem.style.cssText += 'background: -ms-linear-gradient(top,  #ff0000 0%,#ff00ff 17%,#0000ff 34%,#00ffff 50%,#00ff00 67%,#ffff00 84%,#ff0000 100%);'
+    elem.style.cssText += 'background: linear-gradient(top,  #ff0000 0%,#ff00ff 17%,#0000ff 34%,#00ffff 50%,#00ff00 67%,#ffff00 84%,#ff0000 100%);'
+  }
+
+
+  return ColorController;
+
+})(dat.controllers.Controller,
+dat.dom.dom,
+dat.color.Color = (function (interpret, math, toString, common) {
+
+  var Color = function() {
+
+    this.__state = interpret.apply(this, arguments);
+
+    if (this.__state === false) {
+      throw 'Failed to interpret color arguments';
+    }
+
+    this.__state.a = this.__state.a || 1;
+
+
+  };
+
+  Color.COMPONENTS = ['r','g','b','h','s','v','hex','a'];
+
+  common.extend(Color.prototype, {
+
+    toString: function() {
+      return toString(this);
+    },
+
+    toOriginal: function() {
+      return this.__state.conversion.write(this);
+    }
+
+  });
+
+  defineRGBComponent(Color.prototype, 'r', 2);
+  defineRGBComponent(Color.prototype, 'g', 1);
+  defineRGBComponent(Color.prototype, 'b', 0);
+
+  defineHSVComponent(Color.prototype, 'h');
+  defineHSVComponent(Color.prototype, 's');
+  defineHSVComponent(Color.prototype, 'v');
+
+  Object.defineProperty(Color.prototype, 'a', {
+
+    get: function() {
+      return this.__state.a;
+    },
+
+    set: function(v) {
+      this.__state.a = v;
+    }
+
+  });
+
+  Object.defineProperty(Color.prototype, 'hex', {
+
+    get: function() {
+
+      if (!this.__state.space !== 'HEX') {
+        this.__state.hex = math.rgb_to_hex(this.r, this.g, this.b);
+      }
+
+      return this.__state.hex;
+
+    },
+
+    set: function(v) {
+
+      this.__state.space = 'HEX';
+      this.__state.hex = v;
+
+    }
+
+  });
+
+  function defineRGBComponent(target, component, componentHexIndex) {
+
+    Object.defineProperty(target, component, {
+
+      get: function() {
+
+        if (this.__state.space === 'RGB') {
+          return this.__state[component];
+        }
+
+        recalculateRGB(this, component, componentHexIndex);
+
+        return this.__state[component];
+
+      },
+
+      set: function(v) {
+
+        if (this.__state.space !== 'RGB') {
+          recalculateRGB(this, component, componentHexIndex);
+          this.__state.space = 'RGB';
+        }
+
+        this.__state[component] = v;
+
+      }
+
+    });
+
+  }
+
+  function defineHSVComponent(target, component) {
+
+    Object.defineProperty(target, component, {
+
+      get: function() {
+
+        if (this.__state.space === 'HSV')
+          return this.__state[component];
+
+        recalculateHSV(this);
+
+        return this.__state[component];
+
+      },
+
+      set: function(v) {
+
+        if (this.__state.space !== 'HSV') {
+          recalculateHSV(this);
+          this.__state.space = 'HSV';
+        }
+
+        this.__state[component] = v;
+
+      }
+
+    });
+
+  }
+
+  function recalculateRGB(color, component, componentHexIndex) {
+
+    if (color.__state.space === 'HEX') {
+
+      color.__state[component] = math.component_from_hex(color.__state.hex, componentHexIndex);
+
+    } else if (color.__state.space === 'HSV') {
+
+      common.extend(color.__state, math.hsv_to_rgb(color.__state.h, color.__state.s, color.__state.v));
+
+    } else {
+
+      throw 'Corrupted color state';
+
+    }
+
+  }
+
+  function recalculateHSV(color) {
+
+    var result = math.rgb_to_hsv(color.r, color.g, color.b);
+
+    common.extend(color.__state,
+        {
+          s: result.s,
+          v: result.v
+        }
+    );
+
+    if (!common.isNaN(result.h)) {
+      color.__state.h = result.h;
+    } else if (common.isUndefined(color.__state.h)) {
+      color.__state.h = 0;
+    }
+
+  }
+
+  return Color;
+
+})(dat.color.interpret,
+dat.color.math = (function () {
+
+  var tmpComponent;
+
+  return {
+
+    hsv_to_rgb: function(h, s, v) {
+
+      var hi = Math.floor(h / 60) % 6;
+
+      var f = h / 60 - Math.floor(h / 60);
+      var p = v * (1.0 - s);
+      var q = v * (1.0 - (f * s));
+      var t = v * (1.0 - ((1.0 - f) * s));
+      var c = [
+        [v, t, p],
+        [q, v, p],
+        [p, v, t],
+        [p, q, v],
+        [t, p, v],
+        [v, p, q]
+      ][hi];
+
+      return {
+        r: c[0] * 255,
+        g: c[1] * 255,
+        b: c[2] * 255
+      };
+
+    },
+
+    rgb_to_hsv: function(r, g, b) {
+
+      var min = Math.min(r, g, b),
+          max = Math.max(r, g, b),
+          delta = max - min,
+          h, s;
+
+      if (max != 0) {
+        s = delta / max;
+      } else {
+        return {
+          h: NaN,
+          s: 0,
+          v: 0
+        };
+      }
+
+      if (r == max) {
+        h = (g - b) / delta;
+      } else if (g == max) {
+        h = 2 + (b - r) / delta;
+      } else {
+        h = 4 + (r - g) / delta;
+      }
+      h /= 6;
+      if (h < 0) {
+        h += 1;
+      }
+
+      return {
+        h: h * 360,
+        s: s,
+        v: max / 255
+      };
+    },
+
+    rgb_to_hex: function(r, g, b) {
+      var hex = this.hex_with_component(0, 2, r);
+      hex = this.hex_with_component(hex, 1, g);
+      hex = this.hex_with_component(hex, 0, b);
+      return hex;
+    },
+
+    component_from_hex: function(hex, componentIndex) {
+      return (hex >> (componentIndex * 8)) & 0xFF;
+    },
+
+    hex_with_component: function(hex, componentIndex, value) {
+      return value << (tmpComponent = componentIndex * 8) | (hex & ~ (0xFF << tmpComponent));
+    }
+
+  }
+
+})(),
+dat.color.toString,
+dat.utils.common),
+dat.color.interpret,
+dat.utils.common),
+dat.utils.requestAnimationFrame = (function () {
+
+  /**
+   * requirejs version of Paul Irish's RequestAnimationFrame
+   * http://paulirish.com/2011/requestanimationframe-for-smart-animating/
+   */
+
+  return window.webkitRequestAnimationFrame ||
+      window.mozRequestAnimationFrame ||
+      window.oRequestAnimationFrame ||
+      window.msRequestAnimationFrame ||
+      function(callback, element) {
+
+        window.setTimeout(callback, 1000 / 60);
+
+      };
+})(),
+dat.dom.CenteredDiv = (function (dom, common) {
+
+
+  var CenteredDiv = function() {
+
+    this.backgroundElement = document.createElement('div');
+    common.extend(this.backgroundElement.style, {
+      backgroundColor: 'rgba(0,0,0,0.8)',
+      top: 0,
+      left: 0,
+      display: 'none',
+      zIndex: '1000',
+      opacity: 0,
+      WebkitTransition: 'opacity 0.2s linear'
+    });
+
+    dom.makeFullscreen(this.backgroundElement);
+    this.backgroundElement.style.position = 'fixed';
+
+    this.domElement = document.createElement('div');
+    common.extend(this.domElement.style, {
+      position: 'fixed',
+      display: 'none',
+      zIndex: '1001',
+      opacity: 0,
+      WebkitTransition: '-webkit-transform 0.2s ease-out, opacity 0.2s linear'
+    });
+
+
+    document.body.appendChild(this.backgroundElement);
+    document.body.appendChild(this.domElement);
+
+    var _this = this;
+    dom.bind(this.backgroundElement, 'click', function() {
+      _this.hide();
+    });
+
+
+  };
+
+  CenteredDiv.prototype.show = function() {
+
+    var _this = this;
+    
+
+
+    this.backgroundElement.style.display = 'block';
+
+    this.domElement.style.display = 'block';
+    this.domElement.style.opacity = 0;
+//    this.domElement.style.top = '52%';
+    this.domElement.style.webkitTransform = 'scale(1.1)';
+
+    this.layout();
+
+    common.defer(function() {
+      _this.backgroundElement.style.opacity = 1;
+      _this.domElement.style.opacity = 1;
+      _this.domElement.style.webkitTransform = 'scale(1)';
+    });
+
+  };
+
+  CenteredDiv.prototype.hide = function() {
+
+    var _this = this;
+
+    var hide = function() {
+
+      _this.domElement.style.display = 'none';
+      _this.backgroundElement.style.display = 'none';
+
+      dom.unbind(_this.domElement, 'webkitTransitionEnd', hide);
+      dom.unbind(_this.domElement, 'transitionend', hide);
+      dom.unbind(_this.domElement, 'oTransitionEnd', hide);
+
+    };
+
+    dom.bind(this.domElement, 'webkitTransitionEnd', hide);
+    dom.bind(this.domElement, 'transitionend', hide);
+    dom.bind(this.domElement, 'oTransitionEnd', hide);
+
+    this.backgroundElement.style.opacity = 0;
+//    this.domElement.style.top = '48%';
+    this.domElement.style.opacity = 0;
+    this.domElement.style.webkitTransform = 'scale(1.1)';
+
+  };
+
+  CenteredDiv.prototype.layout = function() {
+    this.domElement.style.left = window.innerWidth/2 - dom.getWidth(this.domElement) / 2 + 'px';
+    this.domElement.style.top = window.innerHeight/2 - dom.getHeight(this.domElement) / 2 + 'px';
+  };
+  
+  function lockScroll(e) {
+    console.log(e);
+  }
+
+  return CenteredDiv;
+
+})(dat.dom.dom,
+dat.utils.common),
+dat.dom.dom,
+dat.utils.common);
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports) {
+
+/**
+ * dat-gui JavaScript Controller Library
+ * http://code.google.com/p/dat-gui
+ *
+ * Copyright 2011 Data Arts Team, Google Creative Lab
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
+
+/** @namespace */
+var dat = module.exports = dat || {};
+
+/** @namespace */
+dat.color = dat.color || {};
+
+/** @namespace */
+dat.utils = dat.utils || {};
+
+dat.utils.common = (function () {
+  
+  var ARR_EACH = Array.prototype.forEach;
+  var ARR_SLICE = Array.prototype.slice;
+
+  /**
+   * Band-aid methods for things that should be a lot easier in JavaScript.
+   * Implementation and structure inspired by underscore.js
+   * http://documentcloud.github.com/underscore/
+   */
+
+  return { 
+    
+    BREAK: {},
+  
+    extend: function(target) {
+      
+      this.each(ARR_SLICE.call(arguments, 1), function(obj) {
+        
+        for (var key in obj)
+          if (!this.isUndefined(obj[key])) 
+            target[key] = obj[key];
+        
+      }, this);
+      
+      return target;
+      
+    },
+    
+    defaults: function(target) {
+      
+      this.each(ARR_SLICE.call(arguments, 1), function(obj) {
+        
+        for (var key in obj)
+          if (this.isUndefined(target[key])) 
+            target[key] = obj[key];
+        
+      }, this);
+      
+      return target;
+    
+    },
+    
+    compose: function() {
+      var toCall = ARR_SLICE.call(arguments);
+            return function() {
+              var args = ARR_SLICE.call(arguments);
+              for (var i = toCall.length -1; i >= 0; i--) {
+                args = [toCall[i].apply(this, args)];
+              }
+              return args[0];
+            }
+    },
+    
+    each: function(obj, itr, scope) {
+
+      
+      if (ARR_EACH && obj.forEach === ARR_EACH) { 
+        
+        obj.forEach(itr, scope);
+        
+      } else if (obj.length === obj.length + 0) { // Is number but not NaN
+        
+        for (var key = 0, l = obj.length; key < l; key++)
+          if (key in obj && itr.call(scope, obj[key], key) === this.BREAK) 
+            return;
+            
+      } else {
+
+        for (var key in obj) 
+          if (itr.call(scope, obj[key], key) === this.BREAK)
+            return;
+            
+      }
+            
+    },
+    
+    defer: function(fnc) {
+      setTimeout(fnc, 0);
+    },
+    
+    toArray: function(obj) {
+      if (obj.toArray) return obj.toArray();
+      return ARR_SLICE.call(obj);
+    },
+
+    isUndefined: function(obj) {
+      return obj === undefined;
+    },
+    
+    isNull: function(obj) {
+      return obj === null;
+    },
+    
+    isNaN: function(obj) {
+      return obj !== obj;
+    },
+    
+    isArray: Array.isArray || function(obj) {
+      return obj.constructor === Array;
+    },
+    
+    isObject: function(obj) {
+      return obj === Object(obj);
+    },
+    
+    isNumber: function(obj) {
+      return obj === obj+0;
+    },
+    
+    isString: function(obj) {
+      return obj === obj+'';
+    },
+    
+    isBoolean: function(obj) {
+      return obj === false || obj === true;
+    },
+    
+    isFunction: function(obj) {
+      return Object.prototype.toString.call(obj) === '[object Function]';
+    }
+  
+  };
+    
+})();
+
+
+dat.color.toString = (function (common) {
+
+  return function(color) {
+
+    if (color.a == 1 || common.isUndefined(color.a)) {
+
+      var s = color.hex.toString(16);
+      while (s.length < 6) {
+        s = '0' + s;
+      }
+
+      return '#' + s;
+
+    } else {
+
+      return 'rgba(' + Math.round(color.r) + ',' + Math.round(color.g) + ',' + Math.round(color.b) + ',' + color.a + ')';
+
+    }
+
+  }
+
+})(dat.utils.common);
+
+
+dat.Color = dat.color.Color = (function (interpret, math, toString, common) {
+
+  var Color = function() {
+
+    this.__state = interpret.apply(this, arguments);
+
+    if (this.__state === false) {
+      throw 'Failed to interpret color arguments';
+    }
+
+    this.__state.a = this.__state.a || 1;
+
+
+  };
+
+  Color.COMPONENTS = ['r','g','b','h','s','v','hex','a'];
+
+  common.extend(Color.prototype, {
+
+    toString: function() {
+      return toString(this);
+    },
+
+    toOriginal: function() {
+      return this.__state.conversion.write(this);
+    }
+
+  });
+
+  defineRGBComponent(Color.prototype, 'r', 2);
+  defineRGBComponent(Color.prototype, 'g', 1);
+  defineRGBComponent(Color.prototype, 'b', 0);
+
+  defineHSVComponent(Color.prototype, 'h');
+  defineHSVComponent(Color.prototype, 's');
+  defineHSVComponent(Color.prototype, 'v');
+
+  Object.defineProperty(Color.prototype, 'a', {
+
+    get: function() {
+      return this.__state.a;
+    },
+
+    set: function(v) {
+      this.__state.a = v;
+    }
+
+  });
+
+  Object.defineProperty(Color.prototype, 'hex', {
+
+    get: function() {
+
+      if (!this.__state.space !== 'HEX') {
+        this.__state.hex = math.rgb_to_hex(this.r, this.g, this.b);
+      }
+
+      return this.__state.hex;
+
+    },
+
+    set: function(v) {
+
+      this.__state.space = 'HEX';
+      this.__state.hex = v;
+
+    }
+
+  });
+
+  function defineRGBComponent(target, component, componentHexIndex) {
+
+    Object.defineProperty(target, component, {
+
+      get: function() {
+
+        if (this.__state.space === 'RGB') {
+          return this.__state[component];
+        }
+
+        recalculateRGB(this, component, componentHexIndex);
+
+        return this.__state[component];
+
+      },
+
+      set: function(v) {
+
+        if (this.__state.space !== 'RGB') {
+          recalculateRGB(this, component, componentHexIndex);
+          this.__state.space = 'RGB';
+        }
+
+        this.__state[component] = v;
+
+      }
+
+    });
+
+  }
+
+  function defineHSVComponent(target, component) {
+
+    Object.defineProperty(target, component, {
+
+      get: function() {
+
+        if (this.__state.space === 'HSV')
+          return this.__state[component];
+
+        recalculateHSV(this);
+
+        return this.__state[component];
+
+      },
+
+      set: function(v) {
+
+        if (this.__state.space !== 'HSV') {
+          recalculateHSV(this);
+          this.__state.space = 'HSV';
+        }
+
+        this.__state[component] = v;
+
+      }
+
+    });
+
+  }
+
+  function recalculateRGB(color, component, componentHexIndex) {
+
+    if (color.__state.space === 'HEX') {
+
+      color.__state[component] = math.component_from_hex(color.__state.hex, componentHexIndex);
+
+    } else if (color.__state.space === 'HSV') {
+
+      common.extend(color.__state, math.hsv_to_rgb(color.__state.h, color.__state.s, color.__state.v));
+
+    } else {
+
+      throw 'Corrupted color state';
+
+    }
+
+  }
+
+  function recalculateHSV(color) {
+
+    var result = math.rgb_to_hsv(color.r, color.g, color.b);
+
+    common.extend(color.__state,
+        {
+          s: result.s,
+          v: result.v
+        }
+    );
+
+    if (!common.isNaN(result.h)) {
+      color.__state.h = result.h;
+    } else if (common.isUndefined(color.__state.h)) {
+      color.__state.h = 0;
+    }
+
+  }
+
+  return Color;
+
+})(dat.color.interpret = (function (toString, common) {
+
+  var result, toReturn;
+
+  var interpret = function() {
+
+    toReturn = false;
+
+    var original = arguments.length > 1 ? common.toArray(arguments) : arguments[0];
+
+    common.each(INTERPRETATIONS, function(family) {
+
+      if (family.litmus(original)) {
+
+        common.each(family.conversions, function(conversion, conversionName) {
+
+          result = conversion.read(original);
+
+          if (toReturn === false && result !== false) {
+            toReturn = result;
+            result.conversionName = conversionName;
+            result.conversion = conversion;
+            return common.BREAK;
+
+          }
+
+        });
+
+        return common.BREAK;
+
+      }
+
+    });
+
+    return toReturn;
+
+  };
+
+  var INTERPRETATIONS = [
+
+    // Strings
+    {
+
+      litmus: common.isString,
+
+      conversions: {
+
+        THREE_CHAR_HEX: {
+
+          read: function(original) {
+
+            var test = original.match(/^#([A-F0-9])([A-F0-9])([A-F0-9])$/i);
+            if (test === null) return false;
+
+            return {
+              space: 'HEX',
+              hex: parseInt(
+                  '0x' +
+                      test[1].toString() + test[1].toString() +
+                      test[2].toString() + test[2].toString() +
+                      test[3].toString() + test[3].toString())
+            };
+
+          },
+
+          write: toString
+
+        },
+
+        SIX_CHAR_HEX: {
+
+          read: function(original) {
+
+            var test = original.match(/^#([A-F0-9]{6})$/i);
+            if (test === null) return false;
+
+            return {
+              space: 'HEX',
+              hex: parseInt('0x' + test[1].toString())
+            };
+
+          },
+
+          write: toString
+
+        },
+
+        CSS_RGB: {
+
+          read: function(original) {
+
+            var test = original.match(/^rgb\(\s*(.+)\s*,\s*(.+)\s*,\s*(.+)\s*\)/);
+            if (test === null) return false;
+
+            return {
+              space: 'RGB',
+              r: parseFloat(test[1]),
+              g: parseFloat(test[2]),
+              b: parseFloat(test[3])
+            };
+
+          },
+
+          write: toString
+
+        },
+
+        CSS_RGBA: {
+
+          read: function(original) {
+
+            var test = original.match(/^rgba\(\s*(.+)\s*,\s*(.+)\s*,\s*(.+)\s*\,\s*(.+)\s*\)/);
+            if (test === null) return false;
+
+            return {
+              space: 'RGB',
+              r: parseFloat(test[1]),
+              g: parseFloat(test[2]),
+              b: parseFloat(test[3]),
+              a: parseFloat(test[4])
+            };
+
+          },
+
+          write: toString
+
+        }
+
+      }
+
+    },
+
+    // Numbers
+    {
+
+      litmus: common.isNumber,
+
+      conversions: {
+
+        HEX: {
+          read: function(original) {
+            return {
+              space: 'HEX',
+              hex: original,
+              conversionName: 'HEX'
+            }
+          },
+
+          write: function(color) {
+            return color.hex;
+          }
+        }
+
+      }
+
+    },
+
+    // Arrays
+    {
+
+      litmus: common.isArray,
+
+      conversions: {
+
+        RGB_ARRAY: {
+          read: function(original) {
+            if (original.length != 3) return false;
+            return {
+              space: 'RGB',
+              r: original[0],
+              g: original[1],
+              b: original[2]
+            };
+          },
+
+          write: function(color) {
+            return [color.r, color.g, color.b];
+          }
+
+        },
+
+        RGBA_ARRAY: {
+          read: function(original) {
+            if (original.length != 4) return false;
+            return {
+              space: 'RGB',
+              r: original[0],
+              g: original[1],
+              b: original[2],
+              a: original[3]
+            };
+          },
+
+          write: function(color) {
+            return [color.r, color.g, color.b, color.a];
+          }
+
+        }
+
+      }
+
+    },
+
+    // Objects
+    {
+
+      litmus: common.isObject,
+
+      conversions: {
+
+        RGBA_OBJ: {
+          read: function(original) {
+            if (common.isNumber(original.r) &&
+                common.isNumber(original.g) &&
+                common.isNumber(original.b) &&
+                common.isNumber(original.a)) {
+              return {
+                space: 'RGB',
+                r: original.r,
+                g: original.g,
+                b: original.b,
+                a: original.a
+              }
+            }
+            return false;
+          },
+
+          write: function(color) {
+            return {
+              r: color.r,
+              g: color.g,
+              b: color.b,
+              a: color.a
+            }
+          }
+        },
+
+        RGB_OBJ: {
+          read: function(original) {
+            if (common.isNumber(original.r) &&
+                common.isNumber(original.g) &&
+                common.isNumber(original.b)) {
+              return {
+                space: 'RGB',
+                r: original.r,
+                g: original.g,
+                b: original.b
+              }
+            }
+            return false;
+          },
+
+          write: function(color) {
+            return {
+              r: color.r,
+              g: color.g,
+              b: color.b
+            }
+          }
+        },
+
+        HSVA_OBJ: {
+          read: function(original) {
+            if (common.isNumber(original.h) &&
+                common.isNumber(original.s) &&
+                common.isNumber(original.v) &&
+                common.isNumber(original.a)) {
+              return {
+                space: 'HSV',
+                h: original.h,
+                s: original.s,
+                v: original.v,
+                a: original.a
+              }
+            }
+            return false;
+          },
+
+          write: function(color) {
+            return {
+              h: color.h,
+              s: color.s,
+              v: color.v,
+              a: color.a
+            }
+          }
+        },
+
+        HSV_OBJ: {
+          read: function(original) {
+            if (common.isNumber(original.h) &&
+                common.isNumber(original.s) &&
+                common.isNumber(original.v)) {
+              return {
+                space: 'HSV',
+                h: original.h,
+                s: original.s,
+                v: original.v
+              }
+            }
+            return false;
+          },
+
+          write: function(color) {
+            return {
+              h: color.h,
+              s: color.s,
+              v: color.v
+            }
+          }
+
+        }
+
+      }
+
+    }
+
+
+  ];
+
+  return interpret;
+
+
+})(dat.color.toString,
+dat.utils.common),
+dat.color.math = (function () {
+
+  var tmpComponent;
+
+  return {
+
+    hsv_to_rgb: function(h, s, v) {
+
+      var hi = Math.floor(h / 60) % 6;
+
+      var f = h / 60 - Math.floor(h / 60);
+      var p = v * (1.0 - s);
+      var q = v * (1.0 - (f * s));
+      var t = v * (1.0 - ((1.0 - f) * s));
+      var c = [
+        [v, t, p],
+        [q, v, p],
+        [p, v, t],
+        [p, q, v],
+        [t, p, v],
+        [v, p, q]
+      ][hi];
+
+      return {
+        r: c[0] * 255,
+        g: c[1] * 255,
+        b: c[2] * 255
+      };
+
+    },
+
+    rgb_to_hsv: function(r, g, b) {
+
+      var min = Math.min(r, g, b),
+          max = Math.max(r, g, b),
+          delta = max - min,
+          h, s;
+
+      if (max != 0) {
+        s = delta / max;
+      } else {
+        return {
+          h: NaN,
+          s: 0,
+          v: 0
+        };
+      }
+
+      if (r == max) {
+        h = (g - b) / delta;
+      } else if (g == max) {
+        h = 2 + (b - r) / delta;
+      } else {
+        h = 4 + (r - g) / delta;
+      }
+      h /= 6;
+      if (h < 0) {
+        h += 1;
+      }
+
+      return {
+        h: h * 360,
+        s: s,
+        v: max / 255
+      };
+    },
+
+    rgb_to_hex: function(r, g, b) {
+      var hex = this.hex_with_component(0, 2, r);
+      hex = this.hex_with_component(hex, 1, g);
+      hex = this.hex_with_component(hex, 0, b);
+      return hex;
+    },
+
+    component_from_hex: function(hex, componentIndex) {
+      return (hex >> (componentIndex * 8)) & 0xFF;
+    },
+
+    hex_with_component: function(hex, componentIndex, value) {
+      return value << (tmpComponent = componentIndex * 8) | (hex & ~ (0xFF << tmpComponent));
+    }
+
+  }
+
+})(),
+dat.color.toString,
+dat.utils.common);
+
+/***/ }),
+/* 8 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_examples_windowDemo__ = __webpack_require__(9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_examples_windowDemo___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_examples_windowDemo__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils__ = __webpack_require__(3);
+
+
+
+const canvas = document.getElementById('canvas');
+canvas.addEventListener("webglcontextlost", function(e) {
+  alert('WebGL context lost. You will need to reload the page.'); e.preventDefault();
+}, false);
+
+const params = {
+  frequency: 1,
+};
+
+const windowDemoModule = new __WEBPACK_IMPORTED_MODULE_0_examples_windowDemo___default.a({
+  canvas: canvas,
+  arguments: [window.innerWidth.toString(), window.innerHeight.toString()],
+  onRuntimeInitialized: function() {
+    moduleBindings.updateFrequency(params.frequency);
+    Object(__WEBPACK_IMPORTED_MODULE_1__utils__["b" /* setCanvasToWindowSize */])(windowDemoModule);
+  },
+});
+
+const moduleBindings = {
+  updateFrequency: windowDemoModule.cwrap('updateFrequency', 'number', ['number'])
+};
+
+const gui = Object(__WEBPACK_IMPORTED_MODULE_1__utils__["a" /* createStatsAndGUI */])();
+gui.add(params, 'frequency', 0, 1).onChange(moduleBindings.updateFrequency);
+
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(process) {var Module = function(Module) {
+  Module = Module || {};
+  var Module = Module;
+
+var Module;if(!Module)Module=(typeof Module!=="undefined"?Module:null)||{};var moduleOverrides={};for(var key in Module){if(Module.hasOwnProperty(key)){moduleOverrides[key]=Module[key]}}var ENVIRONMENT_IS_WEB=false;var ENVIRONMENT_IS_WORKER=false;var ENVIRONMENT_IS_NODE=false;var ENVIRONMENT_IS_SHELL=false;if(Module["ENVIRONMENT"]){if(Module["ENVIRONMENT"]==="WEB"){ENVIRONMENT_IS_WEB=true}else if(Module["ENVIRONMENT"]==="WORKER"){ENVIRONMENT_IS_WORKER=true}else if(Module["ENVIRONMENT"]==="NODE"){ENVIRONMENT_IS_NODE=true}else if(Module["ENVIRONMENT"]==="SHELL"){ENVIRONMENT_IS_SHELL=true}else{throw new Error("The provided Module['ENVIRONMENT'] value is not valid. It must be one of: WEB|WORKER|NODE|SHELL.")}}else{ENVIRONMENT_IS_WEB=typeof window==="object";ENVIRONMENT_IS_WORKER=typeof importScripts==="function";ENVIRONMENT_IS_NODE=typeof process==="object"&&"function"==="function"&&!ENVIRONMENT_IS_WEB&&!ENVIRONMENT_IS_WORKER;ENVIRONMENT_IS_SHELL=!ENVIRONMENT_IS_WEB&&!ENVIRONMENT_IS_NODE&&!ENVIRONMENT_IS_WORKER}if(ENVIRONMENT_IS_NODE){if(!Module["print"])Module["print"]=console.log;if(!Module["printErr"])Module["printErr"]=console.warn;var nodeFS;var nodePath;Module["read"]=function shell_read(filename,binary){if(!nodeFS)nodeFS=__webpack_require__(1);if(!nodePath)nodePath=__webpack_require__(2);filename=nodePath["normalize"](filename);var ret=nodeFS["readFileSync"](filename);return binary?ret:ret.toString()};Module["readBinary"]=function readBinary(filename){var ret=Module["read"](filename,true);if(!ret.buffer){ret=new Uint8Array(ret)}assert(ret.buffer);return ret};Module["load"]=function load(f){globalEval(read(f))};if(!Module["thisProgram"]){if(process["argv"].length>1){Module["thisProgram"]=process["argv"][1].replace(/\\/g,"/")}else{Module["thisProgram"]="unknown-program"}}Module["arguments"]=process["argv"].slice(2);if(true){module["exports"]=Module}process["on"]("uncaughtException",(function(ex){if(!(ex instanceof ExitStatus)){throw ex}}));Module["inspect"]=(function(){return"[Emscripten Module object]"})}else if(ENVIRONMENT_IS_SHELL){if(!Module["print"])Module["print"]=print;if(typeof printErr!="undefined")Module["printErr"]=printErr;if(typeof read!="undefined"){Module["read"]=read}else{Module["read"]=function shell_read(){throw"no read() available"}}Module["readBinary"]=function readBinary(f){if(typeof readbuffer==="function"){return new Uint8Array(readbuffer(f))}var data=read(f,"binary");assert(typeof data==="object");return data};if(typeof scriptArgs!="undefined"){Module["arguments"]=scriptArgs}else if(typeof arguments!="undefined"){Module["arguments"]=arguments}if(typeof quit==="function"){Module["quit"]=(function(status,toThrow){quit(status)})}}else if(ENVIRONMENT_IS_WEB||ENVIRONMENT_IS_WORKER){Module["read"]=function shell_read(url){var xhr=new XMLHttpRequest;xhr.open("GET",url,false);xhr.send(null);return xhr.responseText};if(ENVIRONMENT_IS_WORKER){Module["readBinary"]=function readBinary(url){var xhr=new XMLHttpRequest;xhr.open("GET",url,false);xhr.responseType="arraybuffer";xhr.send(null);return new Uint8Array(xhr.response)}}Module["readAsync"]=function readAsync(url,onload,onerror){var xhr=new XMLHttpRequest;xhr.open("GET",url,true);xhr.responseType="arraybuffer";xhr.onload=function xhr_onload(){if(xhr.status==200||xhr.status==0&&xhr.response){onload(xhr.response)}else{onerror()}};xhr.onerror=onerror;xhr.send(null)};if(typeof arguments!="undefined"){Module["arguments"]=arguments}if(typeof console!=="undefined"){if(!Module["print"])Module["print"]=function shell_print(x){console.log(x)};if(!Module["printErr"])Module["printErr"]=function shell_printErr(x){console.warn(x)}}else{var TRY_USE_DUMP=false;if(!Module["print"])Module["print"]=TRY_USE_DUMP&&typeof dump!=="undefined"?(function(x){dump(x)}):(function(x){})}if(ENVIRONMENT_IS_WORKER){Module["load"]=importScripts}if(typeof Module["setWindowTitle"]==="undefined"){Module["setWindowTitle"]=(function(title){document.title=title})}}else{throw"Unknown runtime environment. Where are we?"}function globalEval(x){eval.call(null,x)}if(!Module["load"]&&Module["read"]){Module["load"]=function load(f){globalEval(Module["read"](f))}}if(!Module["print"]){Module["print"]=(function(){})}if(!Module["printErr"]){Module["printErr"]=Module["print"]}if(!Module["arguments"]){Module["arguments"]=[]}if(!Module["thisProgram"]){Module["thisProgram"]="./this.program"}if(!Module["quit"]){Module["quit"]=(function(status,toThrow){throw toThrow})}Module.print=Module["print"];Module.printErr=Module["printErr"];Module["preRun"]=[];Module["postRun"]=[];for(var key in moduleOverrides){if(moduleOverrides.hasOwnProperty(key)){Module[key]=moduleOverrides[key]}}moduleOverrides=undefined;var Runtime={setTempRet0:(function(value){tempRet0=value;return value}),getTempRet0:(function(){return tempRet0}),stackSave:(function(){return STACKTOP}),stackRestore:(function(stackTop){STACKTOP=stackTop}),getNativeTypeSize:(function(type){switch(type){case"i1":case"i8":return 1;case"i16":return 2;case"i32":return 4;case"i64":return 8;case"float":return 4;case"double":return 8;default:{if(type[type.length-1]==="*"){return Runtime.QUANTUM_SIZE}else if(type[0]==="i"){var bits=parseInt(type.substr(1));assert(bits%8===0);return bits/8}else{return 0}}}}),getNativeFieldSize:(function(type){return Math.max(Runtime.getNativeTypeSize(type),Runtime.QUANTUM_SIZE)}),STACK_ALIGN:16,prepVararg:(function(ptr,type){if(type==="double"||type==="i64"){if(ptr&7){assert((ptr&7)===4);ptr+=4}}else{assert((ptr&3)===0)}return ptr}),getAlignSize:(function(type,size,vararg){if(!vararg&&(type=="i64"||type=="double"))return 8;if(!type)return Math.min(size,8);return Math.min(size||(type?Runtime.getNativeFieldSize(type):0),Runtime.QUANTUM_SIZE)}),dynCall:(function(sig,ptr,args){if(args&&args.length){return Module["dynCall_"+sig].apply(null,[ptr].concat(args))}else{return Module["dynCall_"+sig].call(null,ptr)}}),functionPointers:[],addFunction:(function(func){for(var i=0;i<Runtime.functionPointers.length;i++){if(!Runtime.functionPointers[i]){Runtime.functionPointers[i]=func;return 2*(1+i)}}throw"Finished up all reserved function pointers. Use a higher value for RESERVED_FUNCTION_POINTERS."}),removeFunction:(function(index){Runtime.functionPointers[(index-2)/2]=null}),warnOnce:(function(text){if(!Runtime.warnOnce.shown)Runtime.warnOnce.shown={};if(!Runtime.warnOnce.shown[text]){Runtime.warnOnce.shown[text]=1;Module.printErr(text)}}),funcWrappers:{},getFuncWrapper:(function(func,sig){assert(sig);if(!Runtime.funcWrappers[sig]){Runtime.funcWrappers[sig]={}}var sigCache=Runtime.funcWrappers[sig];if(!sigCache[func]){if(sig.length===1){sigCache[func]=function dynCall_wrapper(){return Runtime.dynCall(sig,func)}}else if(sig.length===2){sigCache[func]=function dynCall_wrapper(arg){return Runtime.dynCall(sig,func,[arg])}}else{sigCache[func]=function dynCall_wrapper(){return Runtime.dynCall(sig,func,Array.prototype.slice.call(arguments))}}}return sigCache[func]}),getCompilerSetting:(function(name){throw"You must build with -s RETAIN_COMPILER_SETTINGS=1 for Runtime.getCompilerSetting or emscripten_get_compiler_setting to work"}),stackAlloc:(function(size){var ret=STACKTOP;STACKTOP=STACKTOP+size|0;STACKTOP=STACKTOP+15&-16;return ret}),staticAlloc:(function(size){var ret=STATICTOP;STATICTOP=STATICTOP+size|0;STATICTOP=STATICTOP+15&-16;return ret}),dynamicAlloc:(function(size){var ret=HEAP32[DYNAMICTOP_PTR>>2];var end=(ret+size+15|0)&-16;HEAP32[DYNAMICTOP_PTR>>2]=end;if(end>=TOTAL_MEMORY){var success=enlargeMemory();if(!success){HEAP32[DYNAMICTOP_PTR>>2]=ret;return 0}}return ret}),alignMemory:(function(size,quantum){var ret=size=Math.ceil(size/(quantum?quantum:16))*(quantum?quantum:16);return ret}),makeBigInt:(function(low,high,unsigned){var ret=unsigned?+(low>>>0)+ +(high>>>0)*4294967296:+(low>>>0)+ +(high|0)*4294967296;return ret}),GLOBAL_BASE:1024,QUANTUM_SIZE:4,__dummy__:0};Module["Runtime"]=Runtime;var ABORT=0;var EXITSTATUS=0;function assert(condition,text){if(!condition){abort("Assertion failed: "+text)}}function getCFunc(ident){var func=Module["_"+ident];if(!func){try{func=eval("_"+ident)}catch(e){}}assert(func,"Cannot call unknown function "+ident+" (perhaps LLVM optimizations or closure removed it?)");return func}var cwrap,ccall;((function(){var JSfuncs={"stackSave":(function(){Runtime.stackSave()}),"stackRestore":(function(){Runtime.stackRestore()}),"arrayToC":(function(arr){var ret=Runtime.stackAlloc(arr.length);writeArrayToMemory(arr,ret);return ret}),"stringToC":(function(str){var ret=0;if(str!==null&&str!==undefined&&str!==0){var len=(str.length<<2)+1;ret=Runtime.stackAlloc(len);stringToUTF8(str,ret,len)}return ret})};var toC={"string":JSfuncs["stringToC"],"array":JSfuncs["arrayToC"]};ccall=function ccallFunc(ident,returnType,argTypes,args,opts){var func=getCFunc(ident);var cArgs=[];var stack=0;if(args){for(var i=0;i<args.length;i++){var converter=toC[argTypes[i]];if(converter){if(stack===0)stack=Runtime.stackSave();cArgs[i]=converter(args[i])}else{cArgs[i]=args[i]}}}var ret=func.apply(null,cArgs);if(returnType==="string")ret=Pointer_stringify(ret);if(stack!==0){if(opts&&opts.async){EmterpreterAsync.asyncFinalizers.push((function(){Runtime.stackRestore(stack)}));return}Runtime.stackRestore(stack)}return ret};var sourceRegex=/^function\s*[a-zA-Z$_0-9]*\s*\(([^)]*)\)\s*{\s*([^*]*?)[\s;]*(?:return\s*(.*?)[;\s]*)?}$/;function parseJSFunc(jsfunc){var parsed=jsfunc.toString().match(sourceRegex).slice(1);return{arguments:parsed[0],body:parsed[1],returnValue:parsed[2]}}var JSsource=null;function ensureJSsource(){if(!JSsource){JSsource={};for(var fun in JSfuncs){if(JSfuncs.hasOwnProperty(fun)){JSsource[fun]=parseJSFunc(JSfuncs[fun])}}}}cwrap=function cwrap(ident,returnType,argTypes){argTypes=argTypes||[];var cfunc=getCFunc(ident);var numericArgs=argTypes.every((function(type){return type==="number"}));var numericRet=returnType!=="string";if(numericRet&&numericArgs){return cfunc}var argNames=argTypes.map((function(x,i){return"$"+i}));var funcstr="(function("+argNames.join(",")+") {";var nargs=argTypes.length;if(!numericArgs){ensureJSsource();funcstr+="var stack = "+JSsource["stackSave"].body+";";for(var i=0;i<nargs;i++){var arg=argNames[i],type=argTypes[i];if(type==="number")continue;var convertCode=JSsource[type+"ToC"];funcstr+="var "+convertCode.arguments+" = "+arg+";";funcstr+=convertCode.body+";";funcstr+=arg+"=("+convertCode.returnValue+");"}}var cfuncname=parseJSFunc((function(){return cfunc})).returnValue;funcstr+="var ret = "+cfuncname+"("+argNames.join(",")+");";if(!numericRet){var strgfy=parseJSFunc((function(){return Pointer_stringify})).returnValue;funcstr+="ret = "+strgfy+"(ret);"}if(!numericArgs){ensureJSsource();funcstr+=JSsource["stackRestore"].body.replace("()","(stack)")+";"}funcstr+="return ret})";return eval(funcstr)}}))();Module["ccall"]=ccall;Module["cwrap"]=cwrap;function setValue(ptr,value,type,noSafe){type=type||"i8";if(type.charAt(type.length-1)==="*")type="i32";switch(type){case"i1":HEAP8[ptr>>0]=value;break;case"i8":HEAP8[ptr>>0]=value;break;case"i16":HEAP16[ptr>>1]=value;break;case"i32":HEAP32[ptr>>2]=value;break;case"i64":tempI64=[value>>>0,(tempDouble=value,+Math_abs(tempDouble)>=1?tempDouble>0?(Math_min(+Math_floor(tempDouble/4294967296),4294967295)|0)>>>0:~~+Math_ceil((tempDouble- +(~~tempDouble>>>0))/4294967296)>>>0:0)],HEAP32[ptr>>2]=tempI64[0],HEAP32[ptr+4>>2]=tempI64[1];break;case"float":HEAPF32[ptr>>2]=value;break;case"double":HEAPF64[ptr>>3]=value;break;default:abort("invalid type for setValue: "+type)}}Module["setValue"]=setValue;function getValue(ptr,type,noSafe){type=type||"i8";if(type.charAt(type.length-1)==="*")type="i32";switch(type){case"i1":return HEAP8[ptr>>0];case"i8":return HEAP8[ptr>>0];case"i16":return HEAP16[ptr>>1];case"i32":return HEAP32[ptr>>2];case"i64":return HEAP32[ptr>>2];case"float":return HEAPF32[ptr>>2];case"double":return HEAPF64[ptr>>3];default:abort("invalid type for setValue: "+type)}return null}Module["getValue"]=getValue;var ALLOC_NORMAL=0;var ALLOC_STACK=1;var ALLOC_STATIC=2;var ALLOC_DYNAMIC=3;var ALLOC_NONE=4;Module["ALLOC_NORMAL"]=ALLOC_NORMAL;Module["ALLOC_STACK"]=ALLOC_STACK;Module["ALLOC_STATIC"]=ALLOC_STATIC;Module["ALLOC_DYNAMIC"]=ALLOC_DYNAMIC;Module["ALLOC_NONE"]=ALLOC_NONE;function allocate(slab,types,allocator,ptr){var zeroinit,size;if(typeof slab==="number"){zeroinit=true;size=slab}else{zeroinit=false;size=slab.length}var singleType=typeof types==="string"?types:null;var ret;if(allocator==ALLOC_NONE){ret=ptr}else{ret=[typeof _malloc==="function"?_malloc:Runtime.staticAlloc,Runtime.stackAlloc,Runtime.staticAlloc,Runtime.dynamicAlloc][allocator===undefined?ALLOC_STATIC:allocator](Math.max(size,singleType?1:types.length))}if(zeroinit){var ptr=ret,stop;assert((ret&3)==0);stop=ret+(size&~3);for(;ptr<stop;ptr+=4){HEAP32[ptr>>2]=0}stop=ret+size;while(ptr<stop){HEAP8[ptr++>>0]=0}return ret}if(singleType==="i8"){if(slab.subarray||slab.slice){HEAPU8.set(slab,ret)}else{HEAPU8.set(new Uint8Array(slab),ret)}return ret}var i=0,type,typeSize,previousType;while(i<size){var curr=slab[i];if(typeof curr==="function"){curr=Runtime.getFunctionIndex(curr)}type=singleType||types[i];if(type===0){i++;continue}if(type=="i64")type="i32";setValue(ret+i,curr,type);if(previousType!==type){typeSize=Runtime.getNativeTypeSize(type);previousType=type}i+=typeSize}return ret}Module["allocate"]=allocate;function getMemory(size){if(!staticSealed)return Runtime.staticAlloc(size);if(!runtimeInitialized)return Runtime.dynamicAlloc(size);return _malloc(size)}Module["getMemory"]=getMemory;function Pointer_stringify(ptr,length){if(length===0||!ptr)return"";var hasUtf=0;var t;var i=0;while(1){t=HEAPU8[ptr+i>>0];hasUtf|=t;if(t==0&&!length)break;i++;if(length&&i==length)break}if(!length)length=i;var ret="";if(hasUtf<128){var MAX_CHUNK=1024;var curr;while(length>0){curr=String.fromCharCode.apply(String,HEAPU8.subarray(ptr,ptr+Math.min(length,MAX_CHUNK)));ret=ret?ret+curr:curr;ptr+=MAX_CHUNK;length-=MAX_CHUNK}return ret}return Module["UTF8ToString"](ptr)}Module["Pointer_stringify"]=Pointer_stringify;function AsciiToString(ptr){var str="";while(1){var ch=HEAP8[ptr++>>0];if(!ch)return str;str+=String.fromCharCode(ch)}}Module["AsciiToString"]=AsciiToString;function stringToAscii(str,outPtr){return writeAsciiToMemory(str,outPtr,false)}Module["stringToAscii"]=stringToAscii;var UTF8Decoder=typeof TextDecoder!=="undefined"?new TextDecoder("utf8"):undefined;function UTF8ArrayToString(u8Array,idx){var endPtr=idx;while(u8Array[endPtr])++endPtr;if(endPtr-idx>16&&u8Array.subarray&&UTF8Decoder){return UTF8Decoder.decode(u8Array.subarray(idx,endPtr))}else{var u0,u1,u2,u3,u4,u5;var str="";while(1){u0=u8Array[idx++];if(!u0)return str;if(!(u0&128)){str+=String.fromCharCode(u0);continue}u1=u8Array[idx++]&63;if((u0&224)==192){str+=String.fromCharCode((u0&31)<<6|u1);continue}u2=u8Array[idx++]&63;if((u0&240)==224){u0=(u0&15)<<12|u1<<6|u2}else{u3=u8Array[idx++]&63;if((u0&248)==240){u0=(u0&7)<<18|u1<<12|u2<<6|u3}else{u4=u8Array[idx++]&63;if((u0&252)==248){u0=(u0&3)<<24|u1<<18|u2<<12|u3<<6|u4}else{u5=u8Array[idx++]&63;u0=(u0&1)<<30|u1<<24|u2<<18|u3<<12|u4<<6|u5}}}if(u0<65536){str+=String.fromCharCode(u0)}else{var ch=u0-65536;str+=String.fromCharCode(55296|ch>>10,56320|ch&1023)}}}}Module["UTF8ArrayToString"]=UTF8ArrayToString;function UTF8ToString(ptr){return UTF8ArrayToString(HEAPU8,ptr)}Module["UTF8ToString"]=UTF8ToString;function stringToUTF8Array(str,outU8Array,outIdx,maxBytesToWrite){if(!(maxBytesToWrite>0))return 0;var startIdx=outIdx;var endIdx=outIdx+maxBytesToWrite-1;for(var i=0;i<str.length;++i){var u=str.charCodeAt(i);if(u>=55296&&u<=57343)u=65536+((u&1023)<<10)|str.charCodeAt(++i)&1023;if(u<=127){if(outIdx>=endIdx)break;outU8Array[outIdx++]=u}else if(u<=2047){if(outIdx+1>=endIdx)break;outU8Array[outIdx++]=192|u>>6;outU8Array[outIdx++]=128|u&63}else if(u<=65535){if(outIdx+2>=endIdx)break;outU8Array[outIdx++]=224|u>>12;outU8Array[outIdx++]=128|u>>6&63;outU8Array[outIdx++]=128|u&63}else if(u<=2097151){if(outIdx+3>=endIdx)break;outU8Array[outIdx++]=240|u>>18;outU8Array[outIdx++]=128|u>>12&63;outU8Array[outIdx++]=128|u>>6&63;outU8Array[outIdx++]=128|u&63}else if(u<=67108863){if(outIdx+4>=endIdx)break;outU8Array[outIdx++]=248|u>>24;outU8Array[outIdx++]=128|u>>18&63;outU8Array[outIdx++]=128|u>>12&63;outU8Array[outIdx++]=128|u>>6&63;outU8Array[outIdx++]=128|u&63}else{if(outIdx+5>=endIdx)break;outU8Array[outIdx++]=252|u>>30;outU8Array[outIdx++]=128|u>>24&63;outU8Array[outIdx++]=128|u>>18&63;outU8Array[outIdx++]=128|u>>12&63;outU8Array[outIdx++]=128|u>>6&63;outU8Array[outIdx++]=128|u&63}}outU8Array[outIdx]=0;return outIdx-startIdx}Module["stringToUTF8Array"]=stringToUTF8Array;function stringToUTF8(str,outPtr,maxBytesToWrite){return stringToUTF8Array(str,HEAPU8,outPtr,maxBytesToWrite)}Module["stringToUTF8"]=stringToUTF8;function lengthBytesUTF8(str){var len=0;for(var i=0;i<str.length;++i){var u=str.charCodeAt(i);if(u>=55296&&u<=57343)u=65536+((u&1023)<<10)|str.charCodeAt(++i)&1023;if(u<=127){++len}else if(u<=2047){len+=2}else if(u<=65535){len+=3}else if(u<=2097151){len+=4}else if(u<=67108863){len+=5}else{len+=6}}return len}Module["lengthBytesUTF8"]=lengthBytesUTF8;var UTF16Decoder=typeof TextDecoder!=="undefined"?new TextDecoder("utf-16le"):undefined;function demangle(func){var __cxa_demangle_func=Module["___cxa_demangle"]||Module["__cxa_demangle"];if(__cxa_demangle_func){try{var s=func.substr(1);var len=lengthBytesUTF8(s)+1;var buf=_malloc(len);stringToUTF8(s,buf,len);var status=_malloc(4);var ret=__cxa_demangle_func(buf,0,0,status);if(getValue(status,"i32")===0&&ret){return Pointer_stringify(ret)}}catch(e){}finally{if(buf)_free(buf);if(status)_free(status);if(ret)_free(ret)}return func}Runtime.warnOnce("warning: build with  -s DEMANGLE_SUPPORT=1  to link in libcxxabi demangling");return func}function demangleAll(text){var regex=/__Z[\w\d_]+/g;return text.replace(regex,(function(x){var y=demangle(x);return x===y?x:x+" ["+y+"]"}))}function jsStackTrace(){var err=new Error;if(!err.stack){try{throw new Error(0)}catch(e){err=e}if(!err.stack){return"(no stack trace available)"}}return err.stack.toString()}function stackTrace(){var js=jsStackTrace();if(Module["extraStackTrace"])js+="\n"+Module["extraStackTrace"]();return demangleAll(js)}Module["stackTrace"]=stackTrace;var WASM_PAGE_SIZE=65536;var ASMJS_PAGE_SIZE=16777216;var MIN_TOTAL_MEMORY=16777216;function alignUp(x,multiple){if(x%multiple>0){x+=multiple-x%multiple}return x}var HEAP,buffer,HEAP8,HEAPU8,HEAP16,HEAPU16,HEAP32,HEAPU32,HEAPF32,HEAPF64;function updateGlobalBuffer(buf){Module["buffer"]=buffer=buf}function updateGlobalBufferViews(){Module["HEAP8"]=HEAP8=new Int8Array(buffer);Module["HEAP16"]=HEAP16=new Int16Array(buffer);Module["HEAP32"]=HEAP32=new Int32Array(buffer);Module["HEAPU8"]=HEAPU8=new Uint8Array(buffer);Module["HEAPU16"]=HEAPU16=new Uint16Array(buffer);Module["HEAPU32"]=HEAPU32=new Uint32Array(buffer);Module["HEAPF32"]=HEAPF32=new Float32Array(buffer);Module["HEAPF64"]=HEAPF64=new Float64Array(buffer)}var STATIC_BASE,STATICTOP,staticSealed;var STACK_BASE,STACKTOP,STACK_MAX;var DYNAMIC_BASE,DYNAMICTOP_PTR;STATIC_BASE=STATICTOP=STACK_BASE=STACKTOP=STACK_MAX=DYNAMIC_BASE=DYNAMICTOP_PTR=0;staticSealed=false;function abortOnCannotGrowMemory(){abort("Cannot enlarge memory arrays. Either (1) compile with  -s TOTAL_MEMORY=X  with X higher than the current value "+TOTAL_MEMORY+", (2) compile with  -s ALLOW_MEMORY_GROWTH=1  which allows increasing the size at runtime, or (3) if you want malloc to return NULL (0) instead of this abort, compile with  -s ABORTING_MALLOC=0 ")}if(!Module["reallocBuffer"])Module["reallocBuffer"]=(function(size){var ret;try{if(ArrayBuffer.transfer){ret=ArrayBuffer.transfer(buffer,size)}else{var oldHEAP8=HEAP8;ret=new ArrayBuffer(size);var temp=new Int8Array(ret);temp.set(oldHEAP8)}}catch(e){return false}var success=_emscripten_replace_memory(ret);if(!success)return false;return ret});function enlargeMemory(){var PAGE_MULTIPLE=Module["usingWasm"]?WASM_PAGE_SIZE:ASMJS_PAGE_SIZE;var LIMIT=2147483648-PAGE_MULTIPLE;if(HEAP32[DYNAMICTOP_PTR>>2]>LIMIT){return false}var OLD_TOTAL_MEMORY=TOTAL_MEMORY;TOTAL_MEMORY=Math.max(TOTAL_MEMORY,MIN_TOTAL_MEMORY);while(TOTAL_MEMORY<HEAP32[DYNAMICTOP_PTR>>2]){if(TOTAL_MEMORY<=536870912){TOTAL_MEMORY=alignUp(2*TOTAL_MEMORY,PAGE_MULTIPLE)}else{TOTAL_MEMORY=Math.min(alignUp((3*TOTAL_MEMORY+2147483648)/4,PAGE_MULTIPLE),LIMIT)}}var replacement=Module["reallocBuffer"](TOTAL_MEMORY);if(!replacement||replacement.byteLength!=TOTAL_MEMORY){TOTAL_MEMORY=OLD_TOTAL_MEMORY;return false}updateGlobalBuffer(replacement);updateGlobalBufferViews();return true}var byteLength;try{byteLength=Function.prototype.call.bind(Object.getOwnPropertyDescriptor(ArrayBuffer.prototype,"byteLength").get);byteLength(new ArrayBuffer(4))}catch(e){byteLength=(function(buffer){return buffer.byteLength})}var TOTAL_STACK=Module["TOTAL_STACK"]||5242880;var TOTAL_MEMORY=Module["TOTAL_MEMORY"]||16777216;if(TOTAL_MEMORY<TOTAL_STACK)Module.printErr("TOTAL_MEMORY should be larger than TOTAL_STACK, was "+TOTAL_MEMORY+"! (TOTAL_STACK="+TOTAL_STACK+")");if(Module["buffer"]){buffer=Module["buffer"]}else{if(typeof WebAssembly==="object"&&typeof WebAssembly.Memory==="function"){Module["wasmMemory"]=new WebAssembly.Memory({"initial":TOTAL_MEMORY/WASM_PAGE_SIZE});buffer=Module["wasmMemory"].buffer}else{buffer=new ArrayBuffer(TOTAL_MEMORY)}}updateGlobalBufferViews();function getTotalMemory(){return TOTAL_MEMORY}HEAP32[0]=1668509029;HEAP16[1]=25459;if(HEAPU8[2]!==115||HEAPU8[3]!==99)throw"Runtime error: expected the system to be little-endian!";Module["HEAP"]=HEAP;Module["buffer"]=buffer;Module["HEAP8"]=HEAP8;Module["HEAP16"]=HEAP16;Module["HEAP32"]=HEAP32;Module["HEAPU8"]=HEAPU8;Module["HEAPU16"]=HEAPU16;Module["HEAPU32"]=HEAPU32;Module["HEAPF32"]=HEAPF32;Module["HEAPF64"]=HEAPF64;function callRuntimeCallbacks(callbacks){while(callbacks.length>0){var callback=callbacks.shift();if(typeof callback=="function"){callback();continue}var func=callback.func;if(typeof func==="number"){if(callback.arg===undefined){Module["dynCall_v"](func)}else{Module["dynCall_vi"](func,callback.arg)}}else{func(callback.arg===undefined?null:callback.arg)}}}var __ATPRERUN__=[];var __ATINIT__=[];var __ATMAIN__=[];var __ATEXIT__=[];var __ATPOSTRUN__=[];var runtimeInitialized=false;var runtimeExited=false;function preRun(){if(Module["preRun"]){if(typeof Module["preRun"]=="function")Module["preRun"]=[Module["preRun"]];while(Module["preRun"].length){addOnPreRun(Module["preRun"].shift())}}callRuntimeCallbacks(__ATPRERUN__)}function ensureInitRuntime(){if(runtimeInitialized)return;runtimeInitialized=true;callRuntimeCallbacks(__ATINIT__)}function preMain(){callRuntimeCallbacks(__ATMAIN__)}function exitRuntime(){callRuntimeCallbacks(__ATEXIT__);runtimeExited=true}function postRun(){if(Module["postRun"]){if(typeof Module["postRun"]=="function")Module["postRun"]=[Module["postRun"]];while(Module["postRun"].length){addOnPostRun(Module["postRun"].shift())}}callRuntimeCallbacks(__ATPOSTRUN__)}function addOnPreRun(cb){__ATPRERUN__.unshift(cb)}Module["addOnPreRun"]=addOnPreRun;function addOnInit(cb){__ATINIT__.unshift(cb)}Module["addOnInit"]=addOnInit;function addOnPreMain(cb){__ATMAIN__.unshift(cb)}Module["addOnPreMain"]=addOnPreMain;function addOnExit(cb){__ATEXIT__.unshift(cb)}Module["addOnExit"]=addOnExit;function addOnPostRun(cb){__ATPOSTRUN__.unshift(cb)}Module["addOnPostRun"]=addOnPostRun;function intArrayFromString(stringy,dontAddNull,length){var len=length>0?length:lengthBytesUTF8(stringy)+1;var u8array=new Array(len);var numBytesWritten=stringToUTF8Array(stringy,u8array,0,u8array.length);if(dontAddNull)u8array.length=numBytesWritten;return u8array}Module["intArrayFromString"]=intArrayFromString;function intArrayToString(array){var ret=[];for(var i=0;i<array.length;i++){var chr=array[i];if(chr>255){chr&=255}ret.push(String.fromCharCode(chr))}return ret.join("")}Module["intArrayToString"]=intArrayToString;function writeStringToMemory(string,buffer,dontAddNull){Runtime.warnOnce("writeStringToMemory is deprecated and should not be called! Use stringToUTF8() instead!");var lastChar,end;if(dontAddNull){end=buffer+lengthBytesUTF8(string);lastChar=HEAP8[end]}stringToUTF8(string,buffer,Infinity);if(dontAddNull)HEAP8[end]=lastChar}Module["writeStringToMemory"]=writeStringToMemory;function writeArrayToMemory(array,buffer){HEAP8.set(array,buffer)}Module["writeArrayToMemory"]=writeArrayToMemory;function writeAsciiToMemory(str,buffer,dontAddNull){for(var i=0;i<str.length;++i){HEAP8[buffer++>>0]=str.charCodeAt(i)}if(!dontAddNull)HEAP8[buffer>>0]=0}Module["writeAsciiToMemory"]=writeAsciiToMemory;if(!Math["imul"]||Math["imul"](4294967295,5)!==-5)Math["imul"]=function imul(a,b){var ah=a>>>16;var al=a&65535;var bh=b>>>16;var bl=b&65535;return al*bl+(ah*bl+al*bh<<16)|0};Math.imul=Math["imul"];if(!Math["fround"]){var froundBuffer=new Float32Array(1);Math["fround"]=(function(x){froundBuffer[0]=x;return froundBuffer[0]})}Math.fround=Math["fround"];if(!Math["clz32"])Math["clz32"]=(function(x){x=x>>>0;for(var i=0;i<32;i++){if(x&1<<31-i)return i}return 32});Math.clz32=Math["clz32"];if(!Math["trunc"])Math["trunc"]=(function(x){return x<0?Math.ceil(x):Math.floor(x)});Math.trunc=Math["trunc"];var Math_abs=Math.abs;var Math_cos=Math.cos;var Math_sin=Math.sin;var Math_tan=Math.tan;var Math_acos=Math.acos;var Math_asin=Math.asin;var Math_atan=Math.atan;var Math_atan2=Math.atan2;var Math_exp=Math.exp;var Math_log=Math.log;var Math_sqrt=Math.sqrt;var Math_ceil=Math.ceil;var Math_floor=Math.floor;var Math_pow=Math.pow;var Math_imul=Math.imul;var Math_fround=Math.fround;var Math_round=Math.round;var Math_min=Math.min;var Math_clz32=Math.clz32;var Math_trunc=Math.trunc;var runDependencies=0;var runDependencyWatcher=null;var dependenciesFulfilled=null;function getUniqueRunDependency(id){return id}function addRunDependency(id){runDependencies++;if(Module["monitorRunDependencies"]){Module["monitorRunDependencies"](runDependencies)}}Module["addRunDependency"]=addRunDependency;function removeRunDependency(id){runDependencies--;if(Module["monitorRunDependencies"]){Module["monitorRunDependencies"](runDependencies)}if(runDependencies==0){if(runDependencyWatcher!==null){clearInterval(runDependencyWatcher);runDependencyWatcher=null}if(dependenciesFulfilled){var callback=dependenciesFulfilled;dependenciesFulfilled=null;callback()}}}Module["removeRunDependency"]=removeRunDependency;Module["preloadedImages"]={};Module["preloadedAudios"]={};var memoryInitializer=null;function integrateWasmJS(Module){var method=Module["wasmJSMethod"]||"native-wasm";Module["wasmJSMethod"]=method;var wasmTextFile=Module["wasmTextFile"]||"windowDemo.wast";var wasmBinaryFile=Module["wasmBinaryFile"]||"windowDemo.wasm";var asmjsCodeFile=Module["asmjsCodeFile"]||"windowDemo.temp.asm.js";if(typeof Module["locateFile"]==="function"){wasmTextFile=Module["locateFile"](wasmTextFile);wasmBinaryFile=Module["locateFile"](wasmBinaryFile);asmjsCodeFile=Module["locateFile"](asmjsCodeFile)}var wasmPageSize=64*1024;var asm2wasmImports={"f64-rem":(function(x,y){return x%y}),"f64-to-int":(function(x){return x|0}),"i32s-div":(function(x,y){return(x|0)/(y|0)|0}),"i32u-div":(function(x,y){return(x>>>0)/(y>>>0)>>>0}),"i32s-rem":(function(x,y){return(x|0)%(y|0)|0}),"i32u-rem":(function(x,y){return(x>>>0)%(y>>>0)>>>0}),"debugger":(function(){debugger})};var info={"global":null,"env":null,"asm2wasm":asm2wasmImports,"parent":Module};var exports=null;function lookupImport(mod,base){var lookup=info;if(mod.indexOf(".")<0){lookup=(lookup||{})[mod]}else{var parts=mod.split(".");lookup=(lookup||{})[parts[0]];lookup=(lookup||{})[parts[1]]}if(base){lookup=(lookup||{})[base]}if(lookup===undefined){abort("bad lookupImport to ("+mod+")."+base)}return lookup}function mergeMemory(newBuffer){var oldBuffer=Module["buffer"];if(newBuffer.byteLength<oldBuffer.byteLength){Module["printErr"]("the new buffer in mergeMemory is smaller than the previous one. in native wasm, we should grow memory here")}var oldView=new Int8Array(oldBuffer);var newView=new Int8Array(newBuffer);if(!memoryInitializer){oldView.set(newView.subarray(Module["STATIC_BASE"],Module["STATIC_BASE"]+Module["STATIC_BUMP"]),Module["STATIC_BASE"])}newView.set(oldView);updateGlobalBuffer(newBuffer);updateGlobalBufferViews()}var WasmTypes={none:0,i32:1,i64:2,f32:3,f64:4};function fixImports(imports){if(true)return imports;var ret={};for(var i in imports){var fixed=i;if(fixed[0]=="_")fixed=fixed.substr(1);ret[fixed]=imports[i]}return ret}function getBinary(){try{var binary;if(Module["wasmBinary"]){binary=Module["wasmBinary"];binary=new Uint8Array(binary)}else if(Module["readBinary"]){binary=Module["readBinary"](wasmBinaryFile)}else{throw"on the web, we need the wasm binary to be preloaded and set on Module['wasmBinary']. emcc.py will do that for you when generating HTML (but not JS)"}return binary}catch(err){abort(err)}}function getBinaryPromise(){if(!Module["wasmBinary"]&&typeof fetch==="function"){return fetch(wasmBinaryFile,{credentials:"same-origin"}).then((function(response){if(!response["ok"]){throw"failed to load wasm binary file at '"+wasmBinaryFile+"'"}return response["arrayBuffer"]()}))}return new Promise((function(resolve,reject){resolve(getBinary())}))}function doNativeWasm(global,env,providedBuffer){if(typeof WebAssembly!=="object"){Module["printErr"]("no native wasm support detected");return false}if(!(Module["wasmMemory"]instanceof WebAssembly.Memory)){Module["printErr"]("no native wasm Memory in use");return false}env["memory"]=Module["wasmMemory"];info["global"]={"NaN":NaN,"Infinity":Infinity};info["global.Math"]=global.Math;info["env"]=env;function receiveInstance(instance){exports=instance.exports;if(exports.memory)mergeMemory(exports.memory);Module["asm"]=exports;Module["usingWasm"]=true;removeRunDependency("wasm-instantiate")}addRunDependency("wasm-instantiate");if(Module["instantiateWasm"]){try{return Module["instantiateWasm"](info,receiveInstance)}catch(e){Module["printErr"]("Module.instantiateWasm callback failed with error: "+e);return false}}getBinaryPromise().then((function(binary){return WebAssembly.instantiate(binary,info)})).then((function(output){receiveInstance(output["instance"])})).catch((function(reason){Module["printErr"]("failed to asynchronously prepare wasm: "+reason);abort(reason)}));return{}}Module["asmPreload"]=Module["asm"];var asmjsReallocBuffer=Module["reallocBuffer"];var wasmReallocBuffer=(function(size){var PAGE_MULTIPLE=Module["usingWasm"]?WASM_PAGE_SIZE:ASMJS_PAGE_SIZE;size=alignUp(size,PAGE_MULTIPLE);var old=Module["buffer"];var oldSize=old.byteLength;if(Module["usingWasm"]){try{var result=Module["wasmMemory"].grow((size-oldSize)/wasmPageSize);if(result!==(-1|0)){return Module["buffer"]=Module["wasmMemory"].buffer}else{return null}}catch(e){return null}}else{exports["__growWasmMemory"]((size-oldSize)/wasmPageSize);return Module["buffer"]!==old?Module["buffer"]:null}});Module["reallocBuffer"]=(function(size){if(finalMethod==="asmjs"){return asmjsReallocBuffer(size)}else{return wasmReallocBuffer(size)}});var finalMethod="";Module["asm"]=(function(global,env,providedBuffer){global=fixImports(global);env=fixImports(env);if(!env["table"]){var TABLE_SIZE=Module["wasmTableSize"];if(TABLE_SIZE===undefined)TABLE_SIZE=1024;var MAX_TABLE_SIZE=Module["wasmMaxTableSize"];if(typeof WebAssembly==="object"&&typeof WebAssembly.Table==="function"){if(MAX_TABLE_SIZE!==undefined){env["table"]=new WebAssembly.Table({"initial":TABLE_SIZE,"maximum":MAX_TABLE_SIZE,"element":"anyfunc"})}else{env["table"]=new WebAssembly.Table({"initial":TABLE_SIZE,element:"anyfunc"})}}else{env["table"]=new Array(TABLE_SIZE)}Module["wasmTable"]=env["table"]}if(!env["memoryBase"]){env["memoryBase"]=Module["STATIC_BASE"]}if(!env["tableBase"]){env["tableBase"]=0}var exports;exports=doNativeWasm(global,env,providedBuffer);return exports});var methodHandler=Module["asm"]}integrateWasmJS(Module);var ASM_CONSTS=[];STATIC_BASE=Runtime.GLOBAL_BASE;STATICTOP=STATIC_BASE+5552;__ATINIT__.push();memoryInitializer=Module["wasmJSMethod"].indexOf("asmjs")>=0||Module["wasmJSMethod"].indexOf("interpret-asm2wasm")>=0?"windowDemo.js.mem":null;var STATIC_BUMP=5552;Module["STATIC_BASE"]=STATIC_BASE;Module["STATIC_BUMP"]=STATIC_BUMP;var tempDoublePtr=STATICTOP;STATICTOP+=16;var GL={counter:1,lastError:0,buffers:[],mappedBuffers:{},programs:[],framebuffers:[],renderbuffers:[],textures:[],uniforms:[],shaders:[],vaos:[],contexts:[],currentContext:null,offscreenCanvases:{},timerQueriesEXT:[],queries:[],samplers:[],transformFeedbacks:[],syncs:[],byteSizeByTypeRoot:5120,byteSizeByType:[1,1,2,2,4,4,4,2,3,4,8],programInfos:{},stringCache:{},stringiCache:{},tempFixedLengthArray:[],packAlignment:4,unpackAlignment:4,init:(function(){GL.miniTempBuffer=new Float32Array(GL.MINI_TEMP_BUFFER_SIZE);for(var i=0;i<GL.MINI_TEMP_BUFFER_SIZE;i++){GL.miniTempBufferViews[i]=GL.miniTempBuffer.subarray(0,i+1)}for(var i=0;i<32;i++){GL.tempFixedLengthArray.push(new Array(i))}}),recordError:function recordError(errorCode){if(!GL.lastError){GL.lastError=errorCode}},getNewId:(function(table){var ret=GL.counter++;for(var i=table.length;i<ret;i++){table[i]=null}return ret}),MINI_TEMP_BUFFER_SIZE:256,miniTempBuffer:null,miniTempBufferViews:[0],getSource:(function(shader,count,string,length){var source="";for(var i=0;i<count;++i){var frag;if(length){var len=HEAP32[length+i*4>>2];if(len<0){frag=Pointer_stringify(HEAP32[string+i*4>>2])}else{frag=Pointer_stringify(HEAP32[string+i*4>>2],len)}}else{frag=Pointer_stringify(HEAP32[string+i*4>>2])}source+=frag}return source}),createContext:(function(canvas,webGLContextAttributes){if(typeof webGLContextAttributes["majorVersion"]==="undefined"&&typeof webGLContextAttributes["minorVersion"]==="undefined"){if(typeof WebGL2RenderingContext!=="undefined")webGLContextAttributes["majorVersion"]=2;else webGLContextAttributes["majorVersion"]=1;webGLContextAttributes["minorVersion"]=0}var ctx;var errorInfo="?";function onContextCreationError(event){errorInfo=event.statusMessage||errorInfo}try{canvas.addEventListener("webglcontextcreationerror",onContextCreationError,false);try{if(webGLContextAttributes["majorVersion"]==1&&webGLContextAttributes["minorVersion"]==0){ctx=canvas.getContext("webgl",webGLContextAttributes)||canvas.getContext("experimental-webgl",webGLContextAttributes)}else if(webGLContextAttributes["majorVersion"]==2&&webGLContextAttributes["minorVersion"]==0){ctx=canvas.getContext("webgl2",webGLContextAttributes)}else{throw"Unsupported WebGL context version "+majorVersion+"."+minorVersion+"!"}}finally{canvas.removeEventListener("webglcontextcreationerror",onContextCreationError,false)}if(!ctx)throw":("}catch(e){Module.print("Could not create canvas: "+[errorInfo,e,JSON.stringify(webGLContextAttributes)]);return 0}if(!ctx)return 0;return GL.registerContext(ctx,webGLContextAttributes)}),registerContext:(function(ctx,webGLContextAttributes){var handle=GL.getNewId(GL.contexts);var context={handle:handle,attributes:webGLContextAttributes,version:webGLContextAttributes["majorVersion"],GLctx:ctx};function getChromeVersion(){var raw=navigator.userAgent.match(/Chrom(e|ium)\/([0-9]+)\./);return raw?parseInt(raw[2],10):false}context.supportsWebGL2EntryPoints=context.version>=2&&(getChromeVersion()===false||getChromeVersion()>=58);if(ctx.canvas)ctx.canvas.GLctxObject=context;GL.contexts[handle]=context;if(typeof webGLContextAttributes["enableExtensionsByDefault"]==="undefined"||webGLContextAttributes["enableExtensionsByDefault"]){GL.initExtensions(context)}return handle}),makeContextCurrent:(function(contextHandle){var context=GL.contexts[contextHandle];if(!context)return false;GLctx=Module.ctx=context.GLctx;GL.currentContext=context;return true}),getContext:(function(contextHandle){return GL.contexts[contextHandle]}),deleteContext:(function(contextHandle){if(GL.currentContext===GL.contexts[contextHandle])GL.currentContext=null;if(typeof JSEvents==="object")JSEvents.removeAllHandlersOnTarget(GL.contexts[contextHandle].GLctx.canvas);if(GL.contexts[contextHandle]&&GL.contexts[contextHandle].GLctx.canvas)GL.contexts[contextHandle].GLctx.canvas.GLctxObject=undefined;GL.contexts[contextHandle]=null}),initExtensions:(function(context){if(!context)context=GL.currentContext;if(context.initExtensionsDone)return;context.initExtensionsDone=true;var GLctx=context.GLctx;context.maxVertexAttribs=GLctx.getParameter(GLctx.MAX_VERTEX_ATTRIBS);if(context.version<2){var instancedArraysExt=GLctx.getExtension("ANGLE_instanced_arrays");if(instancedArraysExt){GLctx["vertexAttribDivisor"]=(function(index,divisor){instancedArraysExt["vertexAttribDivisorANGLE"](index,divisor)});GLctx["drawArraysInstanced"]=(function(mode,first,count,primcount){instancedArraysExt["drawArraysInstancedANGLE"](mode,first,count,primcount)});GLctx["drawElementsInstanced"]=(function(mode,count,type,indices,primcount){instancedArraysExt["drawElementsInstancedANGLE"](mode,count,type,indices,primcount)})}var vaoExt=GLctx.getExtension("OES_vertex_array_object");if(vaoExt){GLctx["createVertexArray"]=(function(){return vaoExt["createVertexArrayOES"]()});GLctx["deleteVertexArray"]=(function(vao){vaoExt["deleteVertexArrayOES"](vao)});GLctx["bindVertexArray"]=(function(vao){vaoExt["bindVertexArrayOES"](vao)});GLctx["isVertexArray"]=(function(vao){return vaoExt["isVertexArrayOES"](vao)})}var drawBuffersExt=GLctx.getExtension("WEBGL_draw_buffers");if(drawBuffersExt){GLctx["drawBuffers"]=(function(n,bufs){drawBuffersExt["drawBuffersWEBGL"](n,bufs)})}}GLctx.disjointTimerQueryExt=GLctx.getExtension("EXT_disjoint_timer_query");var automaticallyEnabledExtensions=["OES_texture_float","OES_texture_half_float","OES_standard_derivatives","OES_vertex_array_object","WEBGL_compressed_texture_s3tc","WEBGL_depth_texture","OES_element_index_uint","EXT_texture_filter_anisotropic","ANGLE_instanced_arrays","OES_texture_float_linear","OES_texture_half_float_linear","WEBGL_compressed_texture_atc","WEBGL_compressed_texture_pvrtc","EXT_color_buffer_half_float","WEBGL_color_buffer_float","EXT_frag_depth","EXT_sRGB","WEBGL_draw_buffers","WEBGL_shared_resources","EXT_shader_texture_lod","EXT_color_buffer_float"];var exts=GLctx.getSupportedExtensions();if(exts&&exts.length>0){GLctx.getSupportedExtensions().forEach((function(ext){if(automaticallyEnabledExtensions.indexOf(ext)!=-1){GLctx.getExtension(ext)}}))}}),populateUniformTable:(function(program){var p=GL.programs[program];GL.programInfos[program]={uniforms:{},maxUniformLength:0,maxAttributeLength:-1,maxUniformBlockNameLength:-1};var ptable=GL.programInfos[program];var utable=ptable.uniforms;var numUniforms=GLctx.getProgramParameter(p,GLctx.ACTIVE_UNIFORMS);for(var i=0;i<numUniforms;++i){var u=GLctx.getActiveUniform(p,i);var name=u.name;ptable.maxUniformLength=Math.max(ptable.maxUniformLength,name.length+1);if(name.indexOf("]",name.length-1)!==-1){var ls=name.lastIndexOf("[");name=name.slice(0,ls)}var loc=GLctx.getUniformLocation(p,name);if(loc!=null){var id=GL.getNewId(GL.uniforms);utable[name]=[u.size,id];GL.uniforms[id]=loc;for(var j=1;j<u.size;++j){var n=name+"["+j+"]";loc=GLctx.getUniformLocation(p,n);id=GL.getNewId(GL.uniforms);GL.uniforms[id]=loc}}}})};function _glClearColor(x0,x1,x2,x3){GLctx["clearColor"](x0,x1,x2,x3)}function __ZN5flint4ExitEi(){Module["printErr"]("missing function: _ZN5flint4ExitEi");abort(-1)}var Browser={mainLoop:{scheduler:null,method:"",currentlyRunningMainloop:0,func:null,arg:0,timingMode:0,timingValue:0,currentFrameNumber:0,queue:[],pause:(function(){Browser.mainLoop.scheduler=null;Browser.mainLoop.currentlyRunningMainloop++}),resume:(function(){Browser.mainLoop.currentlyRunningMainloop++;var timingMode=Browser.mainLoop.timingMode;var timingValue=Browser.mainLoop.timingValue;var func=Browser.mainLoop.func;Browser.mainLoop.func=null;_emscripten_set_main_loop(func,0,false,Browser.mainLoop.arg,true);_emscripten_set_main_loop_timing(timingMode,timingValue);Browser.mainLoop.scheduler()}),updateStatus:(function(){if(Module["setStatus"]){var message=Module["statusMessage"]||"Please wait...";var remaining=Browser.mainLoop.remainingBlockers;var expected=Browser.mainLoop.expectedBlockers;if(remaining){if(remaining<expected){Module["setStatus"](message+" ("+(expected-remaining)+"/"+expected+")")}else{Module["setStatus"](message)}}else{Module["setStatus"]("")}}}),runIter:(function(func){if(ABORT)return;if(Module["preMainLoop"]){var preRet=Module["preMainLoop"]();if(preRet===false){return}}try{func()}catch(e){if(e instanceof ExitStatus){return}else{if(e&&typeof e==="object"&&e.stack)Module.printErr("exception thrown: "+[e,e.stack]);throw e}}if(Module["postMainLoop"])Module["postMainLoop"]()})},isFullscreen:false,pointerLock:false,moduleContextCreatedCallbacks:[],workers:[],init:(function(){if(!Module["preloadPlugins"])Module["preloadPlugins"]=[];if(Browser.initted)return;Browser.initted=true;try{new Blob;Browser.hasBlobConstructor=true}catch(e){Browser.hasBlobConstructor=false;console.log("warning: no blob constructor, cannot create blobs with mimetypes")}Browser.BlobBuilder=typeof MozBlobBuilder!="undefined"?MozBlobBuilder:typeof WebKitBlobBuilder!="undefined"?WebKitBlobBuilder:!Browser.hasBlobConstructor?console.log("warning: no BlobBuilder"):null;Browser.URLObject=typeof window!="undefined"?window.URL?window.URL:window.webkitURL:undefined;if(!Module.noImageDecoding&&typeof Browser.URLObject==="undefined"){console.log("warning: Browser does not support creating object URLs. Built-in browser image decoding will not be available.");Module.noImageDecoding=true}var imagePlugin={};imagePlugin["canHandle"]=function imagePlugin_canHandle(name){return!Module.noImageDecoding&&/\.(jpg|jpeg|png|bmp)$/i.test(name)};imagePlugin["handle"]=function imagePlugin_handle(byteArray,name,onload,onerror){var b=null;if(Browser.hasBlobConstructor){try{b=new Blob([byteArray],{type:Browser.getMimetype(name)});if(b.size!==byteArray.length){b=new Blob([(new Uint8Array(byteArray)).buffer],{type:Browser.getMimetype(name)})}}catch(e){Runtime.warnOnce("Blob constructor present but fails: "+e+"; falling back to blob builder")}}if(!b){var bb=new Browser.BlobBuilder;bb.append((new Uint8Array(byteArray)).buffer);b=bb.getBlob()}var url=Browser.URLObject.createObjectURL(b);var img=new Image;img.onload=function img_onload(){assert(img.complete,"Image "+name+" could not be decoded");var canvas=document.createElement("canvas");canvas.width=img.width;canvas.height=img.height;var ctx=canvas.getContext("2d");ctx.drawImage(img,0,0);Module["preloadedImages"][name]=canvas;Browser.URLObject.revokeObjectURL(url);if(onload)onload(byteArray)};img.onerror=function img_onerror(event){console.log("Image "+url+" could not be decoded");if(onerror)onerror()};img.src=url};Module["preloadPlugins"].push(imagePlugin);var audioPlugin={};audioPlugin["canHandle"]=function audioPlugin_canHandle(name){return!Module.noAudioDecoding&&name.substr(-4)in{".ogg":1,".wav":1,".mp3":1}};audioPlugin["handle"]=function audioPlugin_handle(byteArray,name,onload,onerror){var done=false;function finish(audio){if(done)return;done=true;Module["preloadedAudios"][name]=audio;if(onload)onload(byteArray)}function fail(){if(done)return;done=true;Module["preloadedAudios"][name]=new Audio;if(onerror)onerror()}if(Browser.hasBlobConstructor){try{var b=new Blob([byteArray],{type:Browser.getMimetype(name)})}catch(e){return fail()}var url=Browser.URLObject.createObjectURL(b);var audio=new Audio;audio.addEventListener("canplaythrough",(function(){finish(audio)}),false);audio.onerror=function audio_onerror(event){if(done)return;console.log("warning: browser could not fully decode audio "+name+", trying slower base64 approach");function encode64(data){var BASE="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";var PAD="=";var ret="";var leftchar=0;var leftbits=0;for(var i=0;i<data.length;i++){leftchar=leftchar<<8|data[i];leftbits+=8;while(leftbits>=6){var curr=leftchar>>leftbits-6&63;leftbits-=6;ret+=BASE[curr]}}if(leftbits==2){ret+=BASE[(leftchar&3)<<4];ret+=PAD+PAD}else if(leftbits==4){ret+=BASE[(leftchar&15)<<2];ret+=PAD}return ret}audio.src="data:audio/x-"+name.substr(-3)+";base64,"+encode64(byteArray);finish(audio)};audio.src=url;Browser.safeSetTimeout((function(){finish(audio)}),1e4)}else{return fail()}};Module["preloadPlugins"].push(audioPlugin);function pointerLockChange(){Browser.pointerLock=document["pointerLockElement"]===Module["canvas"]||document["mozPointerLockElement"]===Module["canvas"]||document["webkitPointerLockElement"]===Module["canvas"]||document["msPointerLockElement"]===Module["canvas"]}var canvas=Module["canvas"];if(canvas){canvas.requestPointerLock=canvas["requestPointerLock"]||canvas["mozRequestPointerLock"]||canvas["webkitRequestPointerLock"]||canvas["msRequestPointerLock"]||(function(){});canvas.exitPointerLock=document["exitPointerLock"]||document["mozExitPointerLock"]||document["webkitExitPointerLock"]||document["msExitPointerLock"]||(function(){});canvas.exitPointerLock=canvas.exitPointerLock.bind(document);document.addEventListener("pointerlockchange",pointerLockChange,false);document.addEventListener("mozpointerlockchange",pointerLockChange,false);document.addEventListener("webkitpointerlockchange",pointerLockChange,false);document.addEventListener("mspointerlockchange",pointerLockChange,false);if(Module["elementPointerLock"]){canvas.addEventListener("click",(function(ev){if(!Browser.pointerLock&&Module["canvas"].requestPointerLock){Module["canvas"].requestPointerLock();ev.preventDefault()}}),false)}}}),createContext:(function(canvas,useWebGL,setInModule,webGLContextAttributes){if(useWebGL&&Module.ctx&&canvas==Module.canvas)return Module.ctx;var ctx;var contextHandle;if(useWebGL){var contextAttributes={antialias:false,alpha:false};if(webGLContextAttributes){for(var attribute in webGLContextAttributes){contextAttributes[attribute]=webGLContextAttributes[attribute]}}contextHandle=GL.createContext(canvas,contextAttributes);if(contextHandle){ctx=GL.getContext(contextHandle).GLctx}}else{ctx=canvas.getContext("2d")}if(!ctx)return null;if(setInModule){if(!useWebGL)assert(typeof GLctx==="undefined","cannot set in module if GLctx is used, but we are a non-GL context that would replace it");Module.ctx=ctx;if(useWebGL)GL.makeContextCurrent(contextHandle);Module.useWebGL=useWebGL;Browser.moduleContextCreatedCallbacks.forEach((function(callback){callback()}));Browser.init()}return ctx}),destroyContext:(function(canvas,useWebGL,setInModule){}),fullscreenHandlersInstalled:false,lockPointer:undefined,resizeCanvas:undefined,requestFullscreen:(function(lockPointer,resizeCanvas,vrDevice){Browser.lockPointer=lockPointer;Browser.resizeCanvas=resizeCanvas;Browser.vrDevice=vrDevice;if(typeof Browser.lockPointer==="undefined")Browser.lockPointer=true;if(typeof Browser.resizeCanvas==="undefined")Browser.resizeCanvas=false;if(typeof Browser.vrDevice==="undefined")Browser.vrDevice=null;var canvas=Module["canvas"];function fullscreenChange(){Browser.isFullscreen=false;var canvasContainer=canvas.parentNode;if((document["fullscreenElement"]||document["mozFullScreenElement"]||document["msFullscreenElement"]||document["webkitFullscreenElement"]||document["webkitCurrentFullScreenElement"])===canvasContainer){canvas.exitFullscreen=document["exitFullscreen"]||document["cancelFullScreen"]||document["mozCancelFullScreen"]||document["msExitFullscreen"]||document["webkitCancelFullScreen"]||(function(){});canvas.exitFullscreen=canvas.exitFullscreen.bind(document);if(Browser.lockPointer)canvas.requestPointerLock();Browser.isFullscreen=true;if(Browser.resizeCanvas)Browser.setFullscreenCanvasSize()}else{canvasContainer.parentNode.insertBefore(canvas,canvasContainer);canvasContainer.parentNode.removeChild(canvasContainer);if(Browser.resizeCanvas)Browser.setWindowedCanvasSize()}if(Module["onFullScreen"])Module["onFullScreen"](Browser.isFullscreen);if(Module["onFullscreen"])Module["onFullscreen"](Browser.isFullscreen);Browser.updateCanvasDimensions(canvas)}if(!Browser.fullscreenHandlersInstalled){Browser.fullscreenHandlersInstalled=true;document.addEventListener("fullscreenchange",fullscreenChange,false);document.addEventListener("mozfullscreenchange",fullscreenChange,false);document.addEventListener("webkitfullscreenchange",fullscreenChange,false);document.addEventListener("MSFullscreenChange",fullscreenChange,false)}var canvasContainer=document.createElement("div");canvas.parentNode.insertBefore(canvasContainer,canvas);canvasContainer.appendChild(canvas);canvasContainer.requestFullscreen=canvasContainer["requestFullscreen"]||canvasContainer["mozRequestFullScreen"]||canvasContainer["msRequestFullscreen"]||(canvasContainer["webkitRequestFullscreen"]?(function(){canvasContainer["webkitRequestFullscreen"](Element["ALLOW_KEYBOARD_INPUT"])}):null)||(canvasContainer["webkitRequestFullScreen"]?(function(){canvasContainer["webkitRequestFullScreen"](Element["ALLOW_KEYBOARD_INPUT"])}):null);if(vrDevice){canvasContainer.requestFullscreen({vrDisplay:vrDevice})}else{canvasContainer.requestFullscreen()}}),requestFullScreen:(function(lockPointer,resizeCanvas,vrDevice){Module.printErr("Browser.requestFullScreen() is deprecated. Please call Browser.requestFullscreen instead.");Browser.requestFullScreen=(function(lockPointer,resizeCanvas,vrDevice){return Browser.requestFullscreen(lockPointer,resizeCanvas,vrDevice)});return Browser.requestFullscreen(lockPointer,resizeCanvas,vrDevice)}),nextRAF:0,fakeRequestAnimationFrame:(function(func){var now=Date.now();if(Browser.nextRAF===0){Browser.nextRAF=now+1e3/60}else{while(now+2>=Browser.nextRAF){Browser.nextRAF+=1e3/60}}var delay=Math.max(Browser.nextRAF-now,0);setTimeout(func,delay)}),requestAnimationFrame:function requestAnimationFrame(func){if(typeof window==="undefined"){Browser.fakeRequestAnimationFrame(func)}else{if(!window.requestAnimationFrame){window.requestAnimationFrame=window["requestAnimationFrame"]||window["mozRequestAnimationFrame"]||window["webkitRequestAnimationFrame"]||window["msRequestAnimationFrame"]||window["oRequestAnimationFrame"]||Browser.fakeRequestAnimationFrame}window.requestAnimationFrame(func)}},safeCallback:(function(func){return(function(){if(!ABORT)return func.apply(null,arguments)})}),allowAsyncCallbacks:true,queuedAsyncCallbacks:[],pauseAsyncCallbacks:(function(){Browser.allowAsyncCallbacks=false}),resumeAsyncCallbacks:(function(){Browser.allowAsyncCallbacks=true;if(Browser.queuedAsyncCallbacks.length>0){var callbacks=Browser.queuedAsyncCallbacks;Browser.queuedAsyncCallbacks=[];callbacks.forEach((function(func){func()}))}}),safeRequestAnimationFrame:(function(func){return Browser.requestAnimationFrame((function(){if(ABORT)return;if(Browser.allowAsyncCallbacks){func()}else{Browser.queuedAsyncCallbacks.push(func)}}))}),safeSetTimeout:(function(func,timeout){Module["noExitRuntime"]=true;return setTimeout((function(){if(ABORT)return;if(Browser.allowAsyncCallbacks){func()}else{Browser.queuedAsyncCallbacks.push(func)}}),timeout)}),safeSetInterval:(function(func,timeout){Module["noExitRuntime"]=true;return setInterval((function(){if(ABORT)return;if(Browser.allowAsyncCallbacks){func()}}),timeout)}),getMimetype:(function(name){return{"jpg":"image/jpeg","jpeg":"image/jpeg","png":"image/png","bmp":"image/bmp","ogg":"audio/ogg","wav":"audio/wav","mp3":"audio/mpeg"}[name.substr(name.lastIndexOf(".")+1)]}),getUserMedia:(function(func){if(!window.getUserMedia){window.getUserMedia=navigator["getUserMedia"]||navigator["mozGetUserMedia"]}window.getUserMedia(func)}),getMovementX:(function(event){return event["movementX"]||event["mozMovementX"]||event["webkitMovementX"]||0}),getMovementY:(function(event){return event["movementY"]||event["mozMovementY"]||event["webkitMovementY"]||0}),getMouseWheelDelta:(function(event){var delta=0;switch(event.type){case"DOMMouseScroll":delta=event.detail;break;case"mousewheel":delta=event.wheelDelta;break;case"wheel":delta=event["deltaY"];break;default:throw"unrecognized mouse wheel event: "+event.type}return delta}),mouseX:0,mouseY:0,mouseMovementX:0,mouseMovementY:0,touches:{},lastTouches:{},calculateMouseEvent:(function(event){if(Browser.pointerLock){if(event.type!="mousemove"&&"mozMovementX"in event){Browser.mouseMovementX=Browser.mouseMovementY=0}else{Browser.mouseMovementX=Browser.getMovementX(event);Browser.mouseMovementY=Browser.getMovementY(event)}if(typeof SDL!="undefined"){Browser.mouseX=SDL.mouseX+Browser.mouseMovementX;Browser.mouseY=SDL.mouseY+Browser.mouseMovementY}else{Browser.mouseX+=Browser.mouseMovementX;Browser.mouseY+=Browser.mouseMovementY}}else{var rect=Module["canvas"].getBoundingClientRect();var cw=Module["canvas"].width;var ch=Module["canvas"].height;var scrollX=typeof window.scrollX!=="undefined"?window.scrollX:window.pageXOffset;var scrollY=typeof window.scrollY!=="undefined"?window.scrollY:window.pageYOffset;if(event.type==="touchstart"||event.type==="touchend"||event.type==="touchmove"){var touch=event.touch;if(touch===undefined){return}var adjustedX=touch.pageX-(scrollX+rect.left);var adjustedY=touch.pageY-(scrollY+rect.top);adjustedX=adjustedX*(cw/rect.width);adjustedY=adjustedY*(ch/rect.height);var coords={x:adjustedX,y:adjustedY};if(event.type==="touchstart"){Browser.lastTouches[touch.identifier]=coords;Browser.touches[touch.identifier]=coords}else if(event.type==="touchend"||event.type==="touchmove"){var last=Browser.touches[touch.identifier];if(!last)last=coords;Browser.lastTouches[touch.identifier]=last;Browser.touches[touch.identifier]=coords}return}var x=event.pageX-(scrollX+rect.left);var y=event.pageY-(scrollY+rect.top);x=x*(cw/rect.width);y=y*(ch/rect.height);Browser.mouseMovementX=x-Browser.mouseX;Browser.mouseMovementY=y-Browser.mouseY;Browser.mouseX=x;Browser.mouseY=y}}),asyncLoad:(function(url,onload,onerror,noRunDep){var dep=!noRunDep?getUniqueRunDependency("al "+url):"";Module["readAsync"](url,(function(arrayBuffer){assert(arrayBuffer,'Loading data file "'+url+'" failed (no arrayBuffer).');onload(new Uint8Array(arrayBuffer));if(dep)removeRunDependency(dep)}),(function(event){if(onerror){onerror()}else{throw'Loading data file "'+url+'" failed.'}}));if(dep)addRunDependency(dep)}),resizeListeners:[],updateResizeListeners:(function(){var canvas=Module["canvas"];Browser.resizeListeners.forEach((function(listener){listener(canvas.width,canvas.height)}))}),setCanvasSize:(function(width,height,noUpdates){var canvas=Module["canvas"];Browser.updateCanvasDimensions(canvas,width,height);if(!noUpdates)Browser.updateResizeListeners()}),windowedWidth:0,windowedHeight:0,setFullscreenCanvasSize:(function(){if(typeof SDL!="undefined"){var flags=HEAPU32[SDL.screen+Runtime.QUANTUM_SIZE*0>>2];flags=flags|8388608;HEAP32[SDL.screen+Runtime.QUANTUM_SIZE*0>>2]=flags}Browser.updateResizeListeners()}),setWindowedCanvasSize:(function(){if(typeof SDL!="undefined"){var flags=HEAPU32[SDL.screen+Runtime.QUANTUM_SIZE*0>>2];flags=flags&~8388608;HEAP32[SDL.screen+Runtime.QUANTUM_SIZE*0>>2]=flags}Browser.updateResizeListeners()}),updateCanvasDimensions:(function(canvas,wNative,hNative){if(wNative&&hNative){canvas.widthNative=wNative;canvas.heightNative=hNative}else{wNative=canvas.widthNative;hNative=canvas.heightNative}var w=wNative;var h=hNative;if(Module["forcedAspectRatio"]&&Module["forcedAspectRatio"]>0){if(w/h<Module["forcedAspectRatio"]){w=Math.round(h*Module["forcedAspectRatio"])}else{h=Math.round(w/Module["forcedAspectRatio"])}}if((document["fullscreenElement"]||document["mozFullScreenElement"]||document["msFullscreenElement"]||document["webkitFullscreenElement"]||document["webkitCurrentFullScreenElement"])===canvas.parentNode&&typeof screen!="undefined"){var factor=Math.min(screen.width/w,screen.height/h);w=Math.round(w*factor);h=Math.round(h*factor)}if(Browser.resizeCanvas){if(canvas.width!=w)canvas.width=w;if(canvas.height!=h)canvas.height=h;if(typeof canvas.style!="undefined"){canvas.style.removeProperty("width");canvas.style.removeProperty("height")}}else{if(canvas.width!=wNative)canvas.width=wNative;if(canvas.height!=hNative)canvas.height=hNative;if(typeof canvas.style!="undefined"){if(w!=wNative||h!=hNative){canvas.style.setProperty("width",w+"px","important");canvas.style.setProperty("height",h+"px","important")}else{canvas.style.removeProperty("width");canvas.style.removeProperty("height")}}}}),wgetRequests:{},nextWgetRequestHandle:0,getNextWgetRequestHandle:(function(){var handle=Browser.nextWgetRequestHandle;Browser.nextWgetRequestHandle++;return handle})};function _emscripten_set_main_loop_timing(mode,value){Browser.mainLoop.timingMode=mode;Browser.mainLoop.timingValue=value;if(!Browser.mainLoop.func){return 1}if(mode==0){Browser.mainLoop.scheduler=function Browser_mainLoop_scheduler_setTimeout(){var timeUntilNextTick=Math.max(0,Browser.mainLoop.tickStartTime+value-_emscripten_get_now())|0;setTimeout(Browser.mainLoop.runner,timeUntilNextTick)};Browser.mainLoop.method="timeout"}else if(mode==1){Browser.mainLoop.scheduler=function Browser_mainLoop_scheduler_rAF(){Browser.requestAnimationFrame(Browser.mainLoop.runner)};Browser.mainLoop.method="rAF"}else if(mode==2){if(!window["setImmediate"]){var setImmediates=[];var emscriptenMainLoopMessageId="setimmediate";function Browser_setImmediate_messageHandler(event){if(event.source===window&&event.data===emscriptenMainLoopMessageId){event.stopPropagation();setImmediates.shift()()}}window.addEventListener("message",Browser_setImmediate_messageHandler,true);window["setImmediate"]=function Browser_emulated_setImmediate(func){setImmediates.push(func);if(ENVIRONMENT_IS_WORKER){if(Module["setImmediates"]===undefined)Module["setImmediates"]=[];Module["setImmediates"].push(func);window.postMessage({target:emscriptenMainLoopMessageId})}else window.postMessage(emscriptenMainLoopMessageId,"*")}}Browser.mainLoop.scheduler=function Browser_mainLoop_scheduler_setImmediate(){window["setImmediate"](Browser.mainLoop.runner)};Browser.mainLoop.method="immediate"}return 0}function _emscripten_get_now(){abort()}function _emscripten_set_main_loop(func,fps,simulateInfiniteLoop,arg,noSetTiming){Module["noExitRuntime"]=true;assert(!Browser.mainLoop.func,"emscripten_set_main_loop: there can only be one main loop function at once: call emscripten_cancel_main_loop to cancel the previous one before setting a new one with different parameters.");Browser.mainLoop.func=func;Browser.mainLoop.arg=arg;var browserIterationFunc;if(typeof arg!=="undefined"){browserIterationFunc=(function(){Module["dynCall_vi"](func,arg)})}else{browserIterationFunc=(function(){Module["dynCall_v"](func)})}var thisMainLoopId=Browser.mainLoop.currentlyRunningMainloop;Browser.mainLoop.runner=function Browser_mainLoop_runner(){if(ABORT)return;if(Browser.mainLoop.queue.length>0){var start=Date.now();var blocker=Browser.mainLoop.queue.shift();blocker.func(blocker.arg);if(Browser.mainLoop.remainingBlockers){var remaining=Browser.mainLoop.remainingBlockers;var next=remaining%1==0?remaining-1:Math.floor(remaining);if(blocker.counted){Browser.mainLoop.remainingBlockers=next}else{next=next+.5;Browser.mainLoop.remainingBlockers=(8*remaining+next)/9}}console.log('main loop blocker "'+blocker.name+'" took '+(Date.now()-start)+" ms");Browser.mainLoop.updateStatus();if(thisMainLoopId<Browser.mainLoop.currentlyRunningMainloop)return;setTimeout(Browser.mainLoop.runner,0);return}if(thisMainLoopId<Browser.mainLoop.currentlyRunningMainloop)return;Browser.mainLoop.currentFrameNumber=Browser.mainLoop.currentFrameNumber+1|0;if(Browser.mainLoop.timingMode==1&&Browser.mainLoop.timingValue>1&&Browser.mainLoop.currentFrameNumber%Browser.mainLoop.timingValue!=0){Browser.mainLoop.scheduler();return}else if(Browser.mainLoop.timingMode==0){Browser.mainLoop.tickStartTime=_emscripten_get_now()}if(Browser.mainLoop.method==="timeout"&&Module.ctx){Module.printErr("Looks like you are rendering without using requestAnimationFrame for the main loop. You should use 0 for the frame rate in emscripten_set_main_loop in order to use requestAnimationFrame, as that can greatly improve your frame rates!");Browser.mainLoop.method=""}Browser.mainLoop.runIter(browserIterationFunc);if(thisMainLoopId<Browser.mainLoop.currentlyRunningMainloop)return;if(typeof SDL==="object"&&SDL.audio&&SDL.audio.queueNewAudioData)SDL.audio.queueNewAudioData();Browser.mainLoop.scheduler()};if(!noSetTiming){if(fps&&fps>0)_emscripten_set_main_loop_timing(0,1e3/fps);else _emscripten_set_main_loop_timing(1,1);Browser.mainLoop.scheduler()}if(simulateInfiniteLoop){throw"SimulateInfiniteLoop"}}function _emscripten_set_main_loop_arg(func,arg,fps,simulateInfiniteLoop){_emscripten_set_main_loop(func,fps,simulateInfiniteLoop,arg)}var GLFW={Window:(function(id,width,height,title,monitor,share){this.id=id;this.x=0;this.y=0;this.fullscreen=false;this.storedX=0;this.storedY=0;this.width=width;this.height=height;this.storedWidth=width;this.storedHeight=height;this.title=title;this.monitor=monitor;this.share=share;this.attributes=GLFW.hints;this.inputModes={208897:212993,208898:0,208899:0};this.buttons=0;this.keys=new Array;this.domKeys=new Array;this.shouldClose=0;this.title=null;this.windowPosFunc=null;this.windowSizeFunc=null;this.windowCloseFunc=null;this.windowRefreshFunc=null;this.windowFocusFunc=null;this.windowIconifyFunc=null;this.framebufferSizeFunc=null;this.mouseButtonFunc=null;this.cursorPosFunc=null;this.cursorEnterFunc=null;this.scrollFunc=null;this.dropFunc=null;this.keyFunc=null;this.charFunc=null;this.userptr=null}),WindowFromId:(function(id){if(id<=0||!GLFW.windows)return null;return GLFW.windows[id-1]}),joystickFunc:null,errorFunc:null,monitorFunc:null,active:null,windows:null,monitors:null,monitorString:null,versionString:null,initialTime:null,extensions:null,hints:null,defaultHints:{131073:0,131074:0,131075:1,131076:1,131077:1,135169:8,135170:8,135171:8,135172:8,135173:24,135174:8,135175:0,135176:0,135177:0,135178:0,135179:0,135180:0,135181:0,135182:0,135183:0,139265:196609,139266:1,139267:0,139268:0,139269:0,139270:0,139271:0,139272:0},DOMToGLFWKeyCode:(function(keycode){switch(keycode){case 32:return 32;case 222:return 39;case 188:return 44;case 173:return 45;case 189:return 45;case 190:return 46;case 191:return 47;case 48:return 48;case 49:return 49;case 50:return 50;case 51:return 51;case 52:return 52;case 53:return 53;case 54:return 54;case 55:return 55;case 56:return 56;case 57:return 57;case 59:return 59;case 61:return 61;case 187:return 61;case 65:return 65;case 66:return 66;case 67:return 67;case 68:return 68;case 69:return 69;case 70:return 70;case 71:return 71;case 72:return 72;case 73:return 73;case 74:return 74;case 75:return 75;case 76:return 76;case 77:return 77;case 78:return 78;case 79:return 79;case 80:return 80;case 81:return 81;case 82:return 82;case 83:return 83;case 84:return 84;case 85:return 85;case 86:return 86;case 87:return 87;case 88:return 88;case 89:return 89;case 90:return 90;case 219:return 91;case 220:return 92;case 221:return 93;case 192:return 94;case 27:return 256;case 13:return 257;case 9:return 258;case 8:return 259;case 45:return 260;case 46:return 261;case 39:return 262;case 37:return 263;case 40:return 264;case 38:return 265;case 33:return 266;case 34:return 267;case 36:return 268;case 35:return 269;case 20:return 280;case 145:return 281;case 144:return 282;case 44:return 283;case 19:return 284;case 112:return 290;case 113:return 291;case 114:return 292;case 115:return 293;case 116:return 294;case 117:return 295;case 118:return 296;case 119:return 297;case 120:return 298;case 121:return 299;case 122:return 300;case 123:return 301;case 124:return 302;case 125:return 303;case 126:return 304;case 127:return 305;case 128:return 306;case 129:return 307;case 130:return 308;case 131:return 309;case 132:return 310;case 133:return 311;case 134:return 312;case 135:return 313;case 136:return 314;case 96:return 320;case 97:return 321;case 98:return 322;case 99:return 323;case 100:return 324;case 101:return 325;case 102:return 326;case 103:return 327;case 104:return 328;case 105:return 329;case 110:return 330;case 111:return 331;case 106:return 332;case 109:return 333;case 107:return 334;case 16:return 340;case 17:return 341;case 18:return 342;case 91:return 343;case 93:return 348;default:return-1}}),getModBits:(function(win){var mod=0;if(win.keys[340])mod|=1;if(win.keys[341])mod|=2;if(win.keys[342])mod|=4;if(win.keys[343])mod|=8;return mod}),onKeyPress:(function(event){if(!GLFW.active||!GLFW.active.charFunc)return;if(event.ctrlKey||event.metaKey)return;var charCode=event.charCode;if(charCode==0||charCode>=0&&charCode<=31)return;Module["dynCall_vii"](GLFW.active.charFunc,GLFW.active.id,charCode)}),onKeyChanged:(function(keyCode,status){if(!GLFW.active)return;var key=GLFW.DOMToGLFWKeyCode(keyCode);if(key==-1)return;var repeat=status&&GLFW.active.keys[key];GLFW.active.keys[key]=status;GLFW.active.domKeys[keyCode]=status;if(!GLFW.active.keyFunc)return;if(repeat)status=2;Module["dynCall_viiiii"](GLFW.active.keyFunc,GLFW.active.id,key,keyCode,status,GLFW.getModBits(GLFW.active))}),onGamepadConnected:(function(event){GLFW.refreshJoysticks()}),onGamepadDisconnected:(function(event){GLFW.refreshJoysticks()}),onKeydown:(function(event){GLFW.onKeyChanged(event.keyCode,1);if(event.keyCode===8||event.keyCode===9){event.preventDefault()}}),onKeyup:(function(event){GLFW.onKeyChanged(event.keyCode,0)}),onBlur:(function(event){if(!GLFW.active)return;for(var i=0;i<GLFW.active.domKeys.length;++i){if(GLFW.active.domKeys[i]){GLFW.onKeyChanged(i,0)}}}),onMousemove:(function(event){if(!GLFW.active)return;Browser.calculateMouseEvent(event);if(event.target!=Module["canvas"]||!GLFW.active.cursorPosFunc)return;Module["dynCall_vidd"](GLFW.active.cursorPosFunc,GLFW.active.id,Browser.mouseX,Browser.mouseY)}),DOMToGLFWMouseButton:(function(event){var eventButton=event["button"];if(eventButton>0){if(eventButton==1){eventButton=2}else{eventButton=1}}return eventButton}),onMouseenter:(function(event){if(!GLFW.active)return;if(event.target!=Module["canvas"]||!GLFW.active.cursorEnterFunc)return;Module["dynCall_vii"](GLFW.active.cursorEnterFunc,GLFW.active.id,1)}),onMouseleave:(function(event){if(!GLFW.active)return;if(event.target!=Module["canvas"]||!GLFW.active.cursorEnterFunc)return;Module["dynCall_vii"](GLFW.active.cursorEnterFunc,GLFW.active.id,0)}),onMouseButtonChanged:(function(event,status){if(!GLFW.active)return;Browser.calculateMouseEvent(event);if(event.target!=Module["canvas"])return;eventButton=GLFW.DOMToGLFWMouseButton(event);if(status==1){GLFW.active.buttons|=1<<eventButton;try{event.target.setCapture()}catch(e){}}else{GLFW.active.buttons&=~(1<<eventButton)}if(!GLFW.active.mouseButtonFunc)return;Module["dynCall_viiii"](GLFW.active.mouseButtonFunc,GLFW.active.id,eventButton,status,GLFW.getModBits(GLFW.active))}),onMouseButtonDown:(function(event){if(!GLFW.active)return;GLFW.onMouseButtonChanged(event,1)}),onMouseButtonUp:(function(event){if(!GLFW.active)return;GLFW.onMouseButtonChanged(event,0)}),onMouseWheel:(function(event){var delta=-Browser.getMouseWheelDelta(event);delta=delta==0?0:delta>0?Math.max(delta,1):Math.min(delta,-1);GLFW.wheelPos+=delta;if(!GLFW.active||!GLFW.active.scrollFunc||event.target!=Module["canvas"])return;var sx=0;var sy=0;if(event.type=="mousewheel"){sx=event.wheelDeltaX;sy=event.wheelDeltaY}else{sx=event.deltaX;sy=event.deltaY}Module["dynCall_vidd"](GLFW.active.scrollFunc,GLFW.active.id,sx,sy);event.preventDefault()}),onCanvasResize:(function(width,height){if(!GLFW.active)return;var resizeNeeded=true;if(document["fullscreen"]||document["fullScreen"]||document["mozFullScreen"]||document["webkitIsFullScreen"]){GLFW.active.storedX=GLFW.active.x;GLFW.active.storedY=GLFW.active.y;GLFW.active.storedWidth=GLFW.active.width;GLFW.active.storedHeight=GLFW.active.height;GLFW.active.x=GLFW.active.y=0;GLFW.active.width=screen.width;GLFW.active.height=screen.height;GLFW.active.fullscreen=true}else if(GLFW.active.fullscreen==true){GLFW.active.x=GLFW.active.storedX;GLFW.active.y=GLFW.active.storedY;GLFW.active.width=GLFW.active.storedWidth;GLFW.active.height=GLFW.active.storedHeight;GLFW.active.fullscreen=false}else if(GLFW.active.width!=width||GLFW.active.height!=height){GLFW.active.width=width;GLFW.active.height=height}else{resizeNeeded=false}if(resizeNeeded){Browser.setCanvasSize(GLFW.active.width,GLFW.active.height,true);GLFW.onWindowSizeChanged();GLFW.onFramebufferSizeChanged()}}),onWindowSizeChanged:(function(){if(!GLFW.active)return;if(!GLFW.active.windowSizeFunc)return;Module["dynCall_viii"](GLFW.active.windowSizeFunc,GLFW.active.id,GLFW.active.width,GLFW.active.height)}),onFramebufferSizeChanged:(function(){if(!GLFW.active)return;if(!GLFW.active.framebufferSizeFunc)return;Module["dynCall_viii"](GLFW.active.framebufferSizeFunc,GLFW.active.id,GLFW.active.width,GLFW.active.height)}),requestFullscreen:(function(){var RFS=Module["canvas"]["requestFullscreen"]||Module["canvas"]["mozRequestFullScreen"]||Module["canvas"]["webkitRequestFullScreen"]||(function(){});RFS.apply(Module["canvas"],[])}),requestFullScreen:(function(){Module.printErr("GLFW.requestFullScreen() is deprecated. Please call GLFW.requestFullscreen instead.");GLFW.requestFullScreen=(function(){return GLFW.requestFullscreen()});return GLFW.requestFullscreen()}),exitFullscreen:(function(){var CFS=document["exitFullscreen"]||document["cancelFullScreen"]||document["mozCancelFullScreen"]||document["webkitCancelFullScreen"]||(function(){});CFS.apply(document,[])}),cancelFullScreen:(function(){Module.printErr("GLFW.cancelFullScreen() is deprecated. Please call GLFW.exitFullscreen instead.");GLFW.cancelFullScreen=(function(){return GLFW.exitFullscreen()});return GLFW.exitFullscreen()}),getTime:(function(){return _emscripten_get_now()/1e3}),setWindowTitle:(function(winid,title){var win=GLFW.WindowFromId(winid);if(!win)return;win.title=Pointer_stringify(title);if(GLFW.active.id==win.id){document.title=win.title}}),setJoystickCallback:(function(cbfun){GLFW.joystickFunc=cbfun;GLFW.refreshJoysticks()}),joys:{},lastGamepadState:null,lastGamepadStateFrame:null,refreshJoysticks:(function(){if(Browser.mainLoop.currentFrameNumber!==GLFW.lastGamepadStateFrame||!Browser.mainLoop.currentFrameNumber){GLFW.lastGamepadState=navigator.getGamepads?navigator.getGamepads():navigator.webkitGetGamepads?navigator.webkitGetGamepads:null;GLFW.lastGamepadStateFrame=Browser.mainLoop.currentFrameNumber;for(var joy=0;joy<GLFW.lastGamepadState.length;++joy){var gamepad=GLFW.lastGamepadState[joy];if(gamepad){if(!GLFW.joys[joy]){console.log("glfw joystick connected:",joy);GLFW.joys[joy]={id:allocate(intArrayFromString(gamepad.id),"i8",ALLOC_NORMAL),buttonsCount:gamepad.buttons.length,axesCount:gamepad.axes.length,buttons:allocate(new Array(gamepad.buttons.length),"i8",ALLOC_NORMAL),axes:allocate(new Array(gamepad.axes.length*4),"float",ALLOC_NORMAL)};if(GLFW.joystickFunc){Module["dynCall_vii"](GLFW.joystickFunc,joy,262145)}}var data=GLFW.joys[joy];for(var i=0;i<gamepad.buttons.length;++i){setValue(data.buttons+i,gamepad.buttons[i].pressed,"i8")}for(var i=0;i<gamepad.axes.length;++i){setValue(data.axes+i*4,gamepad.axes[i],"float")}}else{if(GLFW.joys[joy]){console.log("glfw joystick disconnected",joy);if(GLFW.joystickFunc){Module["dynCall_vii"](GLFW.joystickFunc,joy,262146)}_free(GLFW.joys[joy].id);_free(GLFW.joys[joy].buttons);_free(GLFW.joys[joy].axes);delete GLFW.joys[joy]}}}}}),setKeyCallback:(function(winid,cbfun){var win=GLFW.WindowFromId(winid);if(!win)return;win.keyFunc=cbfun}),setCharCallback:(function(winid,cbfun){var win=GLFW.WindowFromId(winid);if(!win)return;win.charFunc=cbfun}),setMouseButtonCallback:(function(winid,cbfun){var win=GLFW.WindowFromId(winid);if(!win)return;win.mouseButtonFunc=cbfun}),setCursorPosCallback:(function(winid,cbfun){var win=GLFW.WindowFromId(winid);if(!win)return;win.cursorPosFunc=cbfun}),setScrollCallback:(function(winid,cbfun){var win=GLFW.WindowFromId(winid);if(!win)return;win.scrollFunc=cbfun}),setDropCallback:(function(winid,cbfun){var win=GLFW.WindowFromId(winid);if(!win)return;win.dropFunc=cbfun}),onDrop:(function(event){if(!GLFW.active||!GLFW.active.dropFunc)return;if(!event.dataTransfer||!event.dataTransfer.files||event.dataTransfer.files.length==0)return;event.preventDefault();var filenames=allocate(new Array(event.dataTransfer.files.length*4),"i8*",ALLOC_NORMAL);var filenamesArray=[];var count=event.dataTransfer.files.length;var written=0;var drop_dir=".glfw_dropped_files";FS.createPath("/",drop_dir);function save(file){var path="/"+drop_dir+"/"+file.name.replace(/\//g,"_");var reader=new FileReader;reader.onloadend=(function(e){if(reader.readyState!=2){++written;console.log("failed to read dropped file: "+file.name+": "+reader.error);return}var data=e.target.result;FS.writeFile(path,new Uint8Array(data),{encoding:"binary"});if(++written===count){Module["dynCall_viii"](GLFW.active.dropFunc,GLFW.active.id,count,filenames);for(var i=0;i<filenamesArray.length;++i){_free(filenamesArray[i])}_free(filenames)}});reader.readAsArrayBuffer(file);var filename=allocate(intArrayFromString(path),"i8",ALLOC_NORMAL);filenamesArray.push(filename);setValue(filenames+i*4,filename,"i8*")}for(var i=0;i<count;++i){save(event.dataTransfer.files[i])}return false}),onDragover:(function(event){if(!GLFW.active||!GLFW.active.dropFunc)return;event.preventDefault();return false}),setWindowSizeCallback:(function(winid,cbfun){var win=GLFW.WindowFromId(winid);if(!win)return;win.windowSizeFunc=cbfun}),setWindowCloseCallback:(function(winid,cbfun){var win=GLFW.WindowFromId(winid);if(!win)return;win.windowCloseFunc=cbfun}),setWindowRefreshCallback:(function(winid,cbfun){var win=GLFW.WindowFromId(winid);if(!win)return;win.windowRefreshFunc=cbfun}),onClickRequestPointerLock:(function(e){if(!Browser.pointerLock&&Module["canvas"].requestPointerLock){Module["canvas"].requestPointerLock();e.preventDefault()}}),setInputMode:(function(winid,mode,value){var win=GLFW.WindowFromId(winid);if(!win)return;switch(mode){case 208897:{switch(value){case 212993:{win.inputModes[mode]=value;Module["canvas"].removeEventListener("click",GLFW.onClickRequestPointerLock,true);Module["canvas"].exitPointerLock();break};case 212994:{console.log("glfwSetInputMode called with GLFW_CURSOR_HIDDEN value not implemented.");break};case 212995:{win.inputModes[mode]=value;Module["canvas"].addEventListener("click",GLFW.onClickRequestPointerLock,true);Module["canvas"].requestPointerLock();break};default:{console.log("glfwSetInputMode called with unknown value parameter value: "+value+".");break}}break};case 208898:{console.log("glfwSetInputMode called with GLFW_STICKY_KEYS mode not implemented.");break};case 208899:{console.log("glfwSetInputMode called with GLFW_STICKY_MOUSE_BUTTONS mode not implemented.");break};default:{console.log("glfwSetInputMode called with unknown mode parameter value: "+mode+".");break}}}),getKey:(function(winid,key){var win=GLFW.WindowFromId(winid);if(!win)return 0;return win.keys[key]}),getMouseButton:(function(winid,button){var win=GLFW.WindowFromId(winid);if(!win)return 0;return(win.buttons&1<<button)>0}),getCursorPos:(function(winid,x,y){setValue(x,Browser.mouseX,"double");setValue(y,Browser.mouseY,"double")}),getMousePos:(function(winid,x,y){setValue(x,Browser.mouseX,"i32");setValue(y,Browser.mouseY,"i32")}),setCursorPos:(function(winid,x,y){}),getWindowPos:(function(winid,x,y){var wx=0;var wy=0;var win=GLFW.WindowFromId(winid);if(win){wx=win.x;wy=win.y}setValue(x,wx,"i32");setValue(y,wy,"i32")}),setWindowPos:(function(winid,x,y){var win=GLFW.WindowFromId(winid);if(!win)return;win.x=x;win.y=y}),getWindowSize:(function(winid,width,height){var ww=0;var wh=0;var win=GLFW.WindowFromId(winid);if(win){ww=win.width;wh=win.height}setValue(width,ww,"i32");setValue(height,wh,"i32")}),setWindowSize:(function(winid,width,height){var win=GLFW.WindowFromId(winid);if(!win)return;if(GLFW.active.id==win.id){if(width==screen.width&&height==screen.height){GLFW.requestFullscreen()}else{GLFW.exitFullscreen();Browser.setCanvasSize(width,height);win.width=width;win.height=height}}if(!win.windowSizeFunc)return;Module["dynCall_viii"](win.windowSizeFunc,win.id,width,height)}),createWindow:(function(width,height,title,monitor,share){var i,id;for(i=0;i<GLFW.windows.length&&GLFW.windows[i]!==null;i++);if(i>0)throw"glfwCreateWindow only supports one window at time currently";id=i+1;if(width<=0||height<=0)return 0;if(monitor){GLFW.requestFullscreen()}else{Browser.setCanvasSize(width,height)}for(i=0;i<GLFW.windows.length&&GLFW.windows[i]==null;i++);if(i==GLFW.windows.length){var contextAttributes={antialias:GLFW.hints[135181]>1,depth:GLFW.hints[135173]>0,stencil:GLFW.hints[135174]>0,alpha:GLFW.hints[135172]>0};Module.ctx=Browser.createContext(Module["canvas"],true,true,contextAttributes)}if(!Module.ctx)return 0;var win=new GLFW.Window(id,width,height,title,monitor,share);if(id-1==GLFW.windows.length){GLFW.windows.push(win)}else{GLFW.windows[id-1]=win}GLFW.active=win;return win.id}),destroyWindow:(function(winid){var win=GLFW.WindowFromId(winid);if(!win)return;if(win.windowCloseFunc)Module["dynCall_vi"](win.windowCloseFunc,win.id);GLFW.windows[win.id-1]=null;if(GLFW.active.id==win.id)GLFW.active=null;for(var i=0;i<GLFW.windows.length;i++)if(GLFW.windows[i]!==null)return;Module.ctx=Browser.destroyContext(Module["canvas"],true,true)}),swapBuffers:(function(winid){}),GLFW2ParamToGLFW3Param:(function(param){table={196609:0,196610:0,196611:0,196612:0,196613:0,196614:0,131073:0,131074:0,131075:0,131076:0,131077:135169,131078:135170,131079:135171,131080:135172,131081:135173,131082:135174,131083:135183,131084:135175,131085:135176,131086:135177,131087:135178,131088:135179,131089:135180,131090:0,131091:135181,131092:139266,131093:139267,131094:139270,131095:139271,131096:139272};return table[param]})};function _glfwMakeContextCurrent(winid){}function _abort(){Module["abort"]()}function _pthread_once(ptr,func){if(!_pthread_once.seen)_pthread_once.seen={};if(ptr in _pthread_once.seen)return;Module["dynCall_v"](func);_pthread_once.seen[ptr]=1}var PTHREAD_SPECIFIC={};function _pthread_getspecific(key){return PTHREAD_SPECIFIC[key]||0}var PTHREAD_SPECIFIC_NEXT_KEY=1;var ERRNO_CODES={EPERM:1,ENOENT:2,ESRCH:3,EINTR:4,EIO:5,ENXIO:6,E2BIG:7,ENOEXEC:8,EBADF:9,ECHILD:10,EAGAIN:11,EWOULDBLOCK:11,ENOMEM:12,EACCES:13,EFAULT:14,ENOTBLK:15,EBUSY:16,EEXIST:17,EXDEV:18,ENODEV:19,ENOTDIR:20,EISDIR:21,EINVAL:22,ENFILE:23,EMFILE:24,ENOTTY:25,ETXTBSY:26,EFBIG:27,ENOSPC:28,ESPIPE:29,EROFS:30,EMLINK:31,EPIPE:32,EDOM:33,ERANGE:34,ENOMSG:42,EIDRM:43,ECHRNG:44,EL2NSYNC:45,EL3HLT:46,EL3RST:47,ELNRNG:48,EUNATCH:49,ENOCSI:50,EL2HLT:51,EDEADLK:35,ENOLCK:37,EBADE:52,EBADR:53,EXFULL:54,ENOANO:55,EBADRQC:56,EBADSLT:57,EDEADLOCK:35,EBFONT:59,ENOSTR:60,ENODATA:61,ETIME:62,ENOSR:63,ENONET:64,ENOPKG:65,EREMOTE:66,ENOLINK:67,EADV:68,ESRMNT:69,ECOMM:70,EPROTO:71,EMULTIHOP:72,EDOTDOT:73,EBADMSG:74,ENOTUNIQ:76,EBADFD:77,EREMCHG:78,ELIBACC:79,ELIBBAD:80,ELIBSCN:81,ELIBMAX:82,ELIBEXEC:83,ENOSYS:38,ENOTEMPTY:39,ENAMETOOLONG:36,ELOOP:40,EOPNOTSUPP:95,EPFNOSUPPORT:96,ECONNRESET:104,ENOBUFS:105,EAFNOSUPPORT:97,EPROTOTYPE:91,ENOTSOCK:88,ENOPROTOOPT:92,ESHUTDOWN:108,ECONNREFUSED:111,EADDRINUSE:98,ECONNABORTED:103,ENETUNREACH:101,ENETDOWN:100,ETIMEDOUT:110,EHOSTDOWN:112,EHOSTUNREACH:113,EINPROGRESS:115,EALREADY:114,EDESTADDRREQ:89,EMSGSIZE:90,EPROTONOSUPPORT:93,ESOCKTNOSUPPORT:94,EADDRNOTAVAIL:99,ENETRESET:102,EISCONN:106,ENOTCONN:107,ETOOMANYREFS:109,EUSERS:87,EDQUOT:122,ESTALE:116,ENOTSUP:95,ENOMEDIUM:123,EILSEQ:84,EOVERFLOW:75,ECANCELED:125,ENOTRECOVERABLE:131,EOWNERDEAD:130,ESTRPIPE:86};function _pthread_key_create(key,destructor){if(key==0){return ERRNO_CODES.EINVAL}HEAP32[key>>2]=PTHREAD_SPECIFIC_NEXT_KEY;PTHREAD_SPECIFIC[PTHREAD_SPECIFIC_NEXT_KEY]=0;PTHREAD_SPECIFIC_NEXT_KEY++;return 0}function _glClear(x0){GLctx["clear"](x0)}function _pthread_setspecific(key,value){if(!(key in PTHREAD_SPECIFIC)){return ERRNO_CODES.EINVAL}PTHREAD_SPECIFIC[key]=value;return 0}function _glfwWindowHint(target,hint){GLFW.hints[target]=hint}function _glfwCreateWindow(width,height,title,monitor,share){return GLFW.createWindow(width,height,title,monitor,share)}function _glViewport(x0,x1,x2,x3){GLctx["viewport"](x0,x1,x2,x3)}function _glfwPollEvents(){}function _glfwSetWindowSizeCallback(winid,cbfun){GLFW.setWindowSizeCallback(winid,cbfun)}function _glfwDestroyWindow(winid){return GLFW.destroyWindow(winid)}function _glfwSetErrorCallback(cbfun){GLFW.errorFunc=cbfun}function _glfwTerminate(){window.removeEventListener("gamepadconnected",GLFW.onGamepadConnected,true);window.removeEventListener("gamepaddisconnected",GLFW.onGamepadDisconnected,true);window.removeEventListener("keydown",GLFW.onKeydown,true);window.removeEventListener("keypress",GLFW.onKeyPress,true);window.removeEventListener("keyup",GLFW.onKeyup,true);window.removeEventListener("blur",GLFW.onBlur,true);Module["canvas"].removeEventListener("mousemove",GLFW.onMousemove,true);Module["canvas"].removeEventListener("mousedown",GLFW.onMouseButtonDown,true);Module["canvas"].removeEventListener("mouseup",GLFW.onMouseButtonUp,true);Module["canvas"].removeEventListener("wheel",GLFW.onMouseWheel,true);Module["canvas"].removeEventListener("mousewheel",GLFW.onMouseWheel,true);Module["canvas"].removeEventListener("mouseenter",GLFW.onMouseenter,true);Module["canvas"].removeEventListener("mouseleave",GLFW.onMouseleave,true);Module["canvas"].removeEventListener("drop",GLFW.onDrop,true);Module["canvas"].removeEventListener("dragover",GLFW.onDragover,true);Module["canvas"].width=Module["canvas"].height=1;GLFW.windows=null;GLFW.active=null}function _emscripten_memcpy_big(dest,src,num){HEAPU8.set(HEAPU8.subarray(src,src+num),dest);return dest}var SYSCALLS={varargs:0,get:(function(varargs){SYSCALLS.varargs+=4;var ret=HEAP32[SYSCALLS.varargs-4>>2];return ret}),getStr:(function(){var ret=Pointer_stringify(SYSCALLS.get());return ret}),get64:(function(){var low=SYSCALLS.get(),high=SYSCALLS.get();if(low>=0)assert(high===0);else assert(high===-1);return low}),getZero:(function(){assert(SYSCALLS.get()===0)})};function ___syscall6(which,varargs){SYSCALLS.varargs=varargs;try{var stream=SYSCALLS.getStreamFromFD();FS.close(stream);return 0}catch(e){if(typeof FS==="undefined"||!(e instanceof FS.ErrnoError))abort(e);return-e.errno}}function ___setErrNo(value){if(Module["___errno_location"])HEAP32[Module["___errno_location"]()>>2]=value;return value}function __ZSt18uncaught_exceptionv(){return!!__ZSt18uncaught_exceptionv.uncaught_exception}var EXCEPTIONS={last:0,caught:[],infos:{},deAdjust:(function(adjusted){if(!adjusted||EXCEPTIONS.infos[adjusted])return adjusted;for(var ptr in EXCEPTIONS.infos){var info=EXCEPTIONS.infos[ptr];if(info.adjusted===adjusted){return ptr}}return adjusted}),addRef:(function(ptr){if(!ptr)return;var info=EXCEPTIONS.infos[ptr];info.refcount++}),decRef:(function(ptr){if(!ptr)return;var info=EXCEPTIONS.infos[ptr];assert(info.refcount>0);info.refcount--;if(info.refcount===0&&!info.rethrown){if(info.destructor){Module["dynCall_vi"](info.destructor,ptr)}delete EXCEPTIONS.infos[ptr];___cxa_free_exception(ptr)}}),clearRef:(function(ptr){if(!ptr)return;var info=EXCEPTIONS.infos[ptr];info.refcount=0})};function ___cxa_begin_catch(ptr){var info=EXCEPTIONS.infos[ptr];if(info&&!info.caught){info.caught=true;__ZSt18uncaught_exceptionv.uncaught_exception--}if(info)info.rethrown=false;EXCEPTIONS.caught.push(ptr);EXCEPTIONS.addRef(EXCEPTIONS.deAdjust(ptr));return ptr}function ___resumeException(ptr){if(!EXCEPTIONS.last){EXCEPTIONS.last=ptr}throw ptr+" - Exception catching is disabled, this exception cannot be caught. Compile with -s DISABLE_EXCEPTION_CATCHING=0 or DISABLE_EXCEPTION_CATCHING=2 to catch."}function ___cxa_find_matching_catch(){var thrown=EXCEPTIONS.last;if(!thrown){return(Runtime.setTempRet0(0),0)|0}var info=EXCEPTIONS.infos[thrown];var throwntype=info.type;if(!throwntype){return(Runtime.setTempRet0(0),thrown)|0}var typeArray=Array.prototype.slice.call(arguments);var pointer=Module["___cxa_is_pointer_type"](throwntype);if(!___cxa_find_matching_catch.buffer)___cxa_find_matching_catch.buffer=_malloc(4);HEAP32[___cxa_find_matching_catch.buffer>>2]=thrown;thrown=___cxa_find_matching_catch.buffer;for(var i=0;i<typeArray.length;i++){if(typeArray[i]&&Module["___cxa_can_catch"](typeArray[i],throwntype,thrown)){thrown=HEAP32[thrown>>2];info.adjusted=thrown;return(Runtime.setTempRet0(typeArray[i]),thrown)|0}}thrown=HEAP32[thrown>>2];return(Runtime.setTempRet0(throwntype),thrown)|0}function ___gxx_personality_v0(){}function _glfwInit(){if(GLFW.windows)return 1;GLFW.initialTime=GLFW.getTime();GLFW.hints=GLFW.defaultHints;GLFW.windows=new Array;GLFW.active=null;window.addEventListener("gamepadconnected",GLFW.onGamepadConnected,true);window.addEventListener("gamepaddisconnected",GLFW.onGamepadDisconnected,true);window.addEventListener("keydown",GLFW.onKeydown,true);window.addEventListener("keypress",GLFW.onKeyPress,true);window.addEventListener("keyup",GLFW.onKeyup,true);window.addEventListener("blur",GLFW.onBlur,true);Module["canvas"].addEventListener("mousemove",GLFW.onMousemove,true);Module["canvas"].addEventListener("mousedown",GLFW.onMouseButtonDown,true);Module["canvas"].addEventListener("mouseup",GLFW.onMouseButtonUp,true);Module["canvas"].addEventListener("wheel",GLFW.onMouseWheel,true);Module["canvas"].addEventListener("mousewheel",GLFW.onMouseWheel,true);Module["canvas"].addEventListener("mouseenter",GLFW.onMouseenter,true);Module["canvas"].addEventListener("mouseleave",GLFW.onMouseleave,true);Module["canvas"].addEventListener("drop",GLFW.onDrop,true);Module["canvas"].addEventListener("dragover",GLFW.onDragover,true);Browser.resizeListeners.push((function(width,height){GLFW.onCanvasResize(width,height)}));return 1}function _glfwSwapBuffers(winid){GLFW.swapBuffers(winid)}function ___syscall140(which,varargs){SYSCALLS.varargs=varargs;try{var stream=SYSCALLS.getStreamFromFD(),offset_high=SYSCALLS.get(),offset_low=SYSCALLS.get(),result=SYSCALLS.get(),whence=SYSCALLS.get();var offset=offset_low;FS.llseek(stream,offset,whence);HEAP32[result>>2]=stream.position;if(stream.getdents&&offset===0&&whence===0)stream.getdents=null;return 0}catch(e){if(typeof FS==="undefined"||!(e instanceof FS.ErrnoError))abort(e);return-e.errno}}function ___syscall146(which,varargs){SYSCALLS.varargs=varargs;try{var stream=SYSCALLS.get(),iov=SYSCALLS.get(),iovcnt=SYSCALLS.get();var ret=0;if(!___syscall146.buffer){___syscall146.buffers=[null,[],[]];___syscall146.printChar=(function(stream,curr){var buffer=___syscall146.buffers[stream];assert(buffer);if(curr===0||curr===10){(stream===1?Module["print"]:Module["printErr"])(UTF8ArrayToString(buffer,0));buffer.length=0}else{buffer.push(curr)}})}for(var i=0;i<iovcnt;i++){var ptr=HEAP32[iov+i*8>>2];var len=HEAP32[iov+(i*8+4)>>2];for(var j=0;j<len;j++){___syscall146.printChar(stream,HEAPU8[ptr+j])}ret+=len}return ret}catch(e){if(typeof FS==="undefined"||!(e instanceof FS.ErrnoError))abort(e);return-e.errno}}var GLctx;GL.init();Module["requestFullScreen"]=function Module_requestFullScreen(lockPointer,resizeCanvas,vrDevice){Module.printErr("Module.requestFullScreen is deprecated. Please call Module.requestFullscreen instead.");Module["requestFullScreen"]=Module["requestFullscreen"];Browser.requestFullScreen(lockPointer,resizeCanvas,vrDevice)};Module["requestFullscreen"]=function Module_requestFullscreen(lockPointer,resizeCanvas,vrDevice){Browser.requestFullscreen(lockPointer,resizeCanvas,vrDevice)};Module["requestAnimationFrame"]=function Module_requestAnimationFrame(func){Browser.requestAnimationFrame(func)};Module["setCanvasSize"]=function Module_setCanvasSize(width,height,noUpdates){Browser.setCanvasSize(width,height,noUpdates)};Module["pauseMainLoop"]=function Module_pauseMainLoop(){Browser.mainLoop.pause()};Module["resumeMainLoop"]=function Module_resumeMainLoop(){Browser.mainLoop.resume()};Module["getUserMedia"]=function Module_getUserMedia(){Browser.getUserMedia()};Module["createContext"]=function Module_createContext(canvas,useWebGL,setInModule,webGLContextAttributes){return Browser.createContext(canvas,useWebGL,setInModule,webGLContextAttributes)};if(ENVIRONMENT_IS_NODE){_emscripten_get_now=function _emscripten_get_now_actual(){var t=process["hrtime"]();return t[0]*1e3+t[1]/1e6}}else if(typeof dateNow!=="undefined"){_emscripten_get_now=dateNow}else if(typeof self==="object"&&self["performance"]&&typeof self["performance"]["now"]==="function"){_emscripten_get_now=(function(){return self["performance"]["now"]()})}else if(typeof performance==="object"&&typeof performance["now"]==="function"){_emscripten_get_now=(function(){return performance["now"]()})}else{_emscripten_get_now=Date.now}__ATEXIT__.push((function(){var fflush=Module["_fflush"];if(fflush)fflush(0);var printChar=___syscall146.printChar;if(!printChar)return;var buffers=___syscall146.buffers;if(buffers[1].length)printChar(1,10);if(buffers[2].length)printChar(2,10)}));DYNAMICTOP_PTR=allocate(1,"i32",ALLOC_STATIC);STACK_BASE=STACKTOP=Runtime.alignMemory(STATICTOP);STACK_MAX=STACK_BASE+TOTAL_STACK;DYNAMIC_BASE=Runtime.alignMemory(STACK_MAX);HEAP32[DYNAMICTOP_PTR>>2]=DYNAMIC_BASE;staticSealed=true;Module["wasmTableSize"]=34;Module["wasmMaxTableSize"]=34;function invoke_iiii(index,a1,a2,a3){try{return Module["dynCall_iiii"](index,a1,a2,a3)}catch(e){if(typeof e!=="number"&&e!=="longjmp")throw e;Module["setThrew"](1,0)}}function invoke_viiiii(index,a1,a2,a3,a4,a5){try{Module["dynCall_viiiii"](index,a1,a2,a3,a4,a5)}catch(e){if(typeof e!=="number"&&e!=="longjmp")throw e;Module["setThrew"](1,0)}}function invoke_vi(index,a1){try{Module["dynCall_vi"](index,a1)}catch(e){if(typeof e!=="number"&&e!=="longjmp")throw e;Module["setThrew"](1,0)}}function invoke_vii(index,a1,a2){try{Module["dynCall_vii"](index,a1,a2)}catch(e){if(typeof e!=="number"&&e!=="longjmp")throw e;Module["setThrew"](1,0)}}function invoke_ii(index,a1){try{return Module["dynCall_ii"](index,a1)}catch(e){if(typeof e!=="number"&&e!=="longjmp")throw e;Module["setThrew"](1,0)}}function invoke_viii(index,a1,a2,a3){try{Module["dynCall_viii"](index,a1,a2,a3)}catch(e){if(typeof e!=="number"&&e!=="longjmp")throw e;Module["setThrew"](1,0)}}function invoke_v(index){try{Module["dynCall_v"](index)}catch(e){if(typeof e!=="number"&&e!=="longjmp")throw e;Module["setThrew"](1,0)}}function invoke_viiiiii(index,a1,a2,a3,a4,a5,a6){try{Module["dynCall_viiiiii"](index,a1,a2,a3,a4,a5,a6)}catch(e){if(typeof e!=="number"&&e!=="longjmp")throw e;Module["setThrew"](1,0)}}function invoke_viiii(index,a1,a2,a3,a4){try{Module["dynCall_viiii"](index,a1,a2,a3,a4)}catch(e){if(typeof e!=="number"&&e!=="longjmp")throw e;Module["setThrew"](1,0)}}Module.asmGlobalArg={"Math":Math,"Int8Array":Int8Array,"Int16Array":Int16Array,"Int32Array":Int32Array,"Uint8Array":Uint8Array,"Uint16Array":Uint16Array,"Uint32Array":Uint32Array,"Float32Array":Float32Array,"Float64Array":Float64Array,"NaN":NaN,"Infinity":Infinity,"byteLength":byteLength};Module.asmLibraryArg={"abort":abort,"assert":assert,"enlargeMemory":enlargeMemory,"getTotalMemory":getTotalMemory,"abortOnCannotGrowMemory":abortOnCannotGrowMemory,"invoke_iiii":invoke_iiii,"invoke_viiiii":invoke_viiiii,"invoke_vi":invoke_vi,"invoke_vii":invoke_vii,"invoke_ii":invoke_ii,"invoke_viii":invoke_viii,"invoke_v":invoke_v,"invoke_viiiiii":invoke_viiiiii,"invoke_viiii":invoke_viiii,"_glfwCreateWindow":_glfwCreateWindow,"___resumeException":___resumeException,"_glfwPollEvents":_glfwPollEvents,"_abort":_abort,"_emscripten_set_main_loop_timing":_emscripten_set_main_loop_timing,"___gxx_personality_v0":___gxx_personality_v0,"___cxa_find_matching_catch":___cxa_find_matching_catch,"_glfwMakeContextCurrent":_glfwMakeContextCurrent,"__ZN5flint4ExitEi":__ZN5flint4ExitEi,"_glViewport":_glViewport,"___setErrNo":___setErrNo,"_glClearColor":_glClearColor,"_glClear":_glClear,"_emscripten_memcpy_big":_emscripten_memcpy_big,"_emscripten_set_main_loop_arg":_emscripten_set_main_loop_arg,"__ZSt18uncaught_exceptionv":__ZSt18uncaught_exceptionv,"___cxa_begin_catch":___cxa_begin_catch,"_pthread_getspecific":_pthread_getspecific,"_pthread_once":_pthread_once,"_glfwSetWindowSizeCallback":_glfwSetWindowSizeCallback,"_pthread_key_create":_pthread_key_create,"_glfwInit":_glfwInit,"_glfwSwapBuffers":_glfwSwapBuffers,"_emscripten_set_main_loop":_emscripten_set_main_loop,"_emscripten_get_now":_emscripten_get_now,"_glfwWindowHint":_glfwWindowHint,"_glfwTerminate":_glfwTerminate,"_pthread_setspecific":_pthread_setspecific,"___syscall6":___syscall6,"___syscall140":___syscall140,"_glfwSetErrorCallback":_glfwSetErrorCallback,"_glfwDestroyWindow":_glfwDestroyWindow,"___syscall146":___syscall146,"DYNAMICTOP_PTR":DYNAMICTOP_PTR,"tempDoublePtr":tempDoublePtr,"ABORT":ABORT,"STACKTOP":STACKTOP,"STACK_MAX":STACK_MAX};var asm=Module["asm"](Module.asmGlobalArg,Module.asmLibraryArg,buffer);Module["asm"]=asm;var _malloc=Module["_malloc"]=(function(){return Module["asm"]["_malloc"].apply(null,arguments)});var ___cxa_can_catch=Module["___cxa_can_catch"]=(function(){return Module["asm"]["___cxa_can_catch"].apply(null,arguments)});var getTempRet0=Module["getTempRet0"]=(function(){return Module["asm"]["getTempRet0"].apply(null,arguments)});var _free=Module["_free"]=(function(){return Module["asm"]["_free"].apply(null,arguments)});var _main=Module["_main"]=(function(){return Module["asm"]["_main"].apply(null,arguments)});var setTempRet0=Module["setTempRet0"]=(function(){return Module["asm"]["setTempRet0"].apply(null,arguments)});var ___cxa_is_pointer_type=Module["___cxa_is_pointer_type"]=(function(){return Module["asm"]["___cxa_is_pointer_type"].apply(null,arguments)});var ___errno_location=Module["___errno_location"]=(function(){return Module["asm"]["___errno_location"].apply(null,arguments)});var stackSave=Module["stackSave"]=(function(){return Module["asm"]["stackSave"].apply(null,arguments)});var _memset=Module["_memset"]=(function(){return Module["asm"]["_memset"].apply(null,arguments)});var _sbrk=Module["_sbrk"]=(function(){return Module["asm"]["_sbrk"].apply(null,arguments)});var establishStackSpace=Module["establishStackSpace"]=(function(){return Module["asm"]["establishStackSpace"].apply(null,arguments)});var _emscripten_get_global_libc=Module["_emscripten_get_global_libc"]=(function(){return Module["asm"]["_emscripten_get_global_libc"].apply(null,arguments)});var _memcpy=Module["_memcpy"]=(function(){return Module["asm"]["_memcpy"].apply(null,arguments)});var _emscripten_replace_memory=Module["_emscripten_replace_memory"]=(function(){return Module["asm"]["_emscripten_replace_memory"].apply(null,arguments)});var _updateFrequency=Module["_updateFrequency"]=(function(){return Module["asm"]["_updateFrequency"].apply(null,arguments)});var setThrew=Module["setThrew"]=(function(){return Module["asm"]["setThrew"].apply(null,arguments)});var stackAlloc=Module["stackAlloc"]=(function(){return Module["asm"]["stackAlloc"].apply(null,arguments)});var stackRestore=Module["stackRestore"]=(function(){return Module["asm"]["stackRestore"].apply(null,arguments)});var _llvm_bswap_i32=Module["_llvm_bswap_i32"]=(function(){return Module["asm"]["_llvm_bswap_i32"].apply(null,arguments)});var runPostSets=Module["runPostSets"]=(function(){return Module["asm"]["runPostSets"].apply(null,arguments)});var dynCall_iiii=Module["dynCall_iiii"]=(function(){return Module["asm"]["dynCall_iiii"].apply(null,arguments)});var dynCall_viiiii=Module["dynCall_viiiii"]=(function(){return Module["asm"]["dynCall_viiiii"].apply(null,arguments)});var dynCall_vi=Module["dynCall_vi"]=(function(){return Module["asm"]["dynCall_vi"].apply(null,arguments)});var dynCall_vii=Module["dynCall_vii"]=(function(){return Module["asm"]["dynCall_vii"].apply(null,arguments)});var dynCall_ii=Module["dynCall_ii"]=(function(){return Module["asm"]["dynCall_ii"].apply(null,arguments)});var dynCall_viii=Module["dynCall_viii"]=(function(){return Module["asm"]["dynCall_viii"].apply(null,arguments)});var dynCall_v=Module["dynCall_v"]=(function(){return Module["asm"]["dynCall_v"].apply(null,arguments)});var dynCall_viiiiii=Module["dynCall_viiiiii"]=(function(){return Module["asm"]["dynCall_viiiiii"].apply(null,arguments)});var dynCall_viiii=Module["dynCall_viiii"]=(function(){return Module["asm"]["dynCall_viiii"].apply(null,arguments)});Runtime.stackAlloc=Module["stackAlloc"];Runtime.stackSave=Module["stackSave"];Runtime.stackRestore=Module["stackRestore"];Runtime.establishStackSpace=Module["establishStackSpace"];Runtime.setTempRet0=Module["setTempRet0"];Runtime.getTempRet0=Module["getTempRet0"];Module["asm"]=asm;if(memoryInitializer){if(typeof Module["locateFile"]==="function"){memoryInitializer=Module["locateFile"](memoryInitializer)}else if(Module["memoryInitializerPrefixURL"]){memoryInitializer=Module["memoryInitializerPrefixURL"]+memoryInitializer}if(ENVIRONMENT_IS_NODE||ENVIRONMENT_IS_SHELL){var data=Module["readBinary"](memoryInitializer);HEAPU8.set(data,Runtime.GLOBAL_BASE)}else{addRunDependency("memory initializer");var applyMemoryInitializer=(function(data){if(data.byteLength)data=new Uint8Array(data);HEAPU8.set(data,Runtime.GLOBAL_BASE);if(Module["memoryInitializerRequest"])delete Module["memoryInitializerRequest"].response;removeRunDependency("memory initializer")});function doBrowserLoad(){Module["readAsync"](memoryInitializer,applyMemoryInitializer,(function(){throw"could not load memory initializer "+memoryInitializer}))}if(Module["memoryInitializerRequest"]){function useRequest(){var request=Module["memoryInitializerRequest"];if(request.status!==200&&request.status!==0){console.warn("a problem seems to have happened with Module.memoryInitializerRequest, status: "+request.status+", retrying "+memoryInitializer);doBrowserLoad();return}applyMemoryInitializer(request.response)}if(Module["memoryInitializerRequest"].response){setTimeout(useRequest,0)}else{Module["memoryInitializerRequest"].addEventListener("load",useRequest)}}else{doBrowserLoad()}}}Module["then"]=(function(func){if(Module["calledRun"]){func(Module)}else{var old=Module["onRuntimeInitialized"];Module["onRuntimeInitialized"]=(function(){if(old)old();func(Module)})}return Module});function ExitStatus(status){this.name="ExitStatus";this.message="Program terminated with exit("+status+")";this.status=status}ExitStatus.prototype=new Error;ExitStatus.prototype.constructor=ExitStatus;var initialStackTop;var preloadStartTime=null;var calledMain=false;dependenciesFulfilled=function runCaller(){if(!Module["calledRun"])run();if(!Module["calledRun"])dependenciesFulfilled=runCaller};Module["callMain"]=Module.callMain=function callMain(args){args=args||[];ensureInitRuntime();var argc=args.length+1;function pad(){for(var i=0;i<4-1;i++){argv.push(0)}}var argv=[allocate(intArrayFromString(Module["thisProgram"]),"i8",ALLOC_NORMAL)];pad();for(var i=0;i<argc-1;i=i+1){argv.push(allocate(intArrayFromString(args[i]),"i8",ALLOC_NORMAL));pad()}argv.push(0);argv=allocate(argv,"i32",ALLOC_NORMAL);try{var ret=Module["_main"](argc,argv,0);exit(ret,true)}catch(e){if(e instanceof ExitStatus){return}else if(e=="SimulateInfiniteLoop"){Module["noExitRuntime"]=true;return}else{var toLog=e;if(e&&typeof e==="object"&&e.stack){toLog=[e,e.stack]}Module.printErr("exception thrown: "+toLog);Module["quit"](1,e)}}finally{calledMain=true}};function run(args){args=args||Module["arguments"];if(preloadStartTime===null)preloadStartTime=Date.now();if(runDependencies>0){return}preRun();if(runDependencies>0)return;if(Module["calledRun"])return;function doRun(){if(Module["calledRun"])return;Module["calledRun"]=true;if(ABORT)return;ensureInitRuntime();preMain();if(Module["onRuntimeInitialized"])Module["onRuntimeInitialized"]();if(Module["_main"]&&shouldRunNow)Module["callMain"](args);postRun()}if(Module["setStatus"]){Module["setStatus"]("Running...");setTimeout((function(){setTimeout((function(){Module["setStatus"]("")}),1);doRun()}),1)}else{doRun()}}Module["run"]=Module.run=run;function exit(status,implicit){if(implicit&&Module["noExitRuntime"]){return}if(Module["noExitRuntime"]){}else{ABORT=true;EXITSTATUS=status;STACKTOP=initialStackTop;exitRuntime();if(Module["onExit"])Module["onExit"](status)}if(ENVIRONMENT_IS_NODE){process["exit"](status)}Module["quit"](status,new ExitStatus(status))}Module["exit"]=Module.exit=exit;var abortDecorators=[];function abort(what){if(Module["onAbort"]){Module["onAbort"](what)}if(what!==undefined){Module.print(what);Module.printErr(what);what=JSON.stringify(what)}else{what=""}ABORT=true;EXITSTATUS=1;var extra="\nIf this abort() is unexpected, build with -s ASSERTIONS=1 which can give more information.";var output="abort("+what+") at "+stackTrace()+extra;if(abortDecorators){abortDecorators.forEach((function(decorator){output=decorator(output,what)}))}throw output}Module["abort"]=Module.abort=abort;if(Module["preInit"]){if(typeof Module["preInit"]=="function")Module["preInit"]=[Module["preInit"]];while(Module["preInit"].length>0){Module["preInit"].pop()()}}var shouldRunNow=true;if(Module["noInitialRun"]){shouldRunNow=false}Module["noExitRuntime"]=true;run()
+
+
+
+
+  return Module;
+};
+if (typeof module === "object" && module.exports) {
+  module['exports'] = Module;
+};
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
+
+/***/ })
+/******/ ]);

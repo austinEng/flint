@@ -42,9 +42,9 @@ class Sphere : public Geometry<D, T>, SphereBase {
             return centroid;
         }
 
-        virtual ~Sphere() {
+        // virtual ~Sphere() {
 
-        }
+        // }
 };
 
 }

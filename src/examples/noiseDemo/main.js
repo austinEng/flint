@@ -1,4 +1,4 @@
-import NoiseDemo from 'src/examples/noiseDemo';
+import NoiseDemo from 'examples/noiseDemo';
 import { createStatsAndGUI, setCanvasToWindowSize } from '../utils';
 
 const canvas = document.getElementById('canvas');
@@ -10,12 +10,13 @@ const params = {
   noise0: 2.0,
   noise1: 0.1,
   drawMode: 0,
+  subdivisions: 6,
+  enableWorkers: true,
 };
 
 
 const workers = {
-  TestModule: require('src/examples/workers/testWorker'),
-  CreateGeometry: require('src/examples/workers/createGeometry'),
+  CreateGeometry: require('workers/createGeometry'),
 };
 
 const noiseDemoModule = new NoiseDemo({
@@ -36,9 +37,13 @@ const moduleBindings = {
   updateSmallNoiseStrength: noiseDemoModule.cwrap('updateSmallNoiseStrength', 'number', ['number']),
   updateLargeNoiseStrength: noiseDemoModule.cwrap('updateLargeNoiseStrength', 'number', ['number']),
   updateDrawMode: noiseDemoModule.cwrap('updateDrawMode', 'number', ['number']),
+  updateSubdivisions: noiseDemoModule.cwrap('updateSubdivisions', 'number', ['number']),
+  updateEnableWorkers: noiseDemoModule.cwrap('updateEnableWorkers', 'number', ['number']),
 };
 
 const gui = createStatsAndGUI();
 gui.add(params, 'noise0', 0, 5).onChange(moduleBindings.updateSmallNoiseStrength);
 gui.add(params, 'noise1', 0, 1).onChange(moduleBindings.updateLargeNoiseStrength);
 gui.add(params, 'drawMode', 0, 1).step(1).onChange(moduleBindings.updateDrawMode);
+gui.add(params, 'subdivisions', 0, 8).step(1).onChange(moduleBindings.updateSubdivisions);
+gui.add(params, 'enableWorkers').onChange(moduleBindings.updateEnableWorkers);

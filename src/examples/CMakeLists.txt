@@ -20,14 +20,12 @@ function(BuildDemo EXAMPLE_NAME)
     add_dependencies(flint_examples ${EXAMPLE_NAME})
 endfunction()
 
-add_subdirectory(workers)
-
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${EMSCRIPTEN_MODULE_FLAGS}")
 BuildDemo(windowDemo)
 BuildDemo(noiseDemo)
 
 if (EMSCRIPTEN)
-    add_dependencies(noiseDemo testWorker createGeometry)
+    add_dependencies(noiseDemo createGeometry)
 else()
-    target_link_libraries(noiseDemo testWorker createGeometry)
+    target_link_libraries(noiseDemo createGeometry)
 endif()

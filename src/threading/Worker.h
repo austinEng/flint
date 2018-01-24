@@ -1,5 +1,7 @@
 #pragma once
 
+#include <flint/debug/Print.h>
+
 namespace threading {
 
 struct WorkerBase {
@@ -54,6 +56,7 @@ public:
             void* arg;
         };
 
+        debugPrint("Calling %s\n", WorkerFunctionMap<Function>::Name);
         emscripten_call_worker(handle, WorkerFunctionMap<Function>::Name, reinterpret_cast<char*>(data), size, [](char* data, int size, void* arg) {
             WrappedCallback* wrappedCallback = reinterpret_cast<WrappedCallback*>(arg);
             wrappedCallback->callback(data, size, wrappedCallback->arg);

@@ -31,11 +31,16 @@ else()
   endif()
 
   if (CMAKE_BUILD_TYPE MATCHES "Rel")
-    add_compile_options(-O3 -march=native -ffast-math)
+    add_compile_options(-O3 -ffast-math)
+    if (NOT EMSCRIPTEN)
+      add_compile_options(-march=native)
+    endif()
   endif()
 
   if (CMAKE_BUILD_TYPE MATCHES "Info")
-    add_compile_options(-fopt-info-vec-optimized -fopt-info-inline-optimized -ftree-vectorizer-verbose=2)
+    if (NOT EMSCRIPTEN)
+      add_compile_options(-fopt-info-vec-optimized -fopt-info-inline-optimized -ftree-vectorizer-verbose=2)
+    endif()
   endif()
 endif()
 
@@ -46,7 +51,7 @@ if (EMSCRIPTEN)
     set(EMSCRIPTEN_FLAGS "-s USE_WEBGL2=1 -s FULL_ES3=1 -s USE_GLFW=3 -s NO_EXIT_RUNTIME=1")
 
     if (CMAKE_BUILD_TYPE MATCHES "Deb")
-      set(EMSCRIPTEN_FLAGS "${EMSCRIPTEN_FLAGS} -s ASSERTIONS=2 -s SAFE_HEAP=1 -s STACK_OVERFLOW_CHECK=2 -g4")
+      set(EMSCRIPTEN_FLAGS "${EMSCRIPTEN_FLAGS} -s DEMANGLE_SUPPORT=1 -s ASSERTIONS=2 -s SAFE_HEAP=1 -s STACK_OVERFLOW_CHECK=2 -g4")
     endif()
 
     if (WASM)
@@ -69,21 +74,6 @@ endif()
 
 if (BUILD_EXAMPLES)
     add_custom_target(flint_examples ALL)
+    add_subdirectory(src/workers)
     add_subdirectory(src/examples)
-
-    if (EMSCRIPTEN)
-        configure_file(${CMAKE_CURRENT_SOURCE_DIR}/webpack.config.js ${CMAKE_CURRENT_BINARY_DIR}/webpack.config.js @ONLY)
-
-        if (CMAKE_BUILD_TYPE MATCHES "Rel")
-          add_custom_command(TARGET flint_examples POST_BUILD
-            COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/node_modules/.bin/webpack
-            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-          )
-        else()
-          add_custom_command(TARGET flint_examples POST_BUILD
-            COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/node_modules/.bin/webpack
-            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-          )
-        endif()
-    endif()
 endif()

@@ -2,6 +2,7 @@
 #include <chrono>
 #include <cstdlib>
 #include <cmath>
+#include <flint/debug/Print.h>
 #include <flint/core/Math.h>
 #include <flint/core/Camera.h>
 #include <flint/geometry/Sphere.h>
@@ -10,13 +11,11 @@
 #include <flint_viewport/Shader.h>
 #include <flint_viewport/ShaderProgram.h>
 #include <flint_viewport/CameraControls.h>
-#include "../workers/testWorker/module.h"
 #include "../workers/createGeometry/module.h"
 
 using namespace flint;
 
 float frequency = 1.0f;
-geometry::SphereBuffer<3>* sphereBuffer = nullptr;
 core::Camera<float> camera;
 float smallNoiseStrength = 2.0;
 float _smallNoiseStrength = smallNoiseStrength;
@@ -24,6 +23,8 @@ float largeNoiseStrength = 0.1;
 float _largeNoiseStrength = largeNoiseStrength;
 unsigned int _drawMode = 0;
 GLenum drawModes[] = { GL_TRIANGLES, GL_LINES };
+float subdivisions = 6.0;
+float enableWorkers = 1.0;
 
 GLint viewProjLocation, timeLocation, smallNoiseStrengthLocation, largeNoiseStrengthLocation;
 GLint positionLocation;
@@ -32,12 +33,39 @@ GLuint& indexBuffer = buffers[0];
 GLuint& vertexBuffer = buffers[1];
 viewport::ShaderProgram shaderProgram;
 unsigned int elementCount = 0;
-bool initializeBuffers = false;
 float t = 0;
+
+threading::Worker<CreateGeometry> createGeometryWorker;
 
 static void resizeCallback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
     camera.SetAspectRatio(static_cast<float>(width) / static_cast<float>(height));
+}
+
+static void uploadSphere(const geometry::GeometryBuffer &sphereBuffer) {
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(flint::geometry::GeometryBuffer::Index) * sphereBuffer.GetIndexCount(), sphereBuffer.GetIndexBuffer(), GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Eigen::Array<float, 3, 1>) * sphereBuffer.GetVertexCount(), sphereBuffer.template GetPositionBuffer<Eigen::Array<float, 3, 1>>(), GL_STATIC_DRAW);
+}
+
+static void createSphere() {
+    geometry::SphereBuffer<3>::CreateArgs createSphereArgs({{{ 0, 0, 0 }, 6}, static_cast<unsigned int>(subdivisions)});
+    if (enableWorkers) {
+        createGeometryWorker.Call<&CreateGeometry::createSphereBuffer>(&createSphereArgs, sizeof(createSphereArgs), nullptr, [](void* data, int size, void* arg) {
+            auto sphereBuffer = geometry::GeometryBuffer(reinterpret_cast<char*>(data));
+            assert(sphereBuffer.ByteLength() == size);
+            elementCount = sphereBuffer.GetIndexCount();
+            debugPrint("Created icosphere with %d triangles, %d vertices\n", elementCount / 3, sphereBuffer.GetVertexCount());
+            uploadSphere(sphereBuffer);
+        });
+    } else {
+        auto sphereBuffer = geometry::SphereBuffer<3>::Create(&createSphereArgs);
+        elementCount = sphereBuffer.GetIndexCount();
+        debugPrint("Created icosphere with %d triangles, %d vertices\n", elementCount / 3, sphereBuffer.GetVertexCount());
+        uploadSphere(sphereBuffer);
+    }
 }
 
 static void frame(void* ptr) {
@@ -60,16 +88,6 @@ static void frame(void* ptr) {
     if (largeNoiseStrength != _largeNoiseStrength) {
         largeNoiseStrength = _largeNoiseStrength;
         glUniform1f(largeNoiseStrengthLocation, largeNoiseStrength);
-    }
-
-    if (initializeBuffers) {
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(sphereBuffer->GetTriangles()[0]) * sphereBuffer->GetTriangles().size(), sphereBuffer->GetTriangles().data(), GL_STATIC_DRAW);
-
-        glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(sphereBuffer->GetPositions()[0]) * sphereBuffer->GetPositions().size(), sphereBuffer->GetPositions().data(), GL_STATIC_DRAW);
-
-        initializeBuffers = false;
     }
 
     if (elementCount > 0) {
@@ -105,25 +123,7 @@ int main(int argc, char** argv) {
 
     glGenBuffers(buffers.size(), buffers.data());
 
-    auto* sphereMemory = geometry::SphereBuffer<3>::GetRequiredMemory({{ 0, 0, 0 }, 6}, 6);
-    sphereBuffer = sphereMemory->buffer;
-
-    auto* createGeometryWorker = new threading::Worker<CreateGeometry>();
-    createGeometryWorker->Call<&CreateGeometry::createSphereBuffer>(sphereMemory, sphereMemory->bytes, nullptr, [](void* data, int size, void* arg) {
-        //auto* args = reinterpret_cast<decltype(sphereMemory)>(data);
-        //sphereBuffer = args->buffer;
-
-        elementCount = sphereBuffer->GetTriangles().size() * 3;
-        printf("Created icosphere with %d triangles, %d vertices\n", sphereBuffer->GetTriangles().size(), sphereBuffer->GetPositions().size());
-
-        initializeBuffers = true;
-    });
-
-    /*auto buffer = geometry::SphereBuffer<3>::Create(geometry::Sphere<3>({ 0, 0, 0 }, 6), 6);
-    sphereBuffer = buffer.first;
-    elementCount = sphereBuffer->GetTriangles().size() * 3;
-    printf("Created icosphere with %d vertices\n", sphereBuffer->GetPositions().size());*/
-
+    createSphere();
 
     viewport::Shader vertexShader, fragmentShader;
     vertexShader.Load(R"(
@@ -410,6 +410,17 @@ extern "C" {
     EMSCRIPTEN_KEEPALIVE
     void updateDrawMode(unsigned int drawMode) {
         _drawMode = drawMode;
+    }
+
+    EMSCRIPTEN_KEEPALIVE
+    void updateSubdivisions(float value) {
+        subdivisions = value;
+        createSphere();
+    }
+
+    EMSCRIPTEN_KEEPALIVE
+    void updateEnableWorkers(float value) {
+        enableWorkers = value;
     }
 }
 

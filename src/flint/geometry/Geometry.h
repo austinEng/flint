@@ -35,9 +35,9 @@ class Geometry : public GeometryBase {
       return core::Optional<Eigen::Matrix<precision_t, D, 1>>();
     }
 
-    virtual ~Geometry() {
+    // virtual ~Geometry() {
 
-    }
+    // }
 
 };
 
