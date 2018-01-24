@@ -1,4 +1,4 @@
-import WindowDemo from 'src/examples/windowDemo';
+import WindowDemo from 'examples/windowDemo';
 import { createStatsAndGUI, setCanvasToWindowSize } from '../utils';
 
 const canvas = document.getElementById('canvas');
