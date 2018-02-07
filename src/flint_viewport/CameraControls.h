@@ -13,7 +13,6 @@ namespace viewport {
 
 template <typename T>
 class CameraControls {
-
     private:
         static core::Camera<T>* currentCamera;
 
@@ -78,7 +77,6 @@ class CameraControls {
         }
 
         static void scrollCallback(GLFWwindow*, double, double yOffset) {
-
             currentCamera->Zoom(static_cast<float>(yOffset) * 0.04f);
         }
 

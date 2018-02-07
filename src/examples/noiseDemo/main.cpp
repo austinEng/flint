@@ -15,27 +15,27 @@
 
 using namespace flint;
 
-float frequency = 1.0f;
-core::Camera<float> camera;
-float smallNoiseStrength = 2.0;
-float _smallNoiseStrength = smallNoiseStrength;
-float largeNoiseStrength = 0.1;
-float _largeNoiseStrength = largeNoiseStrength;
-unsigned int _drawMode = 0;
-GLenum drawModes[] = { GL_TRIANGLES, GL_LINES };
-float subdivisions = 6.0;
-float enableWorkers = 1.0;
+static float frequency = 1.0f;
+static core::Camera<float> camera;
+static float smallNoiseStrength = 2.0;
+static float _smallNoiseStrength = smallNoiseStrength;
+static float largeNoiseStrength = 0.1;
+static float _largeNoiseStrength = largeNoiseStrength;
+static unsigned int _drawMode = 0;
+static GLenum drawModes[] = { GL_TRIANGLES, GL_LINES };
+static float subdivisions = 6.0;
+static float enableWorkers = 1.0;
 
-GLint viewProjLocation, timeLocation, smallNoiseStrengthLocation, largeNoiseStrengthLocation;
-GLint positionLocation;
-std::array<GLuint, 2> buffers = {};
-GLuint& indexBuffer = buffers[0];
-GLuint& vertexBuffer = buffers[1];
-viewport::ShaderProgram shaderProgram;
-unsigned int elementCount = 0;
-float t = 0;
+static GLint viewProjLocation, timeLocation, smallNoiseStrengthLocation, largeNoiseStrengthLocation;
+static GLint positionLocation;
+static std::array<GLuint, 2> buffers = {};
+static GLuint& indexBuffer = buffers[0];
+static GLuint& vertexBuffer = buffers[1];
+static viewport::ShaderProgram shaderProgram;
+static unsigned int elementCount = 0;
+static float t = 0;
 
-threading::Worker<CreateGeometry> createGeometryWorker;
+static threading::Worker<CreateGeometry> createGeometryWorker;
 
 static void resizeCallback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);

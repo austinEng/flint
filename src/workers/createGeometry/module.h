@@ -9,6 +9,8 @@ struct CreateGeometry {
     }
 
     static threading::WorkerBase::WorkerResponse createSphereBuffer(void* data, int size, void* arg);
+
+    static int Main(int argc, char** argv, threading::Worker<CreateGeometry>* worker = nullptr);
 };
 
 #ifdef __EMSCRIPTEN__

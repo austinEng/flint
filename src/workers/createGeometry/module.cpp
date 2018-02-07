@@ -10,6 +10,6 @@ threading::WorkerBase::WorkerResponse CreateGeometry::createSphereBuffer(void* d
     return { const_cast<void*>(reinterpret_cast<const void*>(buffer.GetBuffer())), static_cast<int>(buffer.ByteLength()) };
 }
 
-int main(int argc, char** argv) {
-
-}
+WORKER_MAIN(CreateGeometry, {
+    return 0;
+})

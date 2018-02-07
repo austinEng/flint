@@ -4,6 +4,7 @@
 #include <Eigen/Dense>
 #include <iostream>
 #include "Math.h"
+#include "CullingVolume.h"
 
 namespace flint {
 namespace core {
@@ -18,6 +19,7 @@ class Camera {
     T _fov = static_cast<T>(kPI / 2);
     T _near = static_cast<T>(0.1);
     T _far = static_cast<T>(1000);
+    CullingVolume<3, 6, T> _cullingVolume;
 
     Eigen::Matrix<T, 3, 1> _center;
     mutable Eigen::Matrix<T, 3, 1> _eyeDir, _up, _right;
@@ -68,7 +70,7 @@ class Camera {
     }
 
     public:
-        Camera() {
+        Camera() : _cullingVolume(ComputeCullingVolume()) {
 
         }
 
@@ -114,6 +116,12 @@ class Camera {
             _viewDirty = true;
         }
 
+        void Move(const Eigen::Matrix<T, 3, 1> dir) {
+            this->Recalculate();
+            _center += _right * dir[0] + _up * dir[1] + -_eyeDir * dir[2];
+            _viewDirty = true;
+        }
+
         void Zoom(T factor) {
             _radius = _radius * std::exp(-factor);
             _viewDirty = true;
@@ -145,12 +153,83 @@ class Camera {
             return _view;
         }
 
+        T GetFieldOfView() const {
+            return _fov;
+        }
+
         Eigen::Matrix<T, 4, 4> GetViewProjection() const {
             return this->GetProjection() * this->GetView();
         }
 
         const Eigen::Matrix<T, 3, 1>& GetPosition() const {
             return _center;
+        }
+
+        CullingVolume<3, 6, T> ComputeCullingVolume() {
+            this->Recalculate();
+
+            T t = _near * static_cast<T>(std::tan(0.5 * _fov));
+            T b = -t;
+            T r = _ratio * t;
+            T l = -r;
+            T n = _near;
+            T f = _far;
+
+            auto forward = -_eyeDir;
+            Eigen::Matrix<T, 3, 1> eyePos = _center + _eyeDir * _radius;
+            Eigen::Matrix<T, 3, 1> nearPlaneCenter = _center + forward * n;
+            Eigen::Matrix<T, 3, 1> farPlaneCenter = _center + forward * f;
+
+            Eigen::Matrix<T, 3, 1> normal;
+
+            normal = ((nearPlaneCenter + _right * l) - eyePos).cross(_up).normalized();
+            Eigen::Matrix<T, 4, 1> leftPlane = {
+                normal[0], normal[1], normal[2],
+                -normal.dot(eyePos),
+            };
+
+            normal = _up.cross((nearPlaneCenter + _right * l) - eyePos).normalized();
+            Eigen::Matrix<T, 4, 1> rightPlane = {
+                normal[0], normal[1], normal[2],
+                -normal.dot(eyePos),
+            };
+
+            normal = _right.cross((nearPlaneCenter + _up * b) - eyePos).normalized();
+            Eigen::Matrix<T, 4, 1> bottomPlane = {
+                normal[0], normal[1], normal[2],
+                -normal.dot(eyePos),
+            };
+
+            normal = ((nearPlaneCenter + _up * t) - eyePos).cross(_right).normalized();
+            Eigen::Matrix<T, 4, 1> topPlane = {
+                normal[0], normal[1], normal[2],
+                -normal.dot(eyePos),
+            };
+
+            Eigen::Matrix<T, 4, 1> nearPlane = {
+                forward[0], forward[1], forward[2],
+                -forward.dot(nearPlaneCenter),
+            };
+
+            Eigen::Matrix<T, 4, 1> farPlane = {
+                -forward[0], -forward[1], -forward[2],
+                forward.dot(farPlaneCenter),
+            };
+
+            _cullingVolume = CullingVolume<3, 6, T>({
+                leftPlane,
+                rightPlane,
+                bottomPlane,
+                topPlane,
+                nearPlane,
+                farPlane,
+            });
+
+            return _cullingVolume;
+        }
+
+        const CullingVolume<3, 6, T>& GetCullingVolume() const {
+            return _cullingVolume;
         }
     };
 

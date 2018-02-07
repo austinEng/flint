@@ -23,6 +23,17 @@ void WorkerImpl::CallImpl(WorkerFunction func, void* data, int size, WorkerCallb
     hasMessage.notify_one();
 }
 
+void WorkerImpl::SetLoop(WorkerLoop loopFunc, unsigned int fps) {
+    loop = new std::thread([this, loopFunc, fps]() {
+        while(!this->shouldExit) {
+            runMutex.lock();
+            loopFunc();
+            runMutex.unlock();
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000 / fps));
+        }
+    });
+}
+
 WorkerImpl::~WorkerImpl() {
     if (!thread) {
         return;
@@ -34,6 +45,10 @@ WorkerImpl::~WorkerImpl() {
         thread->join();
     }
 
+    if (loop && loop->joinable()) {
+        loop->join();
+    }
+
     while (!messageQueue.empty()) {
         WorkerMessage* msg = messageQueue.front();
         messageQueue.pop();
@@ -41,6 +56,7 @@ WorkerImpl::~WorkerImpl() {
     }
 
     delete thread;
+    delete loop;
 }
 
 WorkerBase::WorkerResponse WorkerImpl::ExitWorker(void*, int, void* workerPtr) {
@@ -65,9 +81,11 @@ void WorkerImpl::EventLoop() {
             msg = messageQueue.front();
             messageQueue.pop();
         }
-
+        
+        runMutex.lock();
         WorkerResponse response = msg->func(msg->data, msg->size, msg->arg);
         msg->callback(response.data, response.size, msg->arg);
+        runMutex.unlock();
         delete msg;
     }
 }

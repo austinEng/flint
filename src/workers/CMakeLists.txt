@@ -14,3 +14,4 @@ endfunction()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${EMSCRIPTEN_WORKER_FLAGS}")
 BuildWorker(createGeometry)
+BuildWorker(terrainGenerator)

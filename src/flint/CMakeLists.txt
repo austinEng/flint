@@ -8,6 +8,7 @@ ExternalProject_Add(eigen
     INSTALL_COMMAND ""
     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${PROJECT_BINARY_DIR}
 )
+set_target_properties(eigen PROPERTIES EXCLUDE_FROM_ALL TRUE)
 set(EIGEN_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/eigen-prefix/src/eigen)
 
 ExternalProject_Add(tinyobjloader
@@ -15,6 +16,7 @@ ExternalProject_Add(tinyobjloader
     GIT_TAG v1.0.6
     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${PROJECT_BINARY_DIR}
 )
+set_target_properties(tinyobjloader PROPERTIES EXCLUDE_FROM_ALL TRUE)
 
 file(GLOB_RECURSE SOURCES *.cc)
 file(GLOB_RECURSE HEADERS *.h)
