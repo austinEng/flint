@@ -8,6 +8,8 @@ namespace tileset {
 
 class TileContentBase {
 public:
+    flint::core::Optional<flint::core::AxisAlignedBox<3, float>> contentBoundingVolume;
+
     virtual void Create() = 0;
     virtual void Destroy() = 0;
     virtual bool IsEmpty() const = 0;

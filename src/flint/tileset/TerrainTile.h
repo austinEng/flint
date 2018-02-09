@@ -40,17 +40,11 @@ public:
 
     bool IsVisible() const;
 
-private:
-    friend class Tile<TerrainTile>;
-    friend class TerrainTileset;
-    friend class TerrainTileChildren;
-    friend class TerrainTileContent;
-
     Index index;
     TerrainTileChildren* children = nullptr;
-    core::PlaneMask visibilityPlaneMask;
     float distanceToCamera;
     float screenSpaceError;
+    uint64_t lastVisitedFrameNumber = -1;
 
     void CreateChildren();
     void DeleteChildren();
@@ -62,6 +56,9 @@ private:
     flint::core::AxisAlignedBox<3, float> ComputeBoundingVolumeImpl() const;
 
     float ComputeGeometricErrorImpl() const;
+
+private:
+    core::AxisAlignedBox<3, float> getBoundingVolume() const;
 };
 
 class TerrainTileChildren {

@@ -13,6 +13,8 @@ struct WorkerBase {
     using WorkerCallback = void(*)(void*, int, void*);
     using WorkerFunction = WorkerResponse(*)(void*, int, void*);
     using WorkerLoop = void(*)();
+    
+    void SetLoop(WorkerBase::WorkerLoop loop, unsigned int fps);
 };
 
 }
@@ -67,10 +69,6 @@ public:
 private:
     worker_handle handle;
 };
-
-static void SetWorkerLoop(WorkerBase*, WorkerBase::WorkerLoop loop, unsigned int fps) {
-    emscripten_set_main_loop(loop, fps, false);
-}
 
 #define WORKER_MAIN(Module, body) \
 int Module:: Main(int argc, char** argv, threading::Worker<Module>* worker) { \
@@ -132,10 +130,6 @@ public:
         int status = Module::Main(argc, argv, this);
     }
 };
-
-static void SetWorkerLoop(WorkerImpl* worker, WorkerBase::WorkerLoop loop, unsigned int fps) {
-    worker->SetLoop(loop, fps);
-}
 
 #define WORKER_MAIN(Module, body) \
 int Module ## ::Main(int argc, char** argv, threading::Worker<Module>* worker) { \

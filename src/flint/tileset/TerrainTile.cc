@@ -6,8 +6,7 @@ namespace tileset {
 
 TerrainTile::TerrainTile(const Index& index, TilesetBase* tileset, TerrainTile* parent)
   : Base(tileset, parent), index(index) {
-    boundingVolume = ComputeBoundingVolume();
-    geometricError = ComputeGeometricError();
+    Init();
     content = new TerrainTileContent(this);
 }
 
@@ -33,10 +32,10 @@ void TerrainTile::GetChildren(const TerrainTile** firstChild, unsigned int* chil
 
 flint::core::AxisAlignedBox<3, float> TerrainTile::ComputeBoundingVolumeImpl() const {
     float size = static_cast<float>(std::pow(0.5f, index.depth) * TERRAIN_ROOT_SIZE);
-    Eigen::Array<float, 3, 1> base(
-        size * index.i,
-        size * index.j,
-        size * index.k
+    Eigen::Array<float, 3, 1> base (
+        size * index.i - 0.5f * TERRAIN_ROOT_SIZE,
+        size * index.j - 0.5f * TERRAIN_ROOT_SIZE,
+        size * index.k - 0.5f * TERRAIN_ROOT_SIZE
     );
 
     return flint::core::AxisAlignedBox<3, float>(
@@ -45,7 +44,7 @@ flint::core::AxisAlignedBox<3, float> TerrainTile::ComputeBoundingVolumeImpl() c
 }
 
 float TerrainTile::ComputeGeometricErrorImpl() const {
-    return static_cast<float>(100.f * std::pow(0.5f, index.depth));
+    return static_cast<float>(10000.f * std::pow(0.5f, index.depth));
 }
 
 void TerrainTile::CreateChildren() {
@@ -63,18 +62,26 @@ TerrainTile::~TerrainTile() {
 }
 
 void TerrainTile::Update(const flint::core::FrameState &frameState) {
-    visibilityPlaneMask = frameState.camera.GetCullingVolume().ComputeVisibility(boundingVolume);
+    if (lastVisitedFrameNumber == frameState.frameNumber) {
+        return;
+    }
+    lastVisitedFrameNumber = frameState.frameNumber;
 
-    auto diag = boundingVolume.max() - boundingVolume.min();
+    auto bv = getBoundingVolume();
+    visibilityPlaneMask = parent ?
+        frameState.camera.GetCullingVolume().ComputeVisibility(bv, parent->visibilityPlaneMask) :
+        frameState.camera.GetCullingVolume().ComputeVisibility(bv);
+
+    auto diag = bv.max() - bv.min();
     auto h = (diag * 0.5f).eval();
-    auto center = ((boundingVolume.max() + boundingVolume.min()) * 0.5f).eval();
+    auto center = ((bv.max() + bv.min()) * 0.5f).eval();
     auto offset = (frameState.camera.GetPosition() - center.matrix()).eval();
     Eigen::Matrix<float, 3, 1> d(
         offset[0] < -h[0] ? offset[0] + h[0] : offset[0] > h[0] ? offset[0] - h[0] : 0,
         offset[1] < -h[1] ? offset[1] + h[1] : offset[1] > h[1] ? offset[1] - h[1] : 0,
         offset[2] < -h[2] ? offset[2] + h[0] : offset[2] > h[2] ? offset[2] - h[2] : 0
     );
-    distanceToCamera = std::max(10.f, d.dot(d));
+    distanceToCamera = std::max(1e-7f, d.dot(d));
 
     float sseDenominator = static_cast<float>(2.f * std::tan(0.5f * frameState.camera.GetFieldOfView()));
     screenSpaceError = (geometricError * frameState.height) / (distanceToCamera * sseDenominator);
@@ -82,6 +89,15 @@ void TerrainTile::Update(const flint::core::FrameState &frameState) {
 
 bool TerrainTile::IsVisible() const {
     return visibilityPlaneMask != core::CullingMaskOutside;
+}
+
+core::AxisAlignedBox<3, float> TerrainTile::getBoundingVolume() const {
+    if (ContentReady() && HasRendererableContent() && content->contentBoundingVolume.hasValue()) {
+        return content->contentBoundingVolume.value();
+    } else {
+        assert(boundingVolume.hasValue());
+        return boundingVolume.value();
+    }
 }
 
 TerrainTileChildren::TerrainTileChildren(TerrainTile* parent) : tiles {{

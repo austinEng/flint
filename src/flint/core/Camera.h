@@ -161,8 +161,8 @@ class Camera {
             return this->GetProjection() * this->GetView();
         }
 
-        const Eigen::Matrix<T, 3, 1>& GetPosition() const {
-            return _center;
+        Eigen::Matrix<T, 3, 1> GetPosition() const {
+            return _center + _eyeDir * _radius;
         }
 
         CullingVolume<3, 6, T> ComputeCullingVolume() {
@@ -175,10 +175,10 @@ class Camera {
             T n = _near;
             T f = _far;
 
-            auto forward = -_eyeDir;
+            Eigen::Matrix<T, 3, 1> forward = -_eyeDir;
             Eigen::Matrix<T, 3, 1> eyePos = _center + _eyeDir * _radius;
-            Eigen::Matrix<T, 3, 1> nearPlaneCenter = _center + forward * n;
-            Eigen::Matrix<T, 3, 1> farPlaneCenter = _center + forward * f;
+            Eigen::Matrix<T, 3, 1> nearPlaneCenter = eyePos + forward * n;
+            Eigen::Matrix<T, 3, 1> farPlaneCenter = eyePos + forward * f;
 
             Eigen::Matrix<T, 3, 1> normal;
 
@@ -188,7 +188,7 @@ class Camera {
                 -normal.dot(eyePos),
             };
 
-            normal = _up.cross((nearPlaneCenter + _right * l) - eyePos).normalized();
+            normal = _up.cross((nearPlaneCenter + _right * r) - eyePos).normalized();
             Eigen::Matrix<T, 4, 1> rightPlane = {
                 normal[0], normal[1], normal[2],
                 -normal.dot(eyePos),

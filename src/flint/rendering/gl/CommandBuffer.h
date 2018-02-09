@@ -1,6 +1,6 @@
 #pragma once
 #include <stdint.h>
-#include "../CommandAllocator.h"
+#include <flint/rendering/CommandAllocator.h>
 #include "Commands.h"
 #include "Enums.h"
 

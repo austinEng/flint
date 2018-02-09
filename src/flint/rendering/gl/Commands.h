@@ -37,8 +37,8 @@ struct BindBufferCmd {
 
 struct BufferDataCmd {
     BufferTarget target;
-    size_t size;
     BufferUsage usage;
+    size_t size;
     // const void* data;
 };
 
@@ -96,8 +96,8 @@ struct DrawElementsCmd {
 
 struct DrawArraysCmd {
     DrawMode mode;
-    size_t start;
     uint32_t count;
+    size_t start;
 };
 
 }

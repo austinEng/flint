@@ -35,6 +35,7 @@ public:
     T* NextCommand() {
         uint8_t* commandPtr = core::Align<alignof(T)>(currentPtr);
         currentPtr = commandPtr + sizeof(T);
+        assert(currentPtr <= currentBlock->data + currentBlock->size);
         return reinterpret_cast<T*>(commandPtr);
     }
 
@@ -47,6 +48,7 @@ public:
 
         uint8_t* commandPtr = core::Align<alignof(T)>(currentPtr);
         currentPtr = commandPtr + count * sizeof(T);
+        assert(currentPtr <= currentBlock->data + currentBlock->size);
         return reinterpret_cast<T*>(commandPtr);
     }
 

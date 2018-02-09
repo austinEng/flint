@@ -50,6 +50,6 @@ threading::WorkerBase::WorkerResponse TerrainGenerator::Update(void* data, int s
 WORKER_MAIN(TerrainGenerator, {
     terrainTileset = new tileset::TerrainTileset();
     commandBuffer = new CommandBuffer();
-    threading::SetWorkerLoop(worker, Loop, 10);
+    worker->SetLoop(Loop, 30);
     return 0;
 })

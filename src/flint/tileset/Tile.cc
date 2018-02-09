@@ -8,7 +8,8 @@ TileBase::TileBase(TilesetBase* tileset, TileBase* parent, const Eigen::Matrix<f
     parent(parent),
     transform(transform),
     parentTransform(parent ? parent->computedTransform : tileset->Transform()),
-    computedTransform(parentTransform * transform) {
+    computedTransform(parentTransform * transform),
+    visibilityPlaneMask(core::CullingMaskIndeterminate) {
 }
 
 bool TileBase::ContentReady() const {

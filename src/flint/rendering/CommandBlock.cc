@@ -40,19 +40,19 @@ void CommandBlock::Serialize(uint8_t** data, size_t* size) const {
     uint8_t* dataPtr = 0;
     while (current != nullptr) {
         blockPtr += sizeof(CommandBlock);
-        dataPtr += current->size;
+        dataPtr = core::Align<alignof(std::max_align_t)>(dataPtr + current->size);
         current = current->nextBlock;
     }
 
-    size_t blockSize = reinterpret_cast<size_t>(blockPtr);
     size_t dataSize = reinterpret_cast<size_t>(dataPtr);
-    size_t totalSize = blockSize + dataSize;
+    uint8_t* dataStart = core::Align<alignof(std::max_align_t)>(blockPtr);
+    size_t totalSize = reinterpret_cast<size_t>(dataStart + dataSize);
 
     *size = totalSize;
     *data = reinterpret_cast<uint8_t*>(malloc(totalSize));
 
     blockPtr = *data;
-    dataPtr = *data + blockSize;
+    dataPtr = *data + reinterpret_cast<size_t>(dataStart);
     uint8_t* endPtr = *data + totalSize;
     current = this;
 
@@ -68,7 +68,7 @@ void CommandBlock::Serialize(uint8_t** data, size_t* size) const {
         blk->data = reinterpret_cast<uint8_t*>(dataPtr - *data);
 
         blockPtr += sizeof(CommandBlock);
-        dataPtr += current->size;
+        dataPtr = core::Align<alignof(std::max_align_t)>(dataPtr + current->size);
 
         current = current->nextBlock;
     }

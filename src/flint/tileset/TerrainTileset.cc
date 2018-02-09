@@ -14,11 +14,11 @@ const std::vector<TileBase*>& TerrainTileset::SelectTilesImpl(const flint::core:
     auto cameraIndex = (frameState.camera.GetPosition() / TERRAIN_ROOT_SIZE).template cast<int>();
 
     std::vector<TerrainTile*> stack;
-    stack.reserve(8);
+    stack.reserve(27);
 
-    for (int i = -1; i <= 0; ++i) {
-        for (int j = -1; j <= 0; ++j) {
-            for (int k = -1; k <= 0; ++k) {
+    for (int i = -1; i <= 1; ++i) {
+        for (int j = -1; j <= 1; ++j) {
+            for (int k = -1; k <= 1; ++k) {
 
                 TerrainTile::Index index {
                     0,
@@ -53,9 +53,22 @@ const std::vector<TileBase*>& TerrainTileset::SelectTilesImpl(const flint::core:
                     if (tile->screenSpaceError > maximumScreenSpaceError) {
                         TerrainTile* children;
                         uint32_t childrenCount;
+                        bool allVisibleRenderableChildrenReady = true;
+                        bool hasRenderableChildren = false;
                         tile->GetChildren(&children, &childrenCount);
                         for (uint32_t i = 0; i < childrenCount; ++i) {
-                            stack.push_back(children + i);
+                            TerrainTile* child = children + i;
+                            stack.push_back(child);
+                            if (child->HasRendererableContent()) {
+                                hasRenderableChildren = true;
+                                if (child->IsVisible() && !child->ContentReady()) {
+                                    allVisibleRenderableChildrenReady = false;
+                                }
+                            }
+                        }
+
+                        if (!allVisibleRenderableChildrenReady || !hasRenderableChildren) {
+                            selectedTiles.push_back(tile);
                         }
                     } else {
                         selectedTiles.push_back(tile);

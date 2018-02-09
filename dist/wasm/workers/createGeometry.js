@@ -2181,7 +2181,7 @@ var ASM_CONSTS = [];
 
 STATIC_BASE = Runtime.GLOBAL_BASE;
 
-STATICTOP = STATIC_BASE + 9264;
+STATICTOP = STATIC_BASE + 7440;
 /* global initializers */  __ATINIT__.push();
 
 
@@ -2190,7 +2190,7 @@ memoryInitializer = Module["wasmJSMethod"].indexOf("asmjs") >= 0 || Module["wasm
 
 
 
-var STATIC_BUMP = 9264;
+var STATIC_BUMP = 7440;
 Module["STATIC_BASE"] = STATIC_BASE;
 Module["STATIC_BUMP"] = STATIC_BUMP;
 
@@ -2234,11 +2234,6 @@ function copyTempDouble(ptr) {
 // {{PRE_LIBRARY}}
 
 
-  function ___assert_fail(condition, filename, line, func) {
-      ABORT = true;
-      throw 'Assertion failed: ' + Pointer_stringify(condition) + ', at: ' + [filename ? Pointer_stringify(filename) : 'unknown filename', line, func ? Pointer_stringify(func) : 'unknown function'] + ' at ' + stackTrace();
-    }
-
   
   function __ZSt18uncaught_exceptionv() { // std::uncaught_exception()
       return !!__ZSt18uncaught_exceptionv.uncaught_exception;
@@ -2281,7 +2276,7 @@ function copyTempDouble(ptr) {
       }};
   function ___resumeException(ptr) {
       if (!EXCEPTIONS.last) { EXCEPTIONS.last = ptr; }
-      throw ptr;
+      throw ptr + " - Exception catching is disabled, this exception cannot be caught. Compile with -s DISABLE_EXCEPTION_CATCHING=0 or DISABLE_EXCEPTION_CATCHING=2 to catch.";
     }function ___cxa_find_matching_catch() {
       var thrown = EXCEPTIONS.last;
       if (!thrown) {
@@ -2333,7 +2328,7 @@ function copyTempDouble(ptr) {
       } else {
         __ZSt18uncaught_exceptionv.uncaught_exception++;
       }
-      throw ptr;
+      throw ptr + " - Exception catching is disabled, this exception cannot be caught. Compile with -s DISABLE_EXCEPTION_CATCHING=0 or DISABLE_EXCEPTION_CATCHING=2 to catch.";
     }
 
    
@@ -2342,28 +2337,17 @@ function copyTempDouble(ptr) {
       Module['abort']();
     }
 
-  function ___cxa_find_matching_catch_2() {
-          return ___cxa_find_matching_catch.apply(null, arguments);
-        }
-
-  
-  function ___cxa_free_exception(ptr) {
-      try {
-        return _free(ptr);
-      } catch(e) { // XXX FIXME
-        Module.printErr('exception during cxa_free_exception: ' + e);
+  function ___cxa_begin_catch(ptr) {
+      var info = EXCEPTIONS.infos[ptr];
+      if (info && !info.caught) {
+        info.caught = true;
+        __ZSt18uncaught_exceptionv.uncaught_exception--;
       }
-    }function ___cxa_end_catch() {
-      // Clear state flag.
-      Module['setThrew'](0);
-      // Call destructor if one is registered then clear it.
-      var ptr = EXCEPTIONS.caught.pop();
-      if (ptr) {
-        EXCEPTIONS.decRef(EXCEPTIONS.deAdjust(ptr));
-        EXCEPTIONS.last = 0; // XXX in decRef?
-      }
+      if (info) info.rethrown = false;
+      EXCEPTIONS.caught.push(ptr);
+      EXCEPTIONS.addRef(EXCEPTIONS.deAdjust(ptr));
+      return ptr;
     }
-
 
   function _pthread_once(ptr, func) {
       if (!_pthread_once.seen) _pthread_once.seen = {};
@@ -2372,11 +2356,9 @@ function copyTempDouble(ptr) {
       _pthread_once.seen[ptr] = 1;
     }
 
-  
-  function _emscripten_memcpy_big(dest, src, num) {
-      HEAPU8.set(HEAPU8.subarray(src, src+num), dest);
-      return dest;
-    } 
+  function ___cxa_allocate_exception(size) {
+      return _malloc(size);
+    }
 
   
   var SYSCALLS={varargs:0,get:function (varargs) {
@@ -2417,7 +2399,12 @@ function copyTempDouble(ptr) {
       return value;
     } 
 
-   
+  
+  
+  function _emscripten_memcpy_big(dest, src, num) {
+      HEAPU8.set(HEAPU8.subarray(src, src+num), dest);
+      return dest;
+    }  
 
   
   var PTHREAD_SPECIFIC_NEXT_KEY=1;
@@ -2431,18 +2418,6 @@ function copyTempDouble(ptr) {
       PTHREAD_SPECIFIC[PTHREAD_SPECIFIC_NEXT_KEY] = 0;
       PTHREAD_SPECIFIC_NEXT_KEY++;
       return 0;
-    }
-
-  function ___cxa_begin_catch(ptr) {
-      var info = EXCEPTIONS.infos[ptr];
-      if (info && !info.caught) {
-        info.caught = true;
-        __ZSt18uncaught_exceptionv.uncaught_exception--;
-      }
-      if (info) info.rethrown = false;
-      EXCEPTIONS.caught.push(ptr);
-      EXCEPTIONS.addRef(EXCEPTIONS.deAdjust(ptr));
-      return ptr;
     }
 
   
@@ -3220,7 +3195,34 @@ function copyTempDouble(ptr) {
   function ___gxx_personality_v0() {
     }
 
+
    
+
+  var _llvm_sqrt_f32=Math_sqrt;
+
+  function _pthread_setspecific(key, value) {
+      if (!(key in PTHREAD_SPECIFIC)) {
+        return ERRNO_CODES.EINVAL;
+      }
+      PTHREAD_SPECIFIC[key] = value;
+      return 0;
+    }
+
+  function ___syscall140(which, varargs) {SYSCALLS.varargs = varargs;
+  try {
+   // llseek
+      var stream = SYSCALLS.getStreamFromFD(), offset_high = SYSCALLS.get(), offset_low = SYSCALLS.get(), result = SYSCALLS.get(), whence = SYSCALLS.get();
+      // NOTE: offset_high is unused - Emscripten's off_t is 32-bit
+      var offset = offset_low;
+      FS.llseek(stream, offset, whence);
+      SAFE_HEAP_STORE(((result)|0), ((stream.position)|0), 4);
+      if (stream.getdents && offset === 0 && whence === 0) stream.getdents = null; // reset readdir state
+      return 0;
+    } catch (e) {
+    if (typeof FS === 'undefined' || !(e instanceof FS.ErrnoError)) abort(e);
+    return -e.errno;
+  }
+  }
 
   function ___syscall146(which, varargs) {SYSCALLS.varargs = varargs;
   try {
@@ -3255,39 +3257,6 @@ function copyTempDouble(ptr) {
     return -e.errno;
   }
   }
-
-  function _pthread_setspecific(key, value) {
-      if (!(key in PTHREAD_SPECIFIC)) {
-        return ERRNO_CODES.EINVAL;
-      }
-      PTHREAD_SPECIFIC[key] = value;
-      return 0;
-    }
-
-
-  function ___syscall140(which, varargs) {SYSCALLS.varargs = varargs;
-  try {
-   // llseek
-      var stream = SYSCALLS.getStreamFromFD(), offset_high = SYSCALLS.get(), offset_low = SYSCALLS.get(), result = SYSCALLS.get(), whence = SYSCALLS.get();
-      // NOTE: offset_high is unused - Emscripten's off_t is 32-bit
-      var offset = offset_low;
-      FS.llseek(stream, offset, whence);
-      SAFE_HEAP_STORE(((result)|0), ((stream.position)|0), 4);
-      if (stream.getdents && offset === 0 && whence === 0) stream.getdents = null; // reset readdir state
-      return 0;
-    } catch (e) {
-    if (typeof FS === 'undefined' || !(e instanceof FS.ErrnoError)) abort(e);
-    return -e.errno;
-  }
-  }
-
-  function ___cxa_allocate_exception(size) {
-      return _malloc(size);
-    }
-
-  function ___cxa_find_matching_catch_3() {
-          return ___cxa_find_matching_catch.apply(null, arguments);
-        }
 Module["requestFullScreen"] = function Module_requestFullScreen(lockPointer, resizeCanvas, vrDevice) { Module.printErr("Module.requestFullScreen is deprecated. Please call Module.requestFullscreen instead."); Module["requestFullScreen"] = Module["requestFullscreen"]; Browser.requestFullScreen(lockPointer, resizeCanvas, vrDevice) };
   Module["requestFullscreen"] = function Module_requestFullscreen(lockPointer, resizeCanvas, vrDevice) { Browser.requestFullscreen(lockPointer, resizeCanvas, vrDevice) };
   Module["requestAnimationFrame"] = function Module_requestAnimationFrame(func) { Browser.requestAnimationFrame(func) };
@@ -3326,61 +3295,34 @@ staticSealed = true; // seal the static portion of memory
 assert(DYNAMIC_BASE < TOTAL_MEMORY, "TOTAL_MEMORY not big enough for stack");
 
 
-var debug_table_iiiii = ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "__ZNSt3__212basic_stringIcNS_11char_traitsIcEEN10__cxxabiv112_GLOBAL__N_112malloc_allocIcEEE6insertEjPKcj", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "__ZN10__cxxabiv112_GLOBAL__N_123parse_binary_expressionINS0_2DbEEEPKcS4_S4_RKNT_6StringERS5_", "__ZN10__cxxabiv112_GLOBAL__N_123parse_prefix_expressionINS0_2DbEEEPKcS4_S4_RKNT_6StringERS5_", "__ZN10__cxxabiv112_GLOBAL__N_121parse_integer_literalINS0_2DbEEEPKcS4_S4_RKNT_6StringERS5_", "0", "__ZNSt3__212basic_stringIcNS_11char_traitsIcEEN10__cxxabiv112_GLOBAL__N_112malloc_allocIcEEE6insertIPKcEENS_9enable_ifIXaasr21__is_forward_iteratorIT_EE5valuesr38__libcpp_string_gets_noexcept_iteratorISC_EE5valueENS_11__wrap_iterIPcEEE4typeENSD_ISA_EESC_SC_", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"];
-var debug_table_viiiiii = ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "__ZNK10__cxxabiv117__class_type_info16search_above_dstEPNS_19__dynamic_cast_infoEPKvS4_ib", "0", "0", "0", "__ZNK10__cxxabiv120__si_class_type_info16search_above_dstEPNS_19__dynamic_cast_infoEPKvS4_ib"];
-var debug_table_viiiii = ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "__ZNK10__cxxabiv117__class_type_info16search_below_dstEPNS_19__dynamic_cast_infoEPKvib", "0", "0", "0", "__ZNK10__cxxabiv120__si_class_type_info16search_below_dstEPNS_19__dynamic_cast_infoEPKvib", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "__ZN5Eigen8internal31generic_dense_assignment_kernelINS0_9evaluatorINS_5ArrayIjLi3ELi1ELi0ELi3ELi1EEEEES5_NS0_9assign_opIjjEELi0EEC2ERS5_RKS5_RKS7_RS4_", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "__ZN5Eigen8internal31generic_dense_assignment_kernelINS0_9evaluatorINS_5ArrayIfLi3ELi1ELi0ELi3ELi1EEEEES5_NS0_9assign_opIffEELi0EEC2ERS5_RKS5_RKS7_RS4_", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "__ZN5Eigen8internal31generic_dense_assignment_kernelINS0_9evaluatorINS_6MatrixIfLi3ELi1ELi0ELi3ELi1EEEEENS2_INS_13CwiseBinaryOpINS0_18scalar_quotient_opIffEEKNS_13MatrixWrapperIKNS6_INS0_13scalar_sum_opIffEEKNS_5ArrayIfLi3ELi1ELi0ELi3ELi1EEESE_EEEEKNS_14CwiseNullaryOpINS0_18scalar_constant_opIfEEKS4_EEEEEENS0_9assign_opIffEELi0EEC2ERS5_RKSQ_RKSS_RS4_", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "__ZN5Eigen8internal31generic_dense_assignment_kernelINS0_9evaluatorINS_6MatrixIfLi3ELi1ELi0ELi3ELi1EEEEENS2_INS_13MatrixWrapperIKNS_13CwiseBinaryOpINS0_13scalar_sum_opIffEEKNS_5ArrayIfLi3ELi1ELi0ELi3ELi1EEESC_EEEEEENS0_9assign_opIffEELi0EEC2ERS5_RKSG_RKSI_RS4_", "0", "0", "__ZN5Eigen8internal31generic_dense_assignment_kernelINS0_9evaluatorINS_5ArrayIfLi3ELi1ELi0ELi3ELi1EEEEENS2_INS_6MatrixIfLi3ELi1ELi0ELi3ELi1EEEEENS0_9assign_opIffEELi0EEC2ERS5_RKS8_RKSA_RS4_", "0", "0", "__ZN5Eigen8internal31generic_dense_assignment_kernelINS0_9evaluatorINS_5ArrayIfLi3ELi1ELi0ELi3ELi1EEEEENS2_INS_13CwiseBinaryOpINS0_13scalar_sum_opIffEEKNS6_INS0_17scalar_product_opIffEEKS4_KNS_14CwiseNullaryOpINS0_18scalar_constant_opIfEESB_EEEESB_EEEENS0_9assign_opIffEELi0EEC2ERS5_RKSK_RKSM_RS4_", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"];
-var debug_table_i = ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "___cxa_get_globals_fast", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"];
-var debug_table_vi = ["0", "0", "0", "0", "0", "0", "__ZN10__cxxabiv116__shim_type_infoD2Ev", "__ZN10__cxxabiv117__class_type_infoD0Ev", "__ZNK10__cxxabiv116__shim_type_info5noop1Ev", "__ZNK10__cxxabiv116__shim_type_info5noop2Ev", "0", "0", "0", "0", "__ZN10__cxxabiv120__si_class_type_infoD0Ev", "0", "0", "0", "__ZNSt9bad_allocD2Ev", "__ZNSt9bad_allocD0Ev", "0", "__ZNSt11logic_errorD2Ev", "__ZNSt11logic_errorD0Ev", "0", "__ZNSt12length_errorD0Ev", "__ZNSt12out_of_rangeD0Ev", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "__ZN5Eigen9ArrayBaseINS_5ArrayIjLi3ELi1ELi0ELi3ELi1EEEEC2Ev", "0", "0", "0", "0", "0", "__ZN5Eigen8internal21dense_assignment_loopINS0_31generic_dense_assignment_kernelINS0_9evaluatorINS_5ArrayIjLi3ELi1ELi0ELi3ELi1EEEEES6_NS0_9assign_opIjjEELi0EEELi1ELi2EE3runERS9_", "0", "0", "0", "0", "__ZN5Eigen9ArrayBaseINS_5ArrayIfLi3ELi1ELi0ELi3ELi1EEEEC2Ev", "0", "0", "0", "0", "0", "__ZN5Eigen8internal21dense_assignment_loopINS0_31generic_dense_assignment_kernelINS0_9evaluatorINS_5ArrayIfLi3ELi1ELi0ELi3ELi1EEEEES6_NS0_9assign_opIffEELi0EEELi1ELi2EE3runERS9_", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "__ZN5Eigen8internal21dense_assignment_loopINS0_31generic_dense_assignment_kernelINS0_9evaluatorINS_6MatrixIfLi3ELi1ELi0ELi3ELi1EEEEENS3_INS_13CwiseBinaryOpINS0_18scalar_quotient_opIffEEKNS_13MatrixWrapperIKNS7_INS0_13scalar_sum_opIffEEKNS_5ArrayIfLi3ELi1ELi0ELi3ELi1EEESF_EEEEKNS_14CwiseNullaryOpINS0_18scalar_constant_opIfEEKS5_EEEEEENS0_9assign_opIffEELi0EEELi1ELi2EE3runERSU_", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "__ZN5Eigen8internal21dense_assignment_loopINS0_31generic_dense_assignment_kernelINS0_9evaluatorINS_6MatrixIfLi3ELi1ELi0ELi3ELi1EEEEENS3_INS_13MatrixWrapperIKNS_13CwiseBinaryOpINS0_13scalar_sum_opIffEEKNS_5ArrayIfLi3ELi1ELi0ELi3ELi1EEESD_EEEEEENS0_9assign_opIffEELi0EEELi1ELi2EE3runERSK_", "0", "0", "__ZN5Eigen8internal21dense_assignment_loopINS0_31generic_dense_assignment_kernelINS0_9evaluatorINS_5ArrayIfLi3ELi1ELi0ELi3ELi1EEEEENS3_INS_6MatrixIfLi3ELi1ELi0ELi3ELi1EEEEENS0_9assign_opIffEELi0EEELi1ELi2EE3runERSC_", "0", "0", "__ZN5Eigen8internal21dense_assignment_loopINS0_31generic_dense_assignment_kernelINS0_9evaluatorINS_5ArrayIfLi3ELi1ELi0ELi3ELi1EEEEENS3_INS_13CwiseBinaryOpINS0_13scalar_sum_opIffEEKNS7_INS0_17scalar_product_opIffEEKS5_KNS_14CwiseNullaryOpINS0_18scalar_constant_opIfEESC_EEEESC_EEEENS0_9assign_opIffEELi0EEELi1ELi2EE3runERSO_", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "__ZN10__cxxabiv112_GLOBAL__N_19destruct_EPv", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "__ZNSt3__212basic_stringIcNS_11char_traitsIcEEN10__cxxabiv112_GLOBAL__N_112malloc_allocIcEEE7reserveEj", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "__ZNSt3__212basic_stringIcNS_11char_traitsIcEEN10__cxxabiv112_GLOBAL__N_112malloc_allocIcEEE5eraseEjj", "__ZNSt3__26vectorIN10__cxxabiv112_GLOBAL__N_111string_pairENS2_11short_allocIS3_Lj4096EEEE8allocateEj", "0", "0", "0", "0", "__ZN10__cxxabiv112_GLOBAL__N_111string_pairC2ILj22EEERAT__Kc", "__ZNKSt3__221__basic_string_commonILb1EE20__throw_length_errorEv", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"];
-var debug_table_vii = ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "__ZNSt3__26vectorIN5Eigen5ArrayIfLi3ELi1ELi0ELi3ELi1EEENS_9allocatorIS3_EEE8allocateEj", "0", "0", "__ZNSt3__26vectorIN5Eigen5ArrayIjLi3ELi1ELi0ELi3ELi1EEENS_9allocatorIS3_EEE8allocateEj", "0", "__ZNSt3__26vectorIN5Eigen5ArrayIjLi3ELi1ELi0ELi3ELi1EEENS_9allocatorIS3_EEEC2ERKS6_", "__ZNSt3__26vectorIN5Eigen5ArrayIjLi3ELi1ELi0ELi3ELi1EEENS_9allocatorIS3_EEE7reserveEj", "__ZNSt3__26vectorIN5Eigen5ArrayIfLi3ELi1ELi0ELi3ELi1EEENS_9allocatorIS3_EEE7reserveEj", "0", "__ZN5Eigen5ArrayIfLi3ELi1ELi0ELi3ELi1EEC2ERKS1_", "__ZNSt3__26vectorIN5Eigen5ArrayIfLi3ELi1ELi0ELi3ELi1EEENS_9allocatorIS3_EEE21__push_back_slow_pathIRKS3_EEvOT_", "0", "__ZNK5Eigen9ArrayBaseINS_13CwiseBinaryOpINS_8internal13scalar_sum_opIffEEKNS_5ArrayIfLi3ELi1ELi0ELi3ELi1EEES7_EEE6matrixEv", "__ZNK5Eigen10MatrixBaseINS_13MatrixWrapperIKNS_13CwiseBinaryOpINS_8internal13scalar_sum_opIffEEKNS_5ArrayIfLi3ELi1ELi0ELi3ELi1EEES8_EEEEE10normalizedEv", "0", "__ZNSt3__26vectorIN5Eigen5ArrayIfLi3ELi1ELi0ELi3ELi1EEENS_9allocatorIS3_EEE21__push_back_slow_pathIS3_EEvOT_", "0", "__ZN5flint8geometry14GeometryBufferC2Ej", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "__ZNSt3__26vectorIN5Eigen5ArrayIjLi3ELi1ELi0ELi3ELi1EEENS_9allocatorIS3_EEE26__swap_out_circular_bufferERNS_14__split_bufferIS3_RS5_EE", "__ZNSt3__26vectorIN5Eigen5ArrayIfLi3ELi1ELi0ELi3ELi1EEENS_9allocatorIS3_EEE26__swap_out_circular_bufferERNS_14__split_bufferIS3_RS5_EE", "__ZNSt11logic_errorC2EPKc", "0", "0", "0", "__ZN5Eigen12DenseStorageIjLi3ELi3ELi1ELi0EEC2ERKS1_", "0", "__ZN5Eigen8internal9evaluatorINS_5ArrayIjLi3ELi1ELi0ELi3ELi1EEEEC2ERKS3_", "0", "0", "0", "0", "__ZN5Eigen8internal19variable_if_dynamicIiLi0EEC2Ei", "0", "0", "0", "__ZN5Eigen12DenseStorageIfLi3ELi3ELi1ELi0EEC2ERKS1_", "0", "__ZN5Eigen8internal9evaluatorINS_5ArrayIfLi3ELi1ELi0ELi3ELi1EEEEC2ERKS3_", "0", "0", "0", "0", "0", "0", "0", "__ZN5Eigen8internal14scalar_abs2_opIfEC2ERKS2_", "0", "__ZN5Eigen8internal9evaluatorIKNS_13MatrixWrapperIKNS_13CwiseBinaryOpINS0_13scalar_sum_opIffEEKNS_5ArrayIfLi3ELi1ELi0ELi3ELi1EEES8_EEEEEC2ERSC_", "__ZN5Eigen8internal9evaluatorINS_13CwiseBinaryOpINS0_13scalar_sum_opIffEEKNS_5ArrayIfLi3ELi1ELi0ELi3ELi1EEES7_EEEC2ERKS8_", "0", "__ZN5Eigen8internal13scalar_sum_opIffEC2ERKS2_", "0", "__ZN5Eigen8internal9evaluatorIKNS_5ArrayIfLi3ELi1ELi0ELi3ELi1EEEEC2ERS4_", "0", "0", "__ZN5Eigen8internal9evaluatorINS_6MatrixIfLi3ELi1ELi0ELi3ELi1EEEEC2ERKS3_", "0", "0", "0", "0", "__ZN5Eigen8internal18scalar_quotient_opIffEC2ERKS2_", "0", "0", "__ZN5Eigen8internal9evaluatorIKNS_14CwiseNullaryOpINS0_18scalar_constant_opIfEEKNS_6MatrixIfLi3ELi1ELi0ELi3ELi1EEEEEEC2ERS9_", "0", "__ZN5Eigen8internal18scalar_constant_opIfEC2ERKS2_", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "__ZN5Eigen8internal9evaluatorIKNS_13CwiseBinaryOpINS0_17scalar_product_opIffEEKNS_5ArrayIfLi3ELi1ELi0ELi3ELi1EEEKNS_14CwiseNullaryOpINS0_18scalar_constant_opIfEES7_EEEEEC2ERSE_", "0", "0", "__ZN5Eigen8internal17scalar_product_opIffEC2ERKS2_", "0", "0", "__ZN5Eigen8internal9evaluatorIKNS_14CwiseNullaryOpINS0_18scalar_constant_opIfEEKNS_5ArrayIfLi3ELi1ELi0ELi3ELi1EEEEEEC2ERS9_", "0", "__ZNSt3__218__libcpp_refstringC2EPKc", "0", "0", "0", "_abort_message", "0", "__ZN10__cxxabiv112_GLOBAL__N_12DbC2ILj4096EEERNS0_5arenaIXT_EEE", "__ZNSt3__26vectorINS0_INS0_IN10__cxxabiv112_GLOBAL__N_111string_pairENS2_11short_allocIS3_Lj4096EEEEENS4_IS6_Lj4096EEEEENS4_IS8_Lj4096EEEE24__emplace_back_slow_pathIJRNS2_5arenaILj4096EEEEEEvDpOT_", "0", "0", "0", "0", "0", "0", "__ZNSt3__212basic_stringIcNS_11char_traitsIcEEN10__cxxabiv112_GLOBAL__N_112malloc_allocIcEEE9push_backEc", "0", "0", "__ZN10__cxxabiv112_GLOBAL__N_111string_pair9move_fullEv", "0", "__ZNSt3__26vectorINS0_IN10__cxxabiv112_GLOBAL__N_111string_pairENS2_11short_allocIS3_Lj4096EEEEENS4_IS6_Lj4096EEEE21__push_back_slow_pathIS6_EEvOT_", "0", "0", "0", "0", "0", "__ZNSt3__26vectorIN10__cxxabiv112_GLOBAL__N_111string_pairENS2_11short_allocIS3_Lj4096EEEE21__push_back_slow_pathIS3_EEvOT_", "__ZNSt3__212basic_stringIcNS_11char_traitsIcEEN10__cxxabiv112_GLOBAL__N_112malloc_allocIcEEEC2ERKS7_", "__ZN10__cxxabiv112_GLOBAL__N_111string_pairC2ERKS1_", "0", "0", "__ZNSt3__26vectorINS0_INS0_IN10__cxxabiv112_GLOBAL__N_111string_pairENS2_11short_allocIS3_Lj4096EEEEENS4_IS6_Lj4096EEEEENS4_IS8_Lj4096EEEE24__emplace_back_slow_pathIJS5_EEEvDpOT_", "0", "__ZNSt3__26vectorINS0_IN10__cxxabiv112_GLOBAL__N_111string_pairENS2_11short_allocIS3_Lj4096EEEEENS4_IS6_Lj4096EEEE24__emplace_back_slow_pathIJS5_EEEvDpOT_", "__ZNSt3__26vectorIN10__cxxabiv112_GLOBAL__N_111string_pairENS2_11short_allocIS3_Lj4096EEEE21__push_back_slow_pathIRKS3_EEvOT_", "0", "0", "0", "0", "0", "0", "0", "__ZNSt3__212basic_stringIcNS_11char_traitsIcEEN10__cxxabiv112_GLOBAL__N_112malloc_allocIcEEE6assignEPKc", "0", "__ZNSt3__212basic_stringIcNS_11char_traitsIcEEN10__cxxabiv112_GLOBAL__N_112malloc_allocIcEEEaSERKS7_", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"];
-var debug_table_ii = ["0", "___stdio_close", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "__ZNKSt9bad_alloc4whatEv", "0", "0", "__ZNKSt11logic_error4whatEv", "0", "0", "__ZNK5flint8geometry14GeometryBuffer9GetBufferEv", "__ZNK5flint8geometry14GeometryBuffer10ByteLengthEv", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "__ZN5flint8geometry14GeometryBuffer4infoEv", "__ZN5flint8geometry14GeometryBuffer14GetIndexBufferIN5Eigen5ArrayIjLi3ELi1ELi0ELi3ELi1EEEEEPT_v", "0", "__ZN5flint8geometry14GeometryBuffer17GetPositionBufferIN5Eigen5ArrayIfLi3ELi1ELi0ELi3ELi1EEEEEPT_v", "0", "0", "__ZN5flint8geometry14GeometryBuffer15GetNormalBufferIN5Eigen5ArrayIfLi3ELi1ELi0ELi3ELi1EEEEEPT_v", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "__ZNK5Eigen9EigenBaseINS_5ArrayIjLi3ELi1ELi0ELi3ELi1EEEE18const_cast_derivedEv", "0", "0", "__ZNK5Eigen15PlainObjectBaseINS_5ArrayIjLi3ELi1ELi0ELi3ELi1EEEE4dataEv", "0", "0", "0", "0", "0", "0", "0", "__ZNK5Eigen9EigenBaseINS_5ArrayIfLi3ELi1ELi0ELi3ELi1EEEE18const_cast_derivedEv", "0", "0", "__ZNK5Eigen15PlainObjectBaseINS_5ArrayIfLi3ELi1ELi0ELi3ELi1EEEE4dataEv", "0", "0", "__ZNK5Eigen12CwiseUnaryOpINS_8internal14scalar_abs2_opIfEEKNS_13MatrixWrapperIKNS_13CwiseBinaryOpINS1_13scalar_sum_opIffEEKNS_5ArrayIfLi3ELi1ELi0ELi3ELi1EEESA_EEEEE7functorEv", "0", "__ZNK5Eigen12CwiseUnaryOpINS_8internal14scalar_abs2_opIfEEKNS_13MatrixWrapperIKNS_13CwiseBinaryOpINS1_13scalar_sum_opIffEEKNS_5ArrayIfLi3ELi1ELi0ELi3ELi1EEESA_EEEEE16nestedExpressionEv", "0", "0", "__ZNK5Eigen13CwiseBinaryOpINS_8internal13scalar_sum_opIffEEKNS_5ArrayIfLi3ELi1ELi0ELi3ELi1EEES6_E7functorEv", "0", "__ZNK5Eigen13CwiseBinaryOpINS_8internal13scalar_sum_opIffEEKNS_5ArrayIfLi3ELi1ELi0ELi3ELi1EEES6_E3lhsEv", "0", "__ZNK5Eigen13CwiseBinaryOpINS_8internal13scalar_sum_opIffEEKNS_5ArrayIfLi3ELi1ELi0ELi3ELi1EEES6_E3rhsEv", "0", "0", "__ZNK5Eigen9EigenBaseINS_6MatrixIfLi3ELi1ELi0ELi3ELi1EEEE18const_cast_derivedEv", "0", "0", "__ZNK5Eigen13CwiseBinaryOpINS_8internal18scalar_quotient_opIffEEKNS_13MatrixWrapperIKNS0_INS1_13scalar_sum_opIffEEKNS_5ArrayIfLi3ELi1ELi0ELi3ELi1EEES9_EEEEKNS_14CwiseNullaryOpINS1_18scalar_constant_opIfEEKNS_6MatrixIfLi3ELi1ELi0ELi3ELi1EEEEEE7functorEv", "0", "__ZNK5Eigen13CwiseBinaryOpINS_8internal18scalar_quotient_opIffEEKNS_13MatrixWrapperIKNS0_INS1_13scalar_sum_opIffEEKNS_5ArrayIfLi3ELi1ELi0ELi3ELi1EEES9_EEEEKNS_14CwiseNullaryOpINS1_18scalar_constant_opIfEEKNS_6MatrixIfLi3ELi1ELi0ELi3ELi1EEEEEE3lhsEv", "__ZNK5Eigen13CwiseBinaryOpINS_8internal18scalar_quotient_opIffEEKNS_13MatrixWrapperIKNS0_INS1_13scalar_sum_opIffEEKNS_5ArrayIfLi3ELi1ELi0ELi3ELi1EEES9_EEEEKNS_14CwiseNullaryOpINS1_18scalar_constant_opIfEEKNS_6MatrixIfLi3ELi1ELi0ELi3ELi1EEEEEE3rhsEv", "0", "__ZNK5Eigen14CwiseNullaryOpINS_8internal18scalar_constant_opIfEEKNS_6MatrixIfLi3ELi1ELi0ELi3ELi1EEEE7functorEv", "0", "__ZNK5Eigen15PlainObjectBaseINS_6MatrixIfLi3ELi1ELi0ELi3ELi1EEEE4dataEv", "0", "0", "0", "0", "0", "0", "0", "0", "0", "__ZNK5Eigen13CwiseBinaryOpINS_8internal13scalar_sum_opIffEEKNS0_INS1_17scalar_product_opIffEEKNS_5ArrayIfLi3ELi1ELi0ELi3ELi1EEEKNS_14CwiseNullaryOpINS1_18scalar_constant_opIfEES8_EEEES8_E7functorEv", "__ZNK5Eigen13CwiseBinaryOpINS_8internal13scalar_sum_opIffEEKNS0_INS1_17scalar_product_opIffEEKNS_5ArrayIfLi3ELi1ELi0ELi3ELi1EEEKNS_14CwiseNullaryOpINS1_18scalar_constant_opIfEES8_EEEES8_E3lhsEv", "0", "__ZNK5Eigen13CwiseBinaryOpINS_8internal13scalar_sum_opIffEEKNS0_INS1_17scalar_product_opIffEEKNS_5ArrayIfLi3ELi1ELi0ELi3ELi1EEEKNS_14CwiseNullaryOpINS1_18scalar_constant_opIfEES8_EEEES8_E3rhsEv", "__ZNK5Eigen13CwiseBinaryOpINS_8internal17scalar_product_opIffEEKNS_5ArrayIfLi3ELi1ELi0ELi3ELi1EEEKNS_14CwiseNullaryOpINS1_18scalar_constant_opIfEES6_EEE7functorEv", "0", "__ZNK5Eigen13CwiseBinaryOpINS_8internal17scalar_product_opIffEEKNS_5ArrayIfLi3ELi1ELi0ELi3ELi1EEEKNS_14CwiseNullaryOpINS1_18scalar_constant_opIfEES6_EEE3lhsEv", "__ZNK5Eigen13CwiseBinaryOpINS_8internal17scalar_product_opIffEEKNS_5ArrayIfLi3ELi1ELi0ELi3ELi1EEEKNS_14CwiseNullaryOpINS1_18scalar_constant_opIfEES6_EEE3rhsEv", "0", "__ZNK5Eigen14CwiseNullaryOpINS_8internal18scalar_constant_opIfEEKNS_5ArrayIfLi3ELi1ELi0ELi3ELi1EEEE7functorEv", "0", "0", "0"];
-var debug_table_iiii = ["0", "0", "___stdio_write", "___stdio_seek", "_sn_write", "0", "0", "0", "0", "0", "__ZNK10__cxxabiv117__class_type_info9can_catchEPKNS_16__shim_type_infoERPv", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "__ZNSt3__212basic_stringIcNS_11char_traitsIcEEN10__cxxabiv112_GLOBAL__N_112malloc_allocIcEEE6appendEPKcj", "__ZN10__cxxabiv112_GLOBAL__N_118parse_special_nameINS0_2DbEEEPKcS4_S4_RT_", "__ZN10__cxxabiv112_GLOBAL__N_110parse_nameINS0_2DbEEEPKcS4_S4_RT_", "__ZN10__cxxabiv112_GLOBAL__N_110parse_typeINS0_2DbEEEPKcS4_S4_RT_", "0", "0", "0", "0", "0", "__ZNSt3__212basic_stringIcNS_11char_traitsIcEEN10__cxxabiv112_GLOBAL__N_112malloc_allocIcEEE6insertEjPKc", "0", "__ZNKSt3__212basic_stringIcNS_11char_traitsIcEEN10__cxxabiv112_GLOBAL__N_112malloc_allocIcEEE7compareEjjPKcj", "0", "0", "0", "__ZN10__cxxabiv112_GLOBAL__N_117parse_source_nameINS0_2DbEEEPKcS4_S4_RT_", "0", "0", "0", "0", "0", "0", "__ZN10__cxxabiv112_GLOBAL__N_118parse_template_argINS0_2DbEEEPKcS4_S4_RT_", "0", "0", "0", "0", "__ZN10__cxxabiv112_GLOBAL__N_116parse_expressionINS0_2DbEEEPKcS4_S4_RT_", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"];
-var debug_table_viii = ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "__ZNK5Eigen9ArrayBaseINS_5ArrayIfLi3ELi1ELi0ELi3ELi1EEEEplIS2_EEKNS_13CwiseBinaryOpINS_8internal13scalar_sum_opIfNS6_6traitsIT_E6ScalarEEEKS2_KS9_EERKNS0_IS9_EE", "0", "0", "__ZN5Eigen5ArrayIfLi3ELi1ELi0ELi3ELi1EEC2INS_6MatrixIfLi3ELi1ELi0ELi3ELi1EEEEERKNS_9EigenBaseIT_EENS_8internal9enable_ifIXsr8internal14is_convertibleINS6_6ScalarEfEE5valueENS1_11PrivateTypeEE4typeE", "0", "0", "0", "0", "0", "0", "0", "__ZZN5flint8geometry12SphereBufferILj3EfE6CreateEPNS2_10CreateArgsEENKUlRKT_E_clIN5Eigen5ArrayIfLi3ELi1ELi0ELi3ELi1EEEEEDaS7_", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "__ZN5Eigen8internal17resize_if_allowedINS_5ArrayIjLi3ELi1ELi0ELi3ELi1EEES3_jjEEvRT_RKT0_RKNS0_9assign_opIT1_T2_EE", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "__ZN5Eigen8internal17resize_if_allowedINS_5ArrayIfLi3ELi1ELi0ELi3ELi1EEES3_ffEEvRT_RKT0_RKNS0_9assign_opIT1_T2_EE", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "__ZN5Eigen8internal17resize_if_allowedINS_6MatrixIfLi3ELi1ELi0ELi3ELi1EEENS_13CwiseBinaryOpINS0_18scalar_quotient_opIffEEKNS_13MatrixWrapperIKNS4_INS0_13scalar_sum_opIffEEKNS_5ArrayIfLi3ELi1ELi0ELi3ELi1EEESC_EEEEKNS_14CwiseNullaryOpINS0_18scalar_constant_opIfEEKS3_EEEEffEEvRT_RKT0_RKNS0_9assign_opIT1_T2_EE", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "__ZN5Eigen8internal17resize_if_allowedINS_6MatrixIfLi3ELi1ELi0ELi3ELi1EEENS_13MatrixWrapperIKNS_13CwiseBinaryOpINS0_13scalar_sum_opIffEEKNS_5ArrayIfLi3ELi1ELi0ELi3ELi1EEESA_EEEEffEEvRT_RKT0_RKNS0_9assign_opIT1_T2_EE", "0", "0", "__ZN5Eigen8internal17resize_if_allowedINS_5ArrayIfLi3ELi1ELi0ELi3ELi1EEENS_6MatrixIfLi3ELi1ELi0ELi3ELi1EEEffEEvRT_RKT0_RKNS0_9assign_opIT1_T2_EE", "0", "0", "__ZN5Eigen8internal17resize_if_allowedINS_5ArrayIfLi3ELi1ELi0ELi3ELi1EEENS_13CwiseBinaryOpINS0_13scalar_sum_opIffEEKNS4_INS0_17scalar_product_opIffEEKS3_KNS_14CwiseNullaryOpINS0_18scalar_constant_opIfEES9_EEEES9_EEffEEvRT_RKT0_RKNS0_9assign_opIT1_T2_EE", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "__ZNSt3__26vectorIN10__cxxabiv112_GLOBAL__N_111string_pairENS2_11short_allocIS3_Lj4096EEEEC2EjRKS3_RKS5_", "__ZNSt3__212basic_stringIcNS_11char_traitsIcEEN10__cxxabiv112_GLOBAL__N_112malloc_allocIcEEEC2ERKS7_jjRKS6_", "__ZNSt3__2plIcNS_11char_traitsIcEEN10__cxxabiv112_GLOBAL__N_112malloc_allocIcEEEENS_12basic_stringIT_T0_T1_EERKSB_PKS8_", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "__ZNSt3__2plIcNS_11char_traitsIcEEN10__cxxabiv112_GLOBAL__N_112malloc_allocIcEEEENS_12basic_stringIT_T0_T1_EEPKS8_RKSB_", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"];
-var debug_table_v = ["0", "0", "0", "0", "0", "__ZL25default_terminate_handlerv", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "__ZN5Eigen15PlainObjectBaseINS_5ArrayIjLi3ELi1ELi0ELi3ELi1EEEE22_check_template_paramsEv", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "__ZN5Eigen15PlainObjectBaseINS_5ArrayIfLi3ELi1ELi0ELi3ELi1EEEE22_check_template_paramsEv", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "__ZN10__cxxabiv112_GLOBAL__N_110construct_Ev", "0", "0", "0", "___cxa_end_catch", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"];
-var debug_table_fii = ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "__ZN5Eigen8internal20redux_novec_unrollerINS0_13scalar_sum_opIffEENS0_15redux_evaluatorINS_12CwiseUnaryOpINS0_14scalar_abs2_opIfEEKNS_13MatrixWrapperIKNS_13CwiseBinaryOpIS3_KNS_5ArrayIfLi3ELi1ELi0ELi3ELi1EEESC_EEEEEEEELi0ELi3EE3runERKSI_RKS3_", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"];
-var debug_table_iii = ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "__ZNK5Eigen15DenseCoeffsBaseINS_5ArrayIjLi3ELi1ELi0ELi3ELi1EEELi0EEixEi", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "__ZN5Eigen5ArrayIjLi3ELi1ELi0ELi3ELi1EEaSERKS1_", "0", "0", "__ZN5Eigen5ArrayIfLi3ELi1ELi0ELi3ELi1EEaSINS_13CwiseBinaryOpINS_8internal13scalar_sum_opIffEEKNS3_INS4_17scalar_product_opIffEEKS1_KNS_14CwiseNullaryOpINS4_18scalar_constant_opIfEES9_EEEES9_EEEERS1_RKNS_9DenseBaseIT_EE", "0", "__ZN5Eigen5ArrayIfLi3ELi1ELi0ELi3ELi1EEaSERKS1_", "0", "0", "0", "0", "0", "0", "__ZN5Eigen15PlainObjectBaseINS_5ArrayIjLi3ELi1ELi0ELi3ELi1EEEE12_set_noaliasIS2_EERS2_RKNS_9DenseBaseIT_EE", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "__ZN5Eigen15PlainObjectBaseINS_5ArrayIfLi3ELi1ELi0ELi3ELi1EEEE12_set_noaliasIS2_EERS2_RKNS_9DenseBaseIT_EE", "0", "0", "0", "0", "0", "0", "0", "0", "__ZNK5Eigen8internal9evaluatorINS_15PlainObjectBaseINS_5ArrayIjLi3ELi1ELi0ELi3ELi1EEEEEE5coeffEi", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "__ZNSt3__212basic_stringIcNS_11char_traitsIcEEN10__cxxabiv112_GLOBAL__N_112malloc_allocIcEEE6appendEPKc", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"];
-var debug_table_viiii = ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "__ZNK10__cxxabiv117__class_type_info27has_unambiguous_public_baseEPNS_19__dynamic_cast_infoEPvi", "0", "0", "0", "__ZNK10__cxxabiv120__si_class_type_info27has_unambiguous_public_baseEPNS_19__dynamic_cast_infoEPvi", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "__ZN5Eigen5ArrayIfLi3ELi1ELi0ELi3ELi1EEC2ERKfS3_S3_", "0", "__ZNSt3__26vectorIN5Eigen5ArrayIfLi3ELi1ELi0ELi3ELi1EEENS_9allocatorIS3_EEE18__construct_at_endIPKS3_EENS_9enable_ifIXsr21__is_forward_iteratorIT_EE5valueEvE4typeESB_SB_j", "__ZN5Eigen5ArrayIjLi3ELi1ELi0ELi3ELi1EEC2ERKjS3_S3_", "0", "__ZNSt3__26vectorIN5Eigen5ArrayIjLi3ELi1ELi0ELi3ELi1EEENS_9allocatorIS3_EEE18__construct_at_endIPKS3_EENS_9enable_ifIXsr21__is_forward_iteratorIT_EE5valueEvE4typeESB_SB_j", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "__ZNSt3__26vectorIN5Eigen5ArrayIjLi3ELi1ELi0ELi3ELi1EEENS_9allocatorIS3_EEE24__emplace_back_slow_pathIJjjjEEEvDpOT_", "0", "0", "0", "0", "0", "0", "0", "0", "0", "__ZNSt3__26vectorIN5Eigen5ArrayIfLi3ELi1ELi0ELi3ELi1EEENS_9allocatorIS3_EEE18__construct_at_endIPS3_EENS_9enable_ifIXsr21__is_forward_iteratorIT_EE5valueEvE4typeESA_SA_j", "__ZNSt3__26vectorIN5Eigen5ArrayIjLi3ELi1ELi0ELi3ELi1EEENS_9allocatorIS3_EEE18__construct_at_endIPS3_EENS_9enable_ifIXsr21__is_forward_iteratorIT_EE5valueEvE4typeESA_SA_j", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "__ZN10__cxxabiv112_GLOBAL__N_18demangleINS0_2DbEEEvPKcS4_RT_Ri", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"];
-function nullFunc_iiiii(x) { Module["printErr"]("Invalid function pointer '" + x + "' called with signature 'iiiii'. Perhaps this is an invalid value (e.g. caused by calling a virtual method on a NULL pointer)? Or calling a function with an incorrect type, which will fail? (it is worth building your source files with -Werror (warnings are errors), as warnings can indicate undefined behavior which can cause this)");  Module["printErr"]("This pointer might make sense in another type signature: iiii: " + debug_table_iiii[x] + "  iii: " + debug_table_iii[x] + "  ii: " + debug_table_ii[x] + "  i: " + debug_table_i[x] + "  viiii: " + debug_table_viiii[x] + "  viii: " + debug_table_viii[x] + "  viiiii: " + debug_table_viiiii[x] + "  vii: " + debug_table_vii[x] + "  fii: " + debug_table_fii[x] + "  vi: " + debug_table_vi[x] + "  viiiiii: " + debug_table_viiiiii[x] + "  v: " + debug_table_v[x] + "  "); abort(x) }
+var debug_table_iiii = ["0", "___stdio_write", "___stdio_seek", "_sn_write", "__ZNK10__cxxabiv117__class_type_info9can_catchEPKNS_16__shim_type_infoERPv", "0", "0", "0"];
+var debug_table_viiiii = ["0", "__ZNK10__cxxabiv117__class_type_info16search_below_dstEPNS_19__dynamic_cast_infoEPKvib", "__ZNK10__cxxabiv120__si_class_type_info16search_below_dstEPNS_19__dynamic_cast_infoEPKvib", "0"];
+var debug_table_vi = ["0", "__ZN10__cxxabiv116__shim_type_infoD2Ev", "__ZN10__cxxabiv117__class_type_infoD0Ev", "__ZNK10__cxxabiv116__shim_type_info5noop1Ev", "__ZNK10__cxxabiv116__shim_type_info5noop2Ev", "__ZN10__cxxabiv120__si_class_type_infoD0Ev", "__ZNSt11logic_errorD2Ev", "__ZNSt11logic_errorD0Ev", "__ZNSt12length_errorD0Ev", "__ZN10__cxxabiv112_GLOBAL__N_19destruct_EPv", "0", "0", "0", "0", "0", "0"];
+var debug_table_ii = ["0", "___stdio_close", "__ZNKSt11logic_error4whatEv", "0"];
+var debug_table_v = ["0", "__ZL25default_terminate_handlerv", "__ZN10__cxxabiv112_GLOBAL__N_110construct_Ev", "0"];
+var debug_table_viiiiii = ["0", "__ZNK10__cxxabiv117__class_type_info16search_above_dstEPNS_19__dynamic_cast_infoEPKvS4_ib", "__ZNK10__cxxabiv120__si_class_type_info16search_above_dstEPNS_19__dynamic_cast_infoEPKvS4_ib", "0"];
+var debug_table_viiii = ["0", "__ZNK10__cxxabiv117__class_type_info27has_unambiguous_public_baseEPNS_19__dynamic_cast_infoEPvi", "__ZNK10__cxxabiv120__si_class_type_info27has_unambiguous_public_baseEPNS_19__dynamic_cast_infoEPvi", "0"];
+function nullFunc_iiii(x) { Module["printErr"]("Invalid function pointer '" + x + "' called with signature 'iiii'. Perhaps this is an invalid value (e.g. caused by calling a virtual method on a NULL pointer)? Or calling a function with an incorrect type, which will fail? (it is worth building your source files with -Werror (warnings are errors), as warnings can indicate undefined behavior which can cause this)");  Module["printErr"]("This pointer might make sense in another type signature: ii: " + debug_table_ii[x] + "  viiii: " + debug_table_viiii[x] + "  vi: " + debug_table_vi[x] + "  viiiii: " + debug_table_viiiii[x] + "  viiiiii: " + debug_table_viiiiii[x] + "  v: " + debug_table_v[x] + "  "); abort(x) }
 
-function nullFunc_viiiiii(x) { Module["printErr"]("Invalid function pointer '" + x + "' called with signature 'viiiiii'. Perhaps this is an invalid value (e.g. caused by calling a virtual method on a NULL pointer)? Or calling a function with an incorrect type, which will fail? (it is worth building your source files with -Werror (warnings are errors), as warnings can indicate undefined behavior which can cause this)");  Module["printErr"]("This pointer might make sense in another type signature: viii: " + debug_table_viii[x] + "  viiii: " + debug_table_viiii[x] + "  viiiii: " + debug_table_viiiii[x] + "  vii: " + debug_table_vii[x] + "  vi: " + debug_table_vi[x] + "  v: " + debug_table_v[x] + "  iiii: " + debug_table_iiii[x] + "  iiiii: " + debug_table_iiiii[x] + "  iii: " + debug_table_iii[x] + "  ii: " + debug_table_ii[x] + "  fii: " + debug_table_fii[x] + "  i: " + debug_table_i[x] + "  "); abort(x) }
+function nullFunc_viiiii(x) { Module["printErr"]("Invalid function pointer '" + x + "' called with signature 'viiiii'. Perhaps this is an invalid value (e.g. caused by calling a virtual method on a NULL pointer)? Or calling a function with an incorrect type, which will fail? (it is worth building your source files with -Werror (warnings are errors), as warnings can indicate undefined behavior which can cause this)");  Module["printErr"]("This pointer might make sense in another type signature: viiii: " + debug_table_viiii[x] + "  vi: " + debug_table_vi[x] + "  viiiiii: " + debug_table_viiiiii[x] + "  v: " + debug_table_v[x] + "  iiii: " + debug_table_iiii[x] + "  ii: " + debug_table_ii[x] + "  "); abort(x) }
 
-function nullFunc_viiiii(x) { Module["printErr"]("Invalid function pointer '" + x + "' called with signature 'viiiii'. Perhaps this is an invalid value (e.g. caused by calling a virtual method on a NULL pointer)? Or calling a function with an incorrect type, which will fail? (it is worth building your source files with -Werror (warnings are errors), as warnings can indicate undefined behavior which can cause this)");  Module["printErr"]("This pointer might make sense in another type signature: viii: " + debug_table_viii[x] + "  viiii: " + debug_table_viiii[x] + "  vii: " + debug_table_vii[x] + "  vi: " + debug_table_vi[x] + "  viiiiii: " + debug_table_viiiiii[x] + "  v: " + debug_table_v[x] + "  iiii: " + debug_table_iiii[x] + "  iiiii: " + debug_table_iiiii[x] + "  iii: " + debug_table_iii[x] + "  ii: " + debug_table_ii[x] + "  fii: " + debug_table_fii[x] + "  i: " + debug_table_i[x] + "  "); abort(x) }
+function nullFunc_vi(x) { Module["printErr"]("Invalid function pointer '" + x + "' called with signature 'vi'. Perhaps this is an invalid value (e.g. caused by calling a virtual method on a NULL pointer)? Or calling a function with an incorrect type, which will fail? (it is worth building your source files with -Werror (warnings are errors), as warnings can indicate undefined behavior which can cause this)");  Module["printErr"]("This pointer might make sense in another type signature: v: " + debug_table_v[x] + "  viiii: " + debug_table_viiii[x] + "  viiiii: " + debug_table_viiiii[x] + "  viiiiii: " + debug_table_viiiiii[x] + "  ii: " + debug_table_ii[x] + "  iiii: " + debug_table_iiii[x] + "  "); abort(x) }
 
-function nullFunc_i(x) { Module["printErr"]("Invalid function pointer '" + x + "' called with signature 'i'. Perhaps this is an invalid value (e.g. caused by calling a virtual method on a NULL pointer)? Or calling a function with an incorrect type, which will fail? (it is worth building your source files with -Werror (warnings are errors), as warnings can indicate undefined behavior which can cause this)");  Module["printErr"]("This pointer might make sense in another type signature: ii: " + debug_table_ii[x] + "  iii: " + debug_table_iii[x] + "  iiii: " + debug_table_iiii[x] + "  iiiii: " + debug_table_iiiii[x] + "  vi: " + debug_table_vi[x] + "  v: " + debug_table_v[x] + "  vii: " + debug_table_vii[x] + "  fii: " + debug_table_fii[x] + "  viii: " + debug_table_viii[x] + "  viiii: " + debug_table_viiii[x] + "  viiiii: " + debug_table_viiiii[x] + "  viiiiii: " + debug_table_viiiiii[x] + "  "); abort(x) }
+function nullFunc_ii(x) { Module["printErr"]("Invalid function pointer '" + x + "' called with signature 'ii'. Perhaps this is an invalid value (e.g. caused by calling a virtual method on a NULL pointer)? Or calling a function with an incorrect type, which will fail? (it is worth building your source files with -Werror (warnings are errors), as warnings can indicate undefined behavior which can cause this)");  Module["printErr"]("This pointer might make sense in another type signature: iiii: " + debug_table_iiii[x] + "  vi: " + debug_table_vi[x] + "  v: " + debug_table_v[x] + "  viiii: " + debug_table_viiii[x] + "  viiiii: " + debug_table_viiiii[x] + "  viiiiii: " + debug_table_viiiiii[x] + "  "); abort(x) }
 
-function nullFunc_vi(x) { Module["printErr"]("Invalid function pointer '" + x + "' called with signature 'vi'. Perhaps this is an invalid value (e.g. caused by calling a virtual method on a NULL pointer)? Or calling a function with an incorrect type, which will fail? (it is worth building your source files with -Werror (warnings are errors), as warnings can indicate undefined behavior which can cause this)");  Module["printErr"]("This pointer might make sense in another type signature: v: " + debug_table_v[x] + "  vii: " + debug_table_vii[x] + "  viii: " + debug_table_viii[x] + "  viiii: " + debug_table_viiii[x] + "  viiiii: " + debug_table_viiiii[x] + "  viiiiii: " + debug_table_viiiiii[x] + "  i: " + debug_table_i[x] + "  ii: " + debug_table_ii[x] + "  fii: " + debug_table_fii[x] + "  iii: " + debug_table_iii[x] + "  iiii: " + debug_table_iiii[x] + "  iiiii: " + debug_table_iiiii[x] + "  "); abort(x) }
+function nullFunc_v(x) { Module["printErr"]("Invalid function pointer '" + x + "' called with signature 'v'. Perhaps this is an invalid value (e.g. caused by calling a virtual method on a NULL pointer)? Or calling a function with an incorrect type, which will fail? (it is worth building your source files with -Werror (warnings are errors), as warnings can indicate undefined behavior which can cause this)");  Module["printErr"]("This pointer might make sense in another type signature: vi: " + debug_table_vi[x] + "  viiii: " + debug_table_viiii[x] + "  viiiii: " + debug_table_viiiii[x] + "  viiiiii: " + debug_table_viiiiii[x] + "  ii: " + debug_table_ii[x] + "  iiii: " + debug_table_iiii[x] + "  "); abort(x) }
 
-function nullFunc_vii(x) { Module["printErr"]("Invalid function pointer '" + x + "' called with signature 'vii'. Perhaps this is an invalid value (e.g. caused by calling a virtual method on a NULL pointer)? Or calling a function with an incorrect type, which will fail? (it is worth building your source files with -Werror (warnings are errors), as warnings can indicate undefined behavior which can cause this)");  Module["printErr"]("This pointer might make sense in another type signature: vi: " + debug_table_vi[x] + "  viii: " + debug_table_viii[x] + "  v: " + debug_table_v[x] + "  viiii: " + debug_table_viiii[x] + "  viiiii: " + debug_table_viiiii[x] + "  viiiiii: " + debug_table_viiiiii[x] + "  ii: " + debug_table_ii[x] + "  fii: " + debug_table_fii[x] + "  iii: " + debug_table_iii[x] + "  i: " + debug_table_i[x] + "  iiii: " + debug_table_iiii[x] + "  iiiii: " + debug_table_iiiii[x] + "  "); abort(x) }
+function nullFunc_viiiiii(x) { Module["printErr"]("Invalid function pointer '" + x + "' called with signature 'viiiiii'. Perhaps this is an invalid value (e.g. caused by calling a virtual method on a NULL pointer)? Or calling a function with an incorrect type, which will fail? (it is worth building your source files with -Werror (warnings are errors), as warnings can indicate undefined behavior which can cause this)");  Module["printErr"]("This pointer might make sense in another type signature: viiii: " + debug_table_viiii[x] + "  viiiii: " + debug_table_viiiii[x] + "  vi: " + debug_table_vi[x] + "  v: " + debug_table_v[x] + "  iiii: " + debug_table_iiii[x] + "  ii: " + debug_table_ii[x] + "  "); abort(x) }
 
-function nullFunc_ii(x) { Module["printErr"]("Invalid function pointer '" + x + "' called with signature 'ii'. Perhaps this is an invalid value (e.g. caused by calling a virtual method on a NULL pointer)? Or calling a function with an incorrect type, which will fail? (it is worth building your source files with -Werror (warnings are errors), as warnings can indicate undefined behavior which can cause this)");  Module["printErr"]("This pointer might make sense in another type signature: i: " + debug_table_i[x] + "  iii: " + debug_table_iii[x] + "  iiii: " + debug_table_iiii[x] + "  iiiii: " + debug_table_iiiii[x] + "  vii: " + debug_table_vii[x] + "  fii: " + debug_table_fii[x] + "  vi: " + debug_table_vi[x] + "  viii: " + debug_table_viii[x] + "  v: " + debug_table_v[x] + "  viiii: " + debug_table_viiii[x] + "  viiiii: " + debug_table_viiiii[x] + "  viiiiii: " + debug_table_viiiiii[x] + "  "); abort(x) }
+function nullFunc_viiii(x) { Module["printErr"]("Invalid function pointer '" + x + "' called with signature 'viiii'. Perhaps this is an invalid value (e.g. caused by calling a virtual method on a NULL pointer)? Or calling a function with an incorrect type, which will fail? (it is worth building your source files with -Werror (warnings are errors), as warnings can indicate undefined behavior which can cause this)");  Module["printErr"]("This pointer might make sense in another type signature: vi: " + debug_table_vi[x] + "  viiiii: " + debug_table_viiiii[x] + "  viiiiii: " + debug_table_viiiiii[x] + "  v: " + debug_table_v[x] + "  iiii: " + debug_table_iiii[x] + "  ii: " + debug_table_ii[x] + "  "); abort(x) }
 
-function nullFunc_iiii(x) { Module["printErr"]("Invalid function pointer '" + x + "' called with signature 'iiii'. Perhaps this is an invalid value (e.g. caused by calling a virtual method on a NULL pointer)? Or calling a function with an incorrect type, which will fail? (it is worth building your source files with -Werror (warnings are errors), as warnings can indicate undefined behavior which can cause this)");  Module["printErr"]("This pointer might make sense in another type signature: iii: " + debug_table_iii[x] + "  ii: " + debug_table_ii[x] + "  iiiii: " + debug_table_iiiii[x] + "  i: " + debug_table_i[x] + "  viii: " + debug_table_viii[x] + "  viiii: " + debug_table_viiii[x] + "  vii: " + debug_table_vii[x] + "  fii: " + debug_table_fii[x] + "  vi: " + debug_table_vi[x] + "  viiiii: " + debug_table_viiiii[x] + "  viiiiii: " + debug_table_viiiiii[x] + "  v: " + debug_table_v[x] + "  "); abort(x) }
+Module['wasmTableSize'] = 44;
 
-function nullFunc_viii(x) { Module["printErr"]("Invalid function pointer '" + x + "' called with signature 'viii'. Perhaps this is an invalid value (e.g. caused by calling a virtual method on a NULL pointer)? Or calling a function with an incorrect type, which will fail? (it is worth building your source files with -Werror (warnings are errors), as warnings can indicate undefined behavior which can cause this)");  Module["printErr"]("This pointer might make sense in another type signature: vii: " + debug_table_vii[x] + "  vi: " + debug_table_vi[x] + "  viiii: " + debug_table_viiii[x] + "  v: " + debug_table_v[x] + "  viiiii: " + debug_table_viiiii[x] + "  viiiiii: " + debug_table_viiiiii[x] + "  iii: " + debug_table_iii[x] + "  ii: " + debug_table_ii[x] + "  iiii: " + debug_table_iiii[x] + "  fii: " + debug_table_fii[x] + "  iiiii: " + debug_table_iiiii[x] + "  i: " + debug_table_i[x] + "  "); abort(x) }
+Module['wasmMaxTableSize'] = 44;
 
-function nullFunc_v(x) { Module["printErr"]("Invalid function pointer '" + x + "' called with signature 'v'. Perhaps this is an invalid value (e.g. caused by calling a virtual method on a NULL pointer)? Or calling a function with an incorrect type, which will fail? (it is worth building your source files with -Werror (warnings are errors), as warnings can indicate undefined behavior which can cause this)");  Module["printErr"]("This pointer might make sense in another type signature: vi: " + debug_table_vi[x] + "  vii: " + debug_table_vii[x] + "  viii: " + debug_table_viii[x] + "  viiii: " + debug_table_viiii[x] + "  viiiii: " + debug_table_viiiii[x] + "  viiiiii: " + debug_table_viiiiii[x] + "  i: " + debug_table_i[x] + "  ii: " + debug_table_ii[x] + "  fii: " + debug_table_fii[x] + "  iii: " + debug_table_iii[x] + "  iiii: " + debug_table_iiii[x] + "  iiiii: " + debug_table_iiiii[x] + "  "); abort(x) }
-
-function nullFunc_fii(x) { Module["printErr"]("Invalid function pointer '" + x + "' called with signature 'fii'. Perhaps this is an invalid value (e.g. caused by calling a virtual method on a NULL pointer)? Or calling a function with an incorrect type, which will fail? (it is worth building your source files with -Werror (warnings are errors), as warnings can indicate undefined behavior which can cause this)");  Module["printErr"]("This pointer might make sense in another type signature: ii: " + debug_table_ii[x] + "  vii: " + debug_table_vii[x] + "  iii: " + debug_table_iii[x] + "  i: " + debug_table_i[x] + "  vi: " + debug_table_vi[x] + "  iiii: " + debug_table_iiii[x] + "  viii: " + debug_table_viii[x] + "  iiiii: " + debug_table_iiiii[x] + "  viiii: " + debug_table_viiii[x] + "  v: " + debug_table_v[x] + "  viiiii: " + debug_table_viiiii[x] + "  viiiiii: " + debug_table_viiiiii[x] + "  "); abort(x) }
-
-function nullFunc_iii(x) { Module["printErr"]("Invalid function pointer '" + x + "' called with signature 'iii'. Perhaps this is an invalid value (e.g. caused by calling a virtual method on a NULL pointer)? Or calling a function with an incorrect type, which will fail? (it is worth building your source files with -Werror (warnings are errors), as warnings can indicate undefined behavior which can cause this)");  Module["printErr"]("This pointer might make sense in another type signature: ii: " + debug_table_ii[x] + "  iiii: " + debug_table_iiii[x] + "  i: " + debug_table_i[x] + "  iiiii: " + debug_table_iiiii[x] + "  viii: " + debug_table_viii[x] + "  vii: " + debug_table_vii[x] + "  fii: " + debug_table_fii[x] + "  vi: " + debug_table_vi[x] + "  viiii: " + debug_table_viiii[x] + "  viiiii: " + debug_table_viiiii[x] + "  v: " + debug_table_v[x] + "  viiiiii: " + debug_table_viiiiii[x] + "  "); abort(x) }
-
-function nullFunc_viiii(x) { Module["printErr"]("Invalid function pointer '" + x + "' called with signature 'viiii'. Perhaps this is an invalid value (e.g. caused by calling a virtual method on a NULL pointer)? Or calling a function with an incorrect type, which will fail? (it is worth building your source files with -Werror (warnings are errors), as warnings can indicate undefined behavior which can cause this)");  Module["printErr"]("This pointer might make sense in another type signature: viii: " + debug_table_viii[x] + "  vii: " + debug_table_vii[x] + "  vi: " + debug_table_vi[x] + "  viiiii: " + debug_table_viiiii[x] + "  viiiiii: " + debug_table_viiiiii[x] + "  v: " + debug_table_v[x] + "  iiii: " + debug_table_iiii[x] + "  iii: " + debug_table_iii[x] + "  ii: " + debug_table_ii[x] + "  iiiii: " + debug_table_iiiii[x] + "  fii: " + debug_table_fii[x] + "  i: " + debug_table_i[x] + "  "); abort(x) }
-
-Module['wasmTableSize'] = 2704;
-
-Module['wasmMaxTableSize'] = 2704;
-
-function invoke_iiiii(index,a1,a2,a3,a4) {
+function invoke_iiii(index,a1,a2,a3) {
   try {
-    return Module["dynCall_iiiii"](index,a1,a2,a3,a4);
-  } catch(e) {
-    if (typeof e !== 'number' && e !== 'longjmp') throw e;
-    Module["setThrew"](1, 0);
-  }
-}
-
-function invoke_viiiiii(index,a1,a2,a3,a4,a5,a6) {
-  try {
-    Module["dynCall_viiiiii"](index,a1,a2,a3,a4,a5,a6);
+    return Module["dynCall_iiii"](index,a1,a2,a3);
   } catch(e) {
     if (typeof e !== 'number' && e !== 'longjmp') throw e;
     Module["setThrew"](1, 0);
@@ -3396,27 +3338,9 @@ function invoke_viiiii(index,a1,a2,a3,a4,a5) {
   }
 }
 
-function invoke_i(index) {
-  try {
-    return Module["dynCall_i"](index);
-  } catch(e) {
-    if (typeof e !== 'number' && e !== 'longjmp') throw e;
-    Module["setThrew"](1, 0);
-  }
-}
-
 function invoke_vi(index,a1) {
   try {
     Module["dynCall_vi"](index,a1);
-  } catch(e) {
-    if (typeof e !== 'number' && e !== 'longjmp') throw e;
-    Module["setThrew"](1, 0);
-  }
-}
-
-function invoke_vii(index,a1,a2) {
-  try {
-    Module["dynCall_vii"](index,a1,a2);
   } catch(e) {
     if (typeof e !== 'number' && e !== 'longjmp') throw e;
     Module["setThrew"](1, 0);
@@ -3432,24 +3356,6 @@ function invoke_ii(index,a1) {
   }
 }
 
-function invoke_iiii(index,a1,a2,a3) {
-  try {
-    return Module["dynCall_iiii"](index,a1,a2,a3);
-  } catch(e) {
-    if (typeof e !== 'number' && e !== 'longjmp') throw e;
-    Module["setThrew"](1, 0);
-  }
-}
-
-function invoke_viii(index,a1,a2,a3) {
-  try {
-    Module["dynCall_viii"](index,a1,a2,a3);
-  } catch(e) {
-    if (typeof e !== 'number' && e !== 'longjmp') throw e;
-    Module["setThrew"](1, 0);
-  }
-}
-
 function invoke_v(index) {
   try {
     Module["dynCall_v"](index);
@@ -3459,18 +3365,9 @@ function invoke_v(index) {
   }
 }
 
-function invoke_fii(index,a1,a2) {
+function invoke_viiiiii(index,a1,a2,a3,a4,a5,a6) {
   try {
-    return Module["dynCall_fii"](index,a1,a2);
-  } catch(e) {
-    if (typeof e !== 'number' && e !== 'longjmp') throw e;
-    Module["setThrew"](1, 0);
-  }
-}
-
-function invoke_iii(index,a1,a2) {
-  try {
-    return Module["dynCall_iii"](index,a1,a2);
+    Module["dynCall_viiiiii"](index,a1,a2,a3,a4,a5,a6);
   } catch(e) {
     if (typeof e !== 'number' && e !== 'longjmp') throw e;
     Module["setThrew"](1, 0);
@@ -3488,7 +3385,7 @@ function invoke_viiii(index,a1,a2,a3,a4) {
 
 Module.asmGlobalArg = { "Math": Math, "Int8Array": Int8Array, "Int16Array": Int16Array, "Int32Array": Int32Array, "Uint8Array": Uint8Array, "Uint16Array": Uint16Array, "Uint32Array": Uint32Array, "Float32Array": Float32Array, "Float64Array": Float64Array, "NaN": NaN, "Infinity": Infinity, "byteLength": byteLength };
 
-Module.asmLibraryArg = { "abort": abort, "assert": assert, "enlargeMemory": enlargeMemory, "getTotalMemory": getTotalMemory, "abortOnCannotGrowMemory": abortOnCannotGrowMemory, "abortStackOverflow": abortStackOverflow, "segfault": segfault, "alignfault": alignfault, "ftfault": ftfault, "nullFunc_iiiii": nullFunc_iiiii, "nullFunc_viiiiii": nullFunc_viiiiii, "nullFunc_viiiii": nullFunc_viiiii, "nullFunc_i": nullFunc_i, "nullFunc_vi": nullFunc_vi, "nullFunc_vii": nullFunc_vii, "nullFunc_ii": nullFunc_ii, "nullFunc_iiii": nullFunc_iiii, "nullFunc_viii": nullFunc_viii, "nullFunc_v": nullFunc_v, "nullFunc_fii": nullFunc_fii, "nullFunc_iii": nullFunc_iii, "nullFunc_viiii": nullFunc_viiii, "invoke_iiiii": invoke_iiiii, "invoke_viiiiii": invoke_viiiiii, "invoke_viiiii": invoke_viiiii, "invoke_i": invoke_i, "invoke_vi": invoke_vi, "invoke_vii": invoke_vii, "invoke_ii": invoke_ii, "invoke_iiii": invoke_iiii, "invoke_viii": invoke_viii, "invoke_v": invoke_v, "invoke_fii": invoke_fii, "invoke_iii": invoke_iii, "invoke_viiii": invoke_viiii, "__ZSt18uncaught_exceptionv": __ZSt18uncaught_exceptionv, "___syscall6": ___syscall6, "_emscripten_set_main_loop_timing": _emscripten_set_main_loop_timing, "___gxx_personality_v0": ___gxx_personality_v0, "___assert_fail": ___assert_fail, "___cxa_free_exception": ___cxa_free_exception, "___cxa_find_matching_catch_2": ___cxa_find_matching_catch_2, "___cxa_find_matching_catch_3": ___cxa_find_matching_catch_3, "___setErrNo": ___setErrNo, "___cxa_begin_catch": ___cxa_begin_catch, "_emscripten_memcpy_big": _emscripten_memcpy_big, "___cxa_end_catch": ___cxa_end_catch, "___resumeException": ___resumeException, "___cxa_find_matching_catch": ___cxa_find_matching_catch, "_emscripten_worker_respond": _emscripten_worker_respond, "_pthread_getspecific": _pthread_getspecific, "_pthread_once": _pthread_once, "_pthread_key_create": _pthread_key_create, "_emscripten_set_main_loop": _emscripten_set_main_loop, "_emscripten_get_now": _emscripten_get_now, "_pthread_setspecific": _pthread_setspecific, "___cxa_throw": ___cxa_throw, "_abort": _abort, "___cxa_allocate_exception": ___cxa_allocate_exception, "___syscall140": ___syscall140, "___syscall146": ___syscall146, "DYNAMICTOP_PTR": DYNAMICTOP_PTR, "tempDoublePtr": tempDoublePtr, "ABORT": ABORT, "STACKTOP": STACKTOP, "STACK_MAX": STACK_MAX };
+Module.asmLibraryArg = { "abort": abort, "assert": assert, "enlargeMemory": enlargeMemory, "getTotalMemory": getTotalMemory, "abortOnCannotGrowMemory": abortOnCannotGrowMemory, "abortStackOverflow": abortStackOverflow, "segfault": segfault, "alignfault": alignfault, "ftfault": ftfault, "nullFunc_iiii": nullFunc_iiii, "nullFunc_viiiii": nullFunc_viiiii, "nullFunc_vi": nullFunc_vi, "nullFunc_ii": nullFunc_ii, "nullFunc_v": nullFunc_v, "nullFunc_viiiiii": nullFunc_viiiiii, "nullFunc_viiii": nullFunc_viiii, "invoke_iiii": invoke_iiii, "invoke_viiiii": invoke_viiiii, "invoke_vi": invoke_vi, "invoke_ii": invoke_ii, "invoke_v": invoke_v, "invoke_viiiiii": invoke_viiiiii, "invoke_viiii": invoke_viiii, "___syscall6": ___syscall6, "_emscripten_worker_respond": _emscripten_worker_respond, "___gxx_personality_v0": ___gxx_personality_v0, "_emscripten_set_main_loop_timing": _emscripten_set_main_loop_timing, "___cxa_allocate_exception": ___cxa_allocate_exception, "___cxa_find_matching_catch": ___cxa_find_matching_catch, "___setErrNo": ___setErrNo, "___cxa_begin_catch": ___cxa_begin_catch, "_emscripten_memcpy_big": _emscripten_memcpy_big, "___resumeException": ___resumeException, "__ZSt18uncaught_exceptionv": __ZSt18uncaught_exceptionv, "_pthread_getspecific": _pthread_getspecific, "_pthread_once": _pthread_once, "_pthread_key_create": _pthread_key_create, "_emscripten_set_main_loop": _emscripten_set_main_loop, "_emscripten_get_now": _emscripten_get_now, "_llvm_sqrt_f32": _llvm_sqrt_f32, "_pthread_setspecific": _pthread_setspecific, "___cxa_throw": ___cxa_throw, "_abort": _abort, "___syscall140": ___syscall140, "___syscall146": ___syscall146, "DYNAMICTOP_PTR": DYNAMICTOP_PTR, "tempDoublePtr": tempDoublePtr, "ABORT": ABORT, "STACKTOP": STACKTOP, "STACK_MAX": STACK_MAX };
 // EMSCRIPTEN_START_ASM
 var asm =Module["asm"]// EMSCRIPTEN_END_ASM
 (Module.asmGlobalArg, Module.asmLibraryArg, buffer);
@@ -3709,54 +3606,30 @@ var _emscripten_replace_memory = Module["_emscripten_replace_memory"] = function
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
   return Module["asm"]["_emscripten_replace_memory"].apply(null, arguments) };
-var dynCall_iiiii = Module["dynCall_iiiii"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["dynCall_iiiii"].apply(null, arguments) };
-var dynCall_viiiiii = Module["dynCall_viiiiii"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["dynCall_viiiiii"].apply(null, arguments) };
-var dynCall_viiiii = Module["dynCall_viiiii"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["dynCall_viiiii"].apply(null, arguments) };
-var dynCall_i = Module["dynCall_i"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["dynCall_i"].apply(null, arguments) };
-var dynCall_vi = Module["dynCall_vi"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["dynCall_vi"].apply(null, arguments) };
-var dynCall_vii = Module["dynCall_vii"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["dynCall_vii"].apply(null, arguments) };
-var dynCall_ii = Module["dynCall_ii"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["dynCall_ii"].apply(null, arguments) };
 var dynCall_iiii = Module["dynCall_iiii"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
   return Module["asm"]["dynCall_iiii"].apply(null, arguments) };
-var dynCall_viii = Module["dynCall_viii"] = function() {
+var dynCall_viiiii = Module["dynCall_viiiii"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["dynCall_viii"].apply(null, arguments) };
+  return Module["asm"]["dynCall_viiiii"].apply(null, arguments) };
+var dynCall_vi = Module["dynCall_vi"] = function() {
+  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
+  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
+  return Module["asm"]["dynCall_vi"].apply(null, arguments) };
+var dynCall_ii = Module["dynCall_ii"] = function() {
+  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
+  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
+  return Module["asm"]["dynCall_ii"].apply(null, arguments) };
 var dynCall_v = Module["dynCall_v"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
   return Module["asm"]["dynCall_v"].apply(null, arguments) };
-var dynCall_fii = Module["dynCall_fii"] = function() {
+var dynCall_viiiiii = Module["dynCall_viiiiii"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["dynCall_fii"].apply(null, arguments) };
-var dynCall_iii = Module["dynCall_iii"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["dynCall_iii"].apply(null, arguments) };
+  return Module["asm"]["dynCall_viiiiii"].apply(null, arguments) };
 var dynCall_viiii = Module["dynCall_viiii"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');

@@ -32,7 +32,6 @@ public:
         PlaneMask mask = CullingMaskInside;
 
         for (uint32_t k = 0; k < N; ++k) {
-            // planes[i]
             uint32_t flag = (k < 31) ? (1 << k) : 0;
             if (k < 31 && (parentMask & flag) == 0) {
                 // boundingVolume is known to be INSIDE this plane.

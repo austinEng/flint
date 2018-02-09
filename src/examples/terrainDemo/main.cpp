@@ -44,7 +44,7 @@ static void frame(void* ptr) {
 
     window->SwapBuffers();
 
-    frameState.camera.Move({ 0, 0, 1 });
+    // frameState.camera.Move({ 0, 0, 1 });
 
     static bool generating = false;
     if (!generating) {
@@ -63,6 +63,8 @@ static void frame(void* ptr) {
             generating = false;
         });
     }
+
+    frameState.frameNumber++;
 }
 
 int main(int argc, char** argv) {
@@ -112,7 +114,7 @@ int main(int argc, char** argv) {
 
     frameState.camera.SetAltitude(0);
     frameState.camera.SetAzimuth(0);
-    frameState.camera.SetDistance(-100);
+    frameState.camera.SetDistance(100);
     frameState.camera.SetAspectRatio(static_cast<float>(width) / static_cast<float>(height));
     frameState.camera.LookAt({ 0, 0, 0 });
     frameState.camera.Move({ 0, 100, 0 });

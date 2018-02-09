@@ -9,7 +9,7 @@ namespace tileset {
 class TerrainTileset : public Tileset<TerrainTileset> {
     friend class Tileset<TerrainTileset>;
     std::map<TerrainTile::Index, TerrainTile*> rootTiles;
-    float maximumScreenSpaceError = 50;
+    float maximumScreenSpaceError = 20;
     std::vector<TileBase*> selectedTiles;
 
     void Touch(TerrainTile* tile);

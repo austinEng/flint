@@ -4,7 +4,15 @@ namespace threading {
 
 #ifdef __EMSCRIPTEN__
 
+void WorkerBase::SetLoop(WorkerBase::WorkerLoop loop, unsigned int fps) {
+    emscripten_set_main_loop(loop, fps, false);
+}
+
 #else
+
+void WorkerBase::SetLoop(WorkerBase::WorkerLoop loop, unsigned int fps) {
+    reinterpret_cast<WorkerImpl*>(this)->SetLoop(loop, fps);
+}
 
 WorkerImpl::WorkerImpl()
   : shouldExit(false),
