@@ -21,34 +21,38 @@ bool TileBase::HasRendererableContent() const {
 }
 
 
-bool TileBase::LoadContent() {
+bool TileBase::LoadContent(flint::rendering::gl::CommandBuffer* commands) {
     if (!HasRendererableContent()) {
         return false;
     }
 
-    content->Create();
+    content->Create(commands);
     return true;
 }
 
-void TileBase::UnloadContent() {
+void TileBase::UnloadContent(flint::rendering::gl::CommandBuffer* commands) {
     if (!HasRendererableContent()) {
         return;
     }
 
-    content->Destroy();
+    content->Destroy(commands);
 }
 
-void TileBase::Update(const flint::core::FrameState &frameState,
-                      flint::rendering::gl::CommandBuffer* commands)
-{
+void TileBase::Update(const flint::core::FrameState &frameState) {
     if (!ContentReady() || !HasRendererableContent()) {
         return;
     }
-    content->Update(frameState, commands);
+    content->Update(frameState);
+}
+
+void TileBase::Draw(const flint::core::FrameState &frameState, flint::rendering::gl::CommandBuffer* commands) {
+    if (!ContentReady() || !HasRendererableContent()) {
+        return;
+    }
+    content->Draw(frameState, commands);
 }
 
 TileBase::~TileBase() {
-    UnloadContent();
     delete content;
     content = nullptr;
 }

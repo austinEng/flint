@@ -29,18 +29,71 @@ public:
 
     TileBase(TilesetBase* tileset, TileBase* parent, const Eigen::Matrix<float, 4, 4> &transform);
 
-    virtual void Children(TileBase** firstChild, unsigned int* childCount) = 0;
-    virtual void Children(const TileBase** firstChild, unsigned int* childCount) const = 0;
+    template <typename T>
+    class children_iterator {
+    public:
+        children_iterator(T* tile, uint32_t index) : tile(tile), index(index) { }
+        children_iterator operator++() {
+            children_iterator i = *this;
+            index++;
+            return i;
+        }
+        T* operator*() {
+            return reinterpret_cast<T*>(tile->GetChild(index));
+        }
+        T* operator->() {
+            return reinterpret_cast<T*>(tile->GetChild(index));
+        }
+        bool operator==(const children_iterator& rhs) {
+            return tile == rhs.tile && index == rhs.index;
+        }
+        bool operator!=(const children_iterator& rhs) {
+            return tile != rhs.tile || index != rhs.index;
+        }
+    private:
+        T* tile;
+        uint32_t index = 0;
+    };
+
+    template <typename T>
+    class const_children_iterator {
+    public:
+        const_children_iterator(const T* tile, uint32_t index) : tile(tile), index(index) { }
+        const_children_iterator operator++() {
+            const_children_iterator i = *this;
+            index++;
+            return i;
+        }
+        const T* operator*() {
+            return reinterpret_cast<const T*>(tile->GetChild(index));
+        }
+        const T* operator->() {
+            return reinterpret_cast<const T*>(tile->GetChild(index));
+        }
+        bool operator==(const const_children_iterator& rhs) {
+            return tile == rhs.tile && index == rhs.index;
+        }
+        bool operator!=(const const_children_iterator& rhs) {
+            return tile != rhs.tile || index != rhs.index;
+        }
+    private:
+        const T* tile;
+        uint32_t index = 0;
+    };
+
+    virtual TileBase* GetChild(uint32_t index) = 0;
+    virtual const TileBase* GetChild(uint32_t index) const = 0;
 
     bool ContentReady() const;
     bool HasRendererableContent() const;
 
-    bool LoadContent();
+    bool LoadContent(flint::rendering::gl::CommandBuffer* commands);
 
-    void UnloadContent();
+    void UnloadContent(flint::rendering::gl::CommandBuffer* commands);
 
-    void Update(const flint::core::FrameState &frameState,
-                flint::rendering::gl::CommandBuffer* commands);
+    void Update(const flint::core::FrameState &frameState);
+
+    void Draw(const flint::core::FrameState &frameState, flint::rendering::gl::CommandBuffer* commands);
 
     virtual ~TileBase();
 };
@@ -48,9 +101,52 @@ public:
 template <typename Derived>
 class Tile : public TileBase {
 public:
+    class TileChildren {
+    public:
+        TileChildren(Derived* tile) : tile(tile) {
+
+        }
+
+        children_iterator<Derived> begin() {
+            return tile->ChildrenBegin();
+        }
+
+        children_iterator<Derived> end() {
+            return tile->ChildrenEnd();
+        }
+
+    private:
+        Derived* tile;
+    };
+
+    class ConstTileChildren {
+    public:
+        ConstTileChildren(const Derived* tile) : tile(tile) {
+
+        }
+        const_children_iterator<Derived> begin() const {
+            return tile->ChildrenBegin();
+        }
+
+        const_children_iterator<Derived> end() const {
+            return tile->ChildrenEnd();
+        }
+    private:
+        const Derived* tile;
+    };
+
+
     void Init() {
         boundingVolume.set(ComputeBoundingVolume());
         geometricError = ComputeGeometricError();
+    }
+
+    TileChildren IterChildren() {
+        return TileChildren(static_cast<Derived*>(this));
+    }
+
+    ConstTileChildren IterChildren() const {
+        return ConstTileChildren(static_cast<const Derived*>(this));
     }
 
     flint::core::AxisAlignedBox<3, float> ComputeBoundingVolume() const {
@@ -70,12 +166,12 @@ public:
       : TileBase(tileset, parent, transform) {
     }
 
-    virtual void Children(const TileBase** firstChild, unsigned int* childCount) const override {
-        static_cast<const Derived*>(this)->GetChildren(reinterpret_cast<const Derived**>(firstChild), childCount);
+    virtual TileBase* GetChild(uint32_t index) override {
+        return static_cast<Derived*>(this)->GetChildImpl(index);
     }
 
-    virtual void Children(TileBase** firstChild, unsigned int* childCount) override {
-        static_cast<Derived*>(this)->GetChildren(reinterpret_cast<Derived**>(firstChild), childCount);
+    virtual const TileBase* GetChild(uint32_t index) const override {
+        return static_cast<const Derived*>(this)->GetChildImpl(index);
     }
 
     virtual ~Tile() {

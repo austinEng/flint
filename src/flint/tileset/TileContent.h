@@ -10,13 +10,15 @@ class TileContentBase {
 public:
     flint::core::Optional<flint::core::AxisAlignedBox<3, float>> contentBoundingVolume;
 
-    virtual void Create() = 0;
-    virtual void Destroy() = 0;
+    virtual void Create(flint::rendering::gl::CommandBuffer* commands) = 0;
+    virtual void Destroy(flint::rendering::gl::CommandBuffer* commands) = 0;
     virtual bool IsEmpty() const = 0;
     virtual bool IsReady() const = 0;
 
-    virtual void Update(const flint::core::FrameState &frameState,
-                        flint::rendering::gl::CommandBuffer* commands) = 0;
+    virtual void Update(const flint::core::FrameState &frameState) = 0;
+
+    virtual void Draw(const flint::core::FrameState &frameState, flint::rendering::gl::CommandBuffer* commands) = 0;
+
     virtual void Commit() = 0;
 
     virtual ~TileContentBase() {
@@ -27,12 +29,12 @@ public:
 template <typename Derived>
 class TileContent : public TileContentBase {
 public:
-    virtual void Create() override {
-        static_cast<Derived*>(this)->CreateImpl();
+    virtual void Create(flint::rendering::gl::CommandBuffer* commands) override {
+        static_cast<Derived*>(this)->CreateImpl(commands);
     }
 
-    virtual void Destroy() override {
-        static_cast<Derived*>(this)->DestroyImpl();
+    virtual void Destroy(flint::rendering::gl::CommandBuffer* commands) override {
+        static_cast<Derived*>(this)->DestroyImpl(commands);
     }
 
     virtual bool IsEmpty() const override {
@@ -43,9 +45,12 @@ public:
         return static_cast<const Derived*>(this)->IsReadyImpl();
     }
 
-    virtual void Update(const flint::core::FrameState &frameState,
-                        flint::rendering::gl::CommandBuffer* commands) override {
-        static_cast<Derived*>(this)->UpdateImpl(frameState, commands);
+    virtual void Update(const flint::core::FrameState &frameState) override {
+        static_cast<Derived*>(this)->UpdateImpl(frameState);
+    }
+
+    virtual void Draw(const flint::core::FrameState &frameState, flint::rendering::gl::CommandBuffer* commands) override {
+        static_cast<Derived*>(this)->DrawImpl(frameState, commands);
     }
 
     virtual void Commit() override {

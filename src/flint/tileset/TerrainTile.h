@@ -1,5 +1,6 @@
 #pragma once
 #include <array>
+#include <list>
 #include <flint/core/AxisAlignedBox.h>
 #include "Tileset.h"
 #include "Tile.h"
@@ -7,7 +8,9 @@
 namespace flint {
 namespace tileset {
 
-constexpr float TERRAIN_ROOT_SIZE = 10000.f;
+constexpr float TERRAIN_ROOT_SIZE = 5000.f;
+constexpr float TERRAIN_ROOT_GEOMETRIC_ERROR = 500000.f;
+constexpr uint32_t TERRAIN_SUBDIVISION_LEVEL = 5;
 
 class TerrainTileContent;
 class TerrainTileset;
@@ -41,17 +44,36 @@ public:
     bool IsVisible() const;
 
     Index index;
-    TerrainTileChildren* children = nullptr;
     float distanceToCamera;
     float screenSpaceError;
     uint64_t lastVisitedFrameNumber = -1;
+    bool deleted = false;
 
-    void CreateChildren();
-    void DeleteChildren();
+    struct LRUNode {
+        TerrainTile* tile = nullptr;
+        LRUNode* prev = nullptr;
+        LRUNode* next = nullptr;
+    } lruNode;
 
-    void GetChildren(TerrainTile** firstChild, unsigned int* childCount);
+    children_iterator<TerrainTile> ChildrenBegin() {
+        return children_iterator<TerrainTile>(this, 0);
+    }
 
-    void GetChildren(const TerrainTile** firstChild, unsigned int* childCount) const;
+    children_iterator<TerrainTile> ChildrenEnd() {
+        return children_iterator<TerrainTile>(this, 8);
+    }
+
+    const_children_iterator<TerrainTile> ChildrenBegin() const {
+        return const_children_iterator<TerrainTile>(this, 0);
+    }
+
+    const_children_iterator<TerrainTile> ChildrenEnd() const {
+        return const_children_iterator<TerrainTile>(this, 8);
+    }
+
+    TerrainTile* GetChildImpl(uint32_t index);
+
+    const TerrainTile* GetChildImpl(uint32_t index) const;
 
     flint::core::AxisAlignedBox<3, float> ComputeBoundingVolumeImpl() const;
 
@@ -59,14 +81,8 @@ public:
 
 private:
     core::AxisAlignedBox<3, float> getBoundingVolume() const;
-};
 
-class TerrainTileChildren {
-    std::array<TerrainTile, 8> tiles;
-
-public:
-    TerrainTileChildren() = delete;
-    TerrainTileChildren(TerrainTile* parent);
+    std::array<TerrainTile*, 8> children = {};
 };
 
 }

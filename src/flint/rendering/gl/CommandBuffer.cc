@@ -26,6 +26,10 @@ const CommandAllocator& CommandBuffer::Allocator() const {
     return *allocator;
 }
 
+CommandAllocator* CommandBuffer::Allocator() {
+    return allocator;
+}
+
 void CommandBuffer::Reset() {
     assert(allocator);
     allocator->Reset();

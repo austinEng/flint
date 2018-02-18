@@ -32,6 +32,7 @@ public:
     }
 
     const CommandAllocator& Allocator() const;
+    CommandAllocator* Allocator();
     void Reset();
 
 private:

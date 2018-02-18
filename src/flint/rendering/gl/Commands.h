@@ -1,5 +1,6 @@
 #pragma once
 #include <stdint.h>
+#include <flint/debug/Commands.h>
 #include "Enums.h"
 
 namespace flint {
@@ -11,8 +12,13 @@ enum class CommandType {
     CreateBuffer,
     BindBuffer,
     BufferData,
+    DeleteBuffer,
+    CreateShader,
+    DeleteShader,
     CreateProgram,
+    DeleteProgram,
     UseProgram,
+    Uniform1ui,
     Uniform1f,
     UniformMatrix4fv,
     EnableVertexAttribArray,
@@ -42,11 +48,19 @@ struct BufferDataCmd {
     // const void* data;
 };
 
+struct DeleteBufferCmd {
+    uint32_t bufferId;
+};
+
 struct CreateShaderCmd {
     uint32_t shaderId;
     ShaderType type;
-    uint32_t size;
+    size_t size;
     // const char* source;
+};
+
+struct DeleteShaderCmd {
+    uint32_t shaderId;
 };
 
 struct CreateProgramCmd {
@@ -55,19 +69,29 @@ struct CreateProgramCmd {
     // uint32_t* shaders;
 };
 
+struct DeleteProgramCmd {
+    uint32_t programId;
+};
+
 struct UseProgramCmd {
     uint32_t programId;
 };
 
+struct Uniform1uiCmd {
+    char location[64];
+    uint32_t value;
+};
+
 struct Uniform1fCmd {
-    int32_t location;
+    char location[64];
     float value;
 };
 
 struct UniformMatrix4fvCmd {
-    int32_t location;
+    char location[64];
     uint32_t count;
     bool transpose;
+    // float* values;
 };
 
 struct EnableVertexAttribArrayCmd {
@@ -101,5 +125,113 @@ struct DrawArraysCmd {
 };
 
 }
+
 }
 }
+
+template <>
+struct CommandPrinter<flint::rendering::gl::CommandType> {
+    static void Print(flint::rendering::CommandIterator* iter) {
+        using namespace flint::rendering::gl;
+        CommandType c;
+        while (iter->NextCommandId(&c)) {
+            switch (c) {
+                case CommandType::Clear: {
+                    auto* cmd = iter->NextCommand<ClearCmd>();
+                    debugPrint("Clear\n");
+                    break;
+                }
+                case CommandType::CreateBuffer: {
+                    auto* cmd = iter->NextCommand<CreateBufferCmd>();
+                    debugPrint("CreateBuffer\n");
+                    break;
+                }
+                case CommandType::BindBuffer: {
+                    auto* cmd = iter->NextCommand<BindBufferCmd>();
+                    debugPrint("BindBuffer\n");
+                    break;
+                }
+                case CommandType::BufferData: {
+                    auto* cmd = iter->NextCommand<BufferDataCmd>();
+                    debugPrint("BufferData\n");
+                    debugPrint("\t<%d bytes>\n", cmd->size);
+                    uint8_t* data = iter->NextData<uint8_t>(cmd->size);
+                    break;
+                }
+                case CommandType::DeleteBuffer: {
+                    auto* cmd = iter->NextCommand<DeleteBufferCmd>();
+                    debugPrint("DeleteBuffer");
+                    break;
+                }
+                case CommandType::CreateShader: {
+                    auto* cmd = iter->NextCommand<CreateShaderCmd>();
+                    debugPrint("CreateShader\n");
+                    debugPrint("\t<%d bytes>\n", cmd->size);
+                    uint8_t* data = iter->NextData<uint8_t>(cmd->size);
+                    break;
+                }
+                case CommandType::DeleteShader: {
+                    auto* cmd = iter->NextCommand<DeleteShaderCmd>();
+                    debugPrint("DeleteShader\n");
+                    break;
+                }
+                case CommandType::CreateProgram: {
+                    auto* cmd = iter->NextCommand<CreateProgramCmd>();
+                    debugPrint("CreateProgram %d\n", cmd->count);
+                    uint32_t* shaderIds = iter->NextData<uint32_t>(cmd->count);
+                    break;
+                }
+                case CommandType::DeleteProgram: {
+                    auto* cmd = iter->NextCommand<DeleteShaderCmd>();
+                    debugPrint("DeleteProgram\n");
+                    break;
+                }
+                case CommandType::UseProgram: {
+                    auto* cmd = iter->NextCommand<UseProgramCmd>();
+                    debugPrint("UseProgram\n");
+                    break;
+                }
+                case CommandType::Uniform1ui: {
+                    auto* cmd = iter->NextCommand<Uniform1uiCmd>();
+                    debugPrint("Uniform1ui\n");
+                    break;
+                }
+                case CommandType::Uniform1f: {
+                    auto* cmd = iter->NextCommand<Uniform1fCmd>();
+                    debugPrint("Uniform1f\n");
+                    break;
+                }
+                case CommandType::UniformMatrix4fv: {
+                    auto* cmd = iter->NextCommand<UniformMatrix4fvCmd>();
+                    debugPrint("UniformMatrix4fv\n");
+                    break;
+                }
+                case CommandType::EnableVertexAttribArray: {
+                    auto* cmd = iter->NextCommand<EnableVertexAttribArrayCmd>();
+                    debugPrint("EnableVertexAttribArray\n");
+                    break;
+                }
+                case CommandType::DisableVertexAttribArray: {
+                    auto* cmd = iter->NextCommand<DisableVertexAttribArrayCmd>();
+                    debugPrint("DisableVertexAttribArray\n");
+                    break;
+                }
+                case CommandType::VertexAttribPointer: {
+                    auto* cmd = iter->NextCommand<VertexAttribPointerCmd>();
+                    debugPrint("VertexAttribPointer\n");
+                    break;
+                }
+                case CommandType::DrawElements: {
+                    auto* cmd = iter->NextCommand<DrawElementsCmd>();
+                    debugPrint("DrawElements\n");
+                    break;
+                }
+                case CommandType::DrawArrays: {
+                    auto* cmd = iter->NextCommand<DrawArraysCmd>();
+                    debugPrint("DrawArrays\n");
+                    break;
+                }
+            }
+        }
+    }
+};

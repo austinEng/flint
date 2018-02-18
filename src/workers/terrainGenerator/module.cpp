@@ -20,7 +20,7 @@ static size_t serializedCommandsSize = 0;
 static bool commandsUpdated = false;
 static CommandBuffer* commandBuffer = nullptr;
 
-static void Loop() {
+static void UpdateTileset() {
     if (!commandBuffer) {
         return;
     }
@@ -28,9 +28,10 @@ static void Loop() {
     commandBuffer->Reset();
     frameState.camera.ComputeCullingVolume();
     terrainTileset->Update(frameState, commandBuffer);
+    terrainTileset->Draw(frameState, commandBuffer);
 
     delete serializedCommands;
-    commandBuffer->Allocator().Serialize(&serializedCommands, &serializedCommandsSize);
+    commandBuffer->Allocator()->Serialize(&serializedCommands, &serializedCommandsSize);
     commandsUpdated = true;
 }
 
@@ -50,6 +51,6 @@ threading::WorkerBase::WorkerResponse TerrainGenerator::Update(void* data, int s
 WORKER_MAIN(TerrainGenerator, {
     terrainTileset = new tileset::TerrainTileset();
     commandBuffer = new CommandBuffer();
-    worker->SetLoop(Loop, 30);
+    worker->SetLoop(UpdateTileset, 90);
     return 0;
 })

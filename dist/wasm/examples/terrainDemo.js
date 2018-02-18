@@ -7230,7 +7230,7 @@ function _emscripten_asm_const_iii(code, a0, a1) {
 
 STATIC_BASE = Runtime.GLOBAL_BASE;
 
-STATICTOP = STATIC_BASE + 9024;
+STATICTOP = STATIC_BASE + 8784;
 /* global initializers */  __ATINIT__.push({ func: function() { __GLOBAL__sub_I_main_cpp() } });
 
 
@@ -7239,7 +7239,7 @@ memoryInitializer = Module["wasmJSMethod"].indexOf("asmjs") >= 0 || Module["wasm
 
 
 
-var STATIC_BUMP = 9024;
+var STATIC_BUMP = 8784;
 Module["STATIC_BASE"] = STATIC_BASE;
 Module["STATIC_BUMP"] = STATIC_BUMP;
 
@@ -7519,6 +7519,8 @@ function copyTempDouble(ptr) {
       return !!__ZSt18uncaught_exceptionv.uncaught_exception;
     }
   
+  
+  
   var EXCEPTIONS={last:0,caught:[],infos:{},deAdjust:function (adjusted) {
         if (!adjusted || EXCEPTIONS.infos[adjusted]) return adjusted;
         for (var ptr in EXCEPTIONS.infos) {
@@ -7551,7 +7553,65 @@ function copyTempDouble(ptr) {
         if (!ptr) return;
         var info = EXCEPTIONS.infos[ptr];
         info.refcount = 0;
-      }};function ___cxa_begin_catch(ptr) {
+      }};
+  function ___resumeException(ptr) {
+      if (!EXCEPTIONS.last) { EXCEPTIONS.last = ptr; }
+      throw ptr + " - Exception catching is disabled, this exception cannot be caught. Compile with -s DISABLE_EXCEPTION_CATCHING=0 or DISABLE_EXCEPTION_CATCHING=2 to catch.";
+    }function ___cxa_find_matching_catch() {
+      var thrown = EXCEPTIONS.last;
+      if (!thrown) {
+        // just pass through the null ptr
+        return ((Runtime.setTempRet0(0),0)|0);
+      }
+      var info = EXCEPTIONS.infos[thrown];
+      var throwntype = info.type;
+      if (!throwntype) {
+        // just pass through the thrown ptr
+        return ((Runtime.setTempRet0(0),thrown)|0);
+      }
+      var typeArray = Array.prototype.slice.call(arguments);
+  
+      var pointer = Module['___cxa_is_pointer_type'](throwntype);
+      // can_catch receives a **, add indirection
+      if (!___cxa_find_matching_catch.buffer) ___cxa_find_matching_catch.buffer = _malloc(4);
+      SAFE_HEAP_STORE(((___cxa_find_matching_catch.buffer)|0), ((thrown)|0), 4);
+      thrown = ___cxa_find_matching_catch.buffer;
+      // The different catch blocks are denoted by different types.
+      // Due to inheritance, those types may not precisely match the
+      // type of the thrown object. Find one which matches, and
+      // return the type of the catch block which should be called.
+      for (var i = 0; i < typeArray.length; i++) {
+        if (typeArray[i] && Module['___cxa_can_catch'](typeArray[i], throwntype, thrown)) {
+          thrown = ((SAFE_HEAP_LOAD(((thrown)|0), 4, 0))|0); // undo indirection
+          info.adjusted = thrown;
+          return ((Runtime.setTempRet0(typeArray[i]),thrown)|0);
+        }
+      }
+      // Shouldn't happen unless we have bogus data in typeArray
+      // or encounter a type for which emscripten doesn't have suitable
+      // typeinfo defined. Best-efforts match just in case.
+      thrown = ((SAFE_HEAP_LOAD(((thrown)|0), 4, 0))|0); // undo indirection
+      return ((Runtime.setTempRet0(throwntype),thrown)|0);
+    }function ___cxa_throw(ptr, type, destructor) {
+      EXCEPTIONS.infos[ptr] = {
+        ptr: ptr,
+        adjusted: ptr,
+        type: type,
+        destructor: destructor,
+        refcount: 0,
+        caught: false,
+        rethrown: false
+      };
+      EXCEPTIONS.last = ptr;
+      if (!("uncaught_exception" in __ZSt18uncaught_exceptionv)) {
+        __ZSt18uncaught_exceptionv.uncaught_exception = 1;
+      } else {
+        __ZSt18uncaught_exceptionv.uncaught_exception++;
+      }
+      throw ptr + " - Exception catching is disabled, this exception cannot be caught. Compile with -s DISABLE_EXCEPTION_CATCHING=0 or DISABLE_EXCEPTION_CATCHING=2 to catch.";
+    }
+
+  function ___cxa_begin_catch(ptr) {
       var info = EXCEPTIONS.infos[ptr];
       if (info && !info.caught) {
         info.caught = true;
@@ -9108,6 +9168,10 @@ function copyTempDouble(ptr) {
       GLctx.shaderSource(GL.shaders[shader], source);
     }
 
+  function _glUniform1ui(location, v0) {
+      GLctx.uniform1ui(GL.uniforms[location], v0);
+    }
+
   function _glGetProgramInfoLog(program, maxLength, length, infoLog) {
       var log = GLctx.getProgramInfoLog(GL.programs[program]);
       if (log === null) log = '(unknown error)';
@@ -9270,47 +9334,7 @@ function copyTempDouble(ptr) {
       }
     }
 
-  
-  
-  function ___resumeException(ptr) {
-      if (!EXCEPTIONS.last) { EXCEPTIONS.last = ptr; }
-      throw ptr + " - Exception catching is disabled, this exception cannot be caught. Compile with -s DISABLE_EXCEPTION_CATCHING=0 or DISABLE_EXCEPTION_CATCHING=2 to catch.";
-    }function ___cxa_find_matching_catch() {
-      var thrown = EXCEPTIONS.last;
-      if (!thrown) {
-        // just pass through the null ptr
-        return ((Runtime.setTempRet0(0),0)|0);
-      }
-      var info = EXCEPTIONS.infos[thrown];
-      var throwntype = info.type;
-      if (!throwntype) {
-        // just pass through the thrown ptr
-        return ((Runtime.setTempRet0(0),thrown)|0);
-      }
-      var typeArray = Array.prototype.slice.call(arguments);
-  
-      var pointer = Module['___cxa_is_pointer_type'](throwntype);
-      // can_catch receives a **, add indirection
-      if (!___cxa_find_matching_catch.buffer) ___cxa_find_matching_catch.buffer = _malloc(4);
-      SAFE_HEAP_STORE(((___cxa_find_matching_catch.buffer)|0), ((thrown)|0), 4);
-      thrown = ___cxa_find_matching_catch.buffer;
-      // The different catch blocks are denoted by different types.
-      // Due to inheritance, those types may not precisely match the
-      // type of the thrown object. Find one which matches, and
-      // return the type of the catch block which should be called.
-      for (var i = 0; i < typeArray.length; i++) {
-        if (typeArray[i] && Module['___cxa_can_catch'](typeArray[i], throwntype, thrown)) {
-          thrown = ((SAFE_HEAP_LOAD(((thrown)|0), 4, 0))|0); // undo indirection
-          info.adjusted = thrown;
-          return ((Runtime.setTempRet0(typeArray[i]),thrown)|0);
-        }
-      }
-      // Shouldn't happen unless we have bogus data in typeArray
-      // or encounter a type for which emscripten doesn't have suitable
-      // typeinfo defined. Best-efforts match just in case.
-      thrown = ((SAFE_HEAP_LOAD(((thrown)|0), 4, 0))|0); // undo indirection
-      return ((Runtime.setTempRet0(throwntype),thrown)|0);
-    }function ___gxx_personality_v0() {
+  function ___gxx_personality_v0() {
     }
 
   function _glfwInit() {
@@ -9424,146 +9448,6 @@ function copyTempDouble(ptr) {
 
   function _abort() {
       Module['abort']();
-    }
-
-  function _glfwMakeContextCurrent(winid) {}
-
-  function _emscripten_create_worker(url) {
-      url = Pointer_stringify(url);
-      var id = Browser.workers.length;
-      var info = {
-        worker: new Worker(url),
-        callbacks: [],
-        awaited: 0,
-        buffer: 0,
-        bufferSize: 0
-      };
-      info.worker.onmessage = function info_worker_onmessage(msg) {
-        if (ABORT) return;
-        var info = Browser.workers[id];
-        if (!info) return; // worker was destroyed meanwhile
-        var callbackId = msg.data['callbackId'];
-        var callbackInfo = info.callbacks[callbackId];
-        if (!callbackInfo) return; // no callback or callback removed meanwhile
-        // Don't trash our callback state if we expect additional calls.
-        if (msg.data['finalResponse']) {
-          info.awaited--;
-          info.callbacks[callbackId] = null; // TODO: reuse callbackIds, compress this
-        }
-        var data = msg.data['data'];
-        if (data) {
-          if (!data.byteLength) data = new Uint8Array(data);
-          if (!info.buffer || info.bufferSize < data.length) {
-            if (info.buffer) _free(info.buffer);
-            info.bufferSize = data.length;
-            info.buffer = _malloc(data.length);
-          }
-          HEAPU8.set(data, info.buffer);
-          callbackInfo.func(info.buffer, data.length, callbackInfo.arg);
-        } else {
-          callbackInfo.func(0, 0, callbackInfo.arg);
-        }
-      };
-      Browser.workers.push(info);
-      return id;
-    }
-
-  function _emscripten_call_worker(id, funcName, data, size, callback, arg) {
-      Module['noExitRuntime'] = true; // should we only do this if there is a callback?
-  
-      funcName = Pointer_stringify(funcName);
-      var info = Browser.workers[id];
-      var callbackId = -1;
-      if (callback) {
-        callbackId = info.callbacks.length;
-        info.callbacks.push({
-          func: Runtime.getFuncWrapper(callback, 'viii'),
-          arg: arg
-        });
-        info.awaited++;
-      }
-      var transferObject = {
-        'funcName': funcName,
-        'callbackId': callbackId,
-        'data': data ? new Uint8Array(HEAPU8.subarray((data),(data + size))) : 0
-      };
-      if (data) {
-        info.worker.postMessage(transferObject, [transferObject.data.buffer]);
-      } else {
-        info.worker.postMessage(transferObject);
-      }
-    }
-
-  function _emscripten_force_exit(status) {
-      Module['noExitRuntime'] = false;
-      Module['exit'](status);
-    }
-
-  function _pthread_getspecific(key) {
-      return PTHREAD_SPECIFIC[key] || 0;
-    }
-
-  function _glEnable(x0) { GLctx['enable'](x0) }
-
-  var _emscripten_asm_const_int=true;
-
-  function _glGenBuffers(n, buffers) {
-      for (var i = 0; i < n; i++) {
-        var buffer = GLctx.createBuffer();
-        if (!buffer) {
-          GL.recordError(0x0502 /* GL_INVALID_OPERATION */);
-          while(i < n) SAFE_HEAP_STORE((((buffers)+(i++*4))|0), ((0)|0), 4);
-          return;
-        }
-        var id = GL.getNewId(GL.buffers);
-        buffer.name = id;
-        GL.buffers[id] = buffer;
-        SAFE_HEAP_STORE((((buffers)+(i*4))|0), ((id)|0), 4);
-      }
-    }
-
-  function _glDeleteProgram(id) {
-      if (!id) return;
-      var program = GL.programs[id];
-      if (!program) { // glDeleteProgram actually signals an error when deleting a nonexisting object, unlike some other GL delete functions.
-        GL.recordError(0x0501 /* GL_INVALID_VALUE */);
-        return;
-      }
-      GLctx.deleteProgram(program);
-      program.name = 0;
-      GL.programs[id] = null;
-      GL.programInfos[id] = null;
-    }
-
-  function __ZN16TerrainGenerator6UpdateEPviS0_() {
-  Module['printErr']('missing function: _ZN16TerrainGenerator6UpdateEPviS0_'); abort(-1);
-  }
-
-  function _pthread_setspecific(key, value) {
-      if (!(key in PTHREAD_SPECIFIC)) {
-        return ERRNO_CODES.EINVAL;
-      }
-      PTHREAD_SPECIFIC[key] = value;
-      return 0;
-    }
-
-  function _glfwWindowHint(target, hint) {
-      GLFW.hints[target] = hint;
-    }
-
-  function _glAttachShader(program, shader) {
-      GLctx.attachShader(GL.programs[program],
-                              GL.shaders[shader]);
-    }
-
-  function _glfwPollEvents() {}
-
-  function _glCreateProgram() {
-      var id = GL.getNewId(GL.programs);
-      var program = GLctx.createProgram();
-      program.name = id;
-      GL.programs[id] = program;
-      return id;
     }
 
   
@@ -10484,17 +10368,174 @@ function copyTempDouble(ptr) {
           useCapture: useCapture
         };
         JSEvents.registerOrRemoveHandler(eventHandler);
-      }};function _emscripten_set_mousemove_callback(target, userData, useCapture, callbackfunc) {
+      }};function _emscripten_set_wheel_callback(target, userData, useCapture, callbackfunc) {
+      target = JSEvents.findEventTarget(target);
+      if (typeof target.onwheel !== 'undefined') {
+        JSEvents.registerWheelEventCallback(target, userData, useCapture, callbackfunc, 9, "wheel");
+        return 0;
+      } else if (typeof target.onmousewheel !== 'undefined') {
+        JSEvents.registerWheelEventCallback(target, userData, useCapture, callbackfunc, 9, "mousewheel");
+        return 0;
+      } else {
+        return -1;
+      }
+    }
+
+  function _glfwMakeContextCurrent(winid) {}
+
+  function _emscripten_create_worker(url) {
+      url = Pointer_stringify(url);
+      var id = Browser.workers.length;
+      var info = {
+        worker: new Worker(url),
+        callbacks: [],
+        awaited: 0,
+        buffer: 0,
+        bufferSize: 0
+      };
+      info.worker.onmessage = function info_worker_onmessage(msg) {
+        if (ABORT) return;
+        var info = Browser.workers[id];
+        if (!info) return; // worker was destroyed meanwhile
+        var callbackId = msg.data['callbackId'];
+        var callbackInfo = info.callbacks[callbackId];
+        if (!callbackInfo) return; // no callback or callback removed meanwhile
+        // Don't trash our callback state if we expect additional calls.
+        if (msg.data['finalResponse']) {
+          info.awaited--;
+          info.callbacks[callbackId] = null; // TODO: reuse callbackIds, compress this
+        }
+        var data = msg.data['data'];
+        if (data) {
+          if (!data.byteLength) data = new Uint8Array(data);
+          if (!info.buffer || info.bufferSize < data.length) {
+            if (info.buffer) _free(info.buffer);
+            info.bufferSize = data.length;
+            info.buffer = _malloc(data.length);
+          }
+          HEAPU8.set(data, info.buffer);
+          callbackInfo.func(info.buffer, data.length, callbackInfo.arg);
+        } else {
+          callbackInfo.func(0, 0, callbackInfo.arg);
+        }
+      };
+      Browser.workers.push(info);
+      return id;
+    }
+
+  function _emscripten_call_worker(id, funcName, data, size, callback, arg) {
+      Module['noExitRuntime'] = true; // should we only do this if there is a callback?
+  
+      funcName = Pointer_stringify(funcName);
+      var info = Browser.workers[id];
+      var callbackId = -1;
+      if (callback) {
+        callbackId = info.callbacks.length;
+        info.callbacks.push({
+          func: Runtime.getFuncWrapper(callback, 'viii'),
+          arg: arg
+        });
+        info.awaited++;
+      }
+      var transferObject = {
+        'funcName': funcName,
+        'callbackId': callbackId,
+        'data': data ? new Uint8Array(HEAPU8.subarray((data),(data + size))) : 0
+      };
+      if (data) {
+        info.worker.postMessage(transferObject, [transferObject.data.buffer]);
+      } else {
+        info.worker.postMessage(transferObject);
+      }
+    }
+
+  function _emscripten_force_exit(status) {
+      Module['noExitRuntime'] = false;
+      Module['exit'](status);
+    }
+
+  function _pthread_getspecific(key) {
+      return PTHREAD_SPECIFIC[key] || 0;
+    }
+
+  function _glEnable(x0) { GLctx['enable'](x0) }
+
+  var _emscripten_asm_const_int=true;
+
+  function _glGenBuffers(n, buffers) {
+      for (var i = 0; i < n; i++) {
+        var buffer = GLctx.createBuffer();
+        if (!buffer) {
+          GL.recordError(0x0502 /* GL_INVALID_OPERATION */);
+          while(i < n) SAFE_HEAP_STORE((((buffers)+(i++*4))|0), ((0)|0), 4);
+          return;
+        }
+        var id = GL.getNewId(GL.buffers);
+        buffer.name = id;
+        GL.buffers[id] = buffer;
+        SAFE_HEAP_STORE((((buffers)+(i*4))|0), ((id)|0), 4);
+      }
+    }
+
+  function _glDeleteProgram(id) {
+      if (!id) return;
+      var program = GL.programs[id];
+      if (!program) { // glDeleteProgram actually signals an error when deleting a nonexisting object, unlike some other GL delete functions.
+        GL.recordError(0x0501 /* GL_INVALID_VALUE */);
+        return;
+      }
+      GLctx.deleteProgram(program);
+      program.name = 0;
+      GL.programs[id] = null;
+      GL.programInfos[id] = null;
+    }
+
+  function __ZN16TerrainGenerator6UpdateEPviS0_() {
+  Module['printErr']('missing function: _ZN16TerrainGenerator6UpdateEPviS0_'); abort(-1);
+  }
+
+  function _pthread_setspecific(key, value) {
+      if (!(key in PTHREAD_SPECIFIC)) {
+        return ERRNO_CODES.EINVAL;
+      }
+      PTHREAD_SPECIFIC[key] = value;
+      return 0;
+    }
+
+  function _glfwWindowHint(target, hint) {
+      GLFW.hints[target] = hint;
+    }
+
+  function _glAttachShader(program, shader) {
+      GLctx.attachShader(GL.programs[program],
+                              GL.shaders[shader]);
+    }
+
+  function ___cxa_allocate_exception(size) {
+      return _malloc(size);
+    }
+
+  function _emscripten_set_mousedown_callback(target, userData, useCapture, callbackfunc) {
+      JSEvents.registerMouseEventCallback(target, userData, useCapture, callbackfunc, 5, "mousedown");
+      return 0;
+    }
+
+  function _glCreateProgram() {
+      var id = GL.getNewId(GL.programs);
+      var program = GLctx.createProgram();
+      program.name = id;
+      GL.programs[id] = program;
+      return id;
+    }
+
+  function _emscripten_set_mousemove_callback(target, userData, useCapture, callbackfunc) {
       JSEvents.registerMouseEventCallback(target, userData, useCapture, callbackfunc, 8, "mousemove");
       return 0;
     }
 
   function _glViewport(x0, x1, x2, x3) { GLctx['viewport'](x0, x1, x2, x3) }
 
-  function _emscripten_set_mousedown_callback(target, userData, useCapture, callbackfunc) {
-      JSEvents.registerMouseEventCallback(target, userData, useCapture, callbackfunc, 5, "mousedown");
-      return 0;
-    }
+  function _glfwPollEvents() {}
 
   function _glfwDestroyWindow(winid) {
       return GLFW.destroyWindow(winid);
@@ -10572,16 +10613,21 @@ function copyTempDouble(ptr) {
   }
   }
 
-  function _emscripten_set_wheel_callback(target, userData, useCapture, callbackfunc) {
-      target = JSEvents.findEventTarget(target);
-      if (typeof target.onwheel !== 'undefined') {
-        JSEvents.registerWheelEventCallback(target, userData, useCapture, callbackfunc, 9, "wheel");
-        return 0;
-      } else if (typeof target.onmousewheel !== 'undefined') {
-        JSEvents.registerWheelEventCallback(target, userData, useCapture, callbackfunc, 9, "mousewheel");
-        return 0;
-      } else {
-        return -1;
+  function _glDeleteBuffers(n, buffers) {
+      for (var i = 0; i < n; i++) {
+        var id = ((SAFE_HEAP_LOAD((((buffers)+(i*4))|0), 4, 0))|0);
+        var buffer = GL.buffers[id];
+  
+        // From spec: "glDeleteBuffers silently ignores 0's and names that do not
+        // correspond to existing buffer objects."
+        if (!buffer) continue;
+  
+        GLctx.deleteBuffer(buffer);
+        buffer.name = 0;
+        GL.buffers[id] = null;
+  
+        if (id == GL.currArrayBuffer) GL.currArrayBuffer = 0;
+        if (id == GL.currElementArrayBuffer) GL.currElementArrayBuffer = 0;
       }
     }
 
@@ -10705,9 +10751,9 @@ assert(DYNAMIC_BASE < TOTAL_MEMORY, "TOTAL_MEMORY not big enough for stack");
 
 var debug_table_iiii = ["0", "___stdio_write", "___stdio_seek", "_sn_write", "__ZNK10__cxxabiv117__class_type_info9can_catchEPKNS_16__shim_type_infoERPv", "__ZN5flint8viewport14CameraControlsIfE19mouseButtonCallbackEiPK20EmscriptenMouseEventPv", "__ZN5flint8viewport14CameraControlsIfE17cursorPosCallbackEiPK20EmscriptenMouseEventPv", "__ZN5flint8viewport14CameraControlsIfE14scrollCallbackEiPK20EmscriptenWheelEventPv"];
 var debug_table_viiiii = ["0", "__ZNK10__cxxabiv117__class_type_info16search_below_dstEPNS_19__dynamic_cast_infoEPKvib", "__ZNK10__cxxabiv120__si_class_type_info16search_below_dstEPNS_19__dynamic_cast_infoEPKvib", "0"];
-var debug_table_vi = ["0", "__ZN10__cxxabiv116__shim_type_infoD2Ev", "__ZN10__cxxabiv117__class_type_infoD0Ev", "__ZNK10__cxxabiv116__shim_type_info5noop1Ev", "__ZNK10__cxxabiv116__shim_type_info5noop2Ev", "__ZN10__cxxabiv120__si_class_type_infoD0Ev", "__ZL5framePv", "__ZN10__cxxabiv112_GLOBAL__N_19destruct_EPv"];
+var debug_table_vi = ["0", "__ZN10__cxxabiv116__shim_type_infoD2Ev", "__ZN10__cxxabiv117__class_type_infoD0Ev", "__ZNK10__cxxabiv116__shim_type_info5noop1Ev", "__ZNK10__cxxabiv116__shim_type_info5noop2Ev", "__ZN10__cxxabiv120__si_class_type_infoD0Ev", "__ZNSt11logic_errorD2Ev", "__ZNSt11logic_errorD0Ev", "__ZNSt12out_of_rangeD0Ev", "__ZL5framePv", "__ZN10__cxxabiv112_GLOBAL__N_19destruct_EPv", "0", "0", "0", "0", "0"];
 var debug_table_vii = ["0", "__ZL10printErroriPKc"];
-var debug_table_ii = ["0", "___stdio_close"];
+var debug_table_ii = ["0", "___stdio_close", "__ZNKSt11logic_error4whatEv", "0"];
 var debug_table_viii = ["0", "__ZL14resizeCallbackP10GLFWwindowii", "__ZZL5framePvEN3__08__invokeES_iS_", "__ZZN9threading6WorkerI16TerrainGeneratorE4CallIXadL_ZNS1_6UpdateEPviS4_EEEEvS4_iS4_PFvS4_iS4_EENUlPciS4_E_8__invokeES7_iS4_"];
 var debug_table_v = ["0", "__ZL25default_terminate_handlerv", "__ZN10__cxxabiv112_GLOBAL__N_110construct_Ev", "0"];
 var debug_table_viiiiii = ["0", "__ZNK10__cxxabiv117__class_type_info16search_above_dstEPNS_19__dynamic_cast_infoEPKvS4_ib", "__ZNK10__cxxabiv120__si_class_type_info16search_above_dstEPNS_19__dynamic_cast_infoEPKvS4_ib", "0"];
@@ -10730,9 +10776,9 @@ function nullFunc_viiiiii(x) { Module["printErr"]("Invalid function pointer '" +
 
 function nullFunc_viiii(x) { Module["printErr"]("Invalid function pointer '" + x + "' called with signature 'viiii'. Perhaps this is an invalid value (e.g. caused by calling a virtual method on a NULL pointer)? Or calling a function with an incorrect type, which will fail? (it is worth building your source files with -Werror (warnings are errors), as warnings can indicate undefined behavior which can cause this)");  Module["printErr"]("This pointer might make sense in another type signature: viii: " + debug_table_viii[x] + "  vii: " + debug_table_vii[x] + "  vi: " + debug_table_vi[x] + "  viiiii: " + debug_table_viiiii[x] + "  viiiiii: " + debug_table_viiiiii[x] + "  v: " + debug_table_v[x] + "  iiii: " + debug_table_iiii[x] + "  ii: " + debug_table_ii[x] + "  "); abort(x) }
 
-Module['wasmTableSize'] = 40;
+Module['wasmTableSize'] = 50;
 
-Module['wasmMaxTableSize'] = 40;
+Module['wasmMaxTableSize'] = 50;
 
 function invoke_iiii(index,a1,a2,a3) {
   try {
@@ -10817,7 +10863,7 @@ function invoke_viiii(index,a1,a2,a3,a4) {
 
 Module.asmGlobalArg = { "Math": Math, "Int8Array": Int8Array, "Int16Array": Int16Array, "Int32Array": Int32Array, "Uint8Array": Uint8Array, "Uint16Array": Uint16Array, "Uint32Array": Uint32Array, "Float32Array": Float32Array, "Float64Array": Float64Array, "NaN": NaN, "Infinity": Infinity, "byteLength": byteLength };
 
-Module.asmLibraryArg = { "abort": abort, "assert": assert, "enlargeMemory": enlargeMemory, "getTotalMemory": getTotalMemory, "abortOnCannotGrowMemory": abortOnCannotGrowMemory, "abortStackOverflow": abortStackOverflow, "segfault": segfault, "alignfault": alignfault, "ftfault": ftfault, "nullFunc_iiii": nullFunc_iiii, "nullFunc_viiiii": nullFunc_viiiii, "nullFunc_vi": nullFunc_vi, "nullFunc_vii": nullFunc_vii, "nullFunc_ii": nullFunc_ii, "nullFunc_viii": nullFunc_viii, "nullFunc_v": nullFunc_v, "nullFunc_viiiiii": nullFunc_viiiiii, "nullFunc_viiii": nullFunc_viiii, "invoke_iiii": invoke_iiii, "invoke_viiiii": invoke_viiiii, "invoke_vi": invoke_vi, "invoke_vii": invoke_vii, "invoke_ii": invoke_ii, "invoke_viii": invoke_viii, "invoke_v": invoke_v, "invoke_viiiiii": invoke_viiiiii, "invoke_viiii": invoke_viiii, "_glUseProgram": _glUseProgram, "_glDeleteShader": _glDeleteShader, "_glVertexAttribPointer": _glVertexAttribPointer, "_glfwCreateWindow": _glfwCreateWindow, "_glGetProgramiv": _glGetProgramiv, "_pthread_key_create": _pthread_key_create, "_glfwPollEvents": _glfwPollEvents, "_abort": _abort, "_glUniformMatrix4fv": _glUniformMatrix4fv, "_glGetProgramInfoLog": _glGetProgramInfoLog, "_emscripten_set_main_loop_timing": _emscripten_set_main_loop_timing, "_emscripten_call_worker": _emscripten_call_worker, "___gxx_personality_v0": ___gxx_personality_v0, "_emscripten_set_mousemove_callback": _emscripten_set_mousemove_callback, "___assert_fail": ___assert_fail, "_glDeleteProgram": _glDeleteProgram, "__ZSt18uncaught_exceptionv": __ZSt18uncaught_exceptionv, "_glfwMakeContextCurrent": _glfwMakeContextCurrent, "_glBindBuffer": _glBindBuffer, "_glGetShaderInfoLog": _glGetShaderInfoLog, "_glViewport": _glViewport, "_pthread_setspecific": _pthread_setspecific, "___setErrNo": ___setErrNo, "_glClearColor": _glClearColor, "_glGetUniformLocation": _glGetUniformLocation, "_glDisableVertexAttribArray": _glDisableVertexAttribArray, "_glClear": _glClear, "_emscripten_memcpy_big": _emscripten_memcpy_big, "_emscripten_set_main_loop_arg": _emscripten_set_main_loop_arg, "___cxa_find_matching_catch": ___cxa_find_matching_catch, "___cxa_begin_catch": ___cxa_begin_catch, "_pthread_getspecific": _pthread_getspecific, "_emscripten_set_mousedown_callback": _emscripten_set_mousedown_callback, "__ZN16TerrainGenerator6UpdateEPviS0_": __ZN16TerrainGenerator6UpdateEPviS0_, "_emscripten_force_exit": _emscripten_force_exit, "_glShaderSource": _glShaderSource, "_pthread_once": _pthread_once, "_emscripten_worker_respond": _emscripten_worker_respond, "_emscripten_set_wheel_callback": _emscripten_set_wheel_callback, "_glEnable": _glEnable, "___resumeException": ___resumeException, "_glfwInit": _glfwInit, "_glDrawElements": _glDrawElements, "_glfwSwapBuffers": _glfwSwapBuffers, "_emscripten_set_main_loop": _emscripten_set_main_loop, "_emscripten_asm_const_iii": _emscripten_asm_const_iii, "_glfwWindowHint": _glfwWindowHint, "_glGenBuffers": _glGenBuffers, "_glAttachShader": _glAttachShader, "_glfwTerminate": _glfwTerminate, "_llvm_sqrt_f32": _llvm_sqrt_f32, "_emscripten_create_worker": _emscripten_create_worker, "_emscripten_asm_const_i": _emscripten_asm_const_i, "_glCompileShader": _glCompileShader, "_glLinkProgram": _glLinkProgram, "_glCreateProgram": _glCreateProgram, "___syscall6": ___syscall6, "_glfwDestroyWindow": _glfwDestroyWindow, "_emscripten_get_now": _emscripten_get_now, "_glBufferData": _glBufferData, "_glGetShaderiv": _glGetShaderiv, "___syscall140": ___syscall140, "_glfwSetErrorCallback": _glfwSetErrorCallback, "_glCreateShader": _glCreateShader, "_glEnableVertexAttribArray": _glEnableVertexAttribArray, "___syscall146": ___syscall146, "_glfwSetWindowSizeCallback": _glfwSetWindowSizeCallback, "DYNAMICTOP_PTR": DYNAMICTOP_PTR, "tempDoublePtr": tempDoublePtr, "ABORT": ABORT, "STACKTOP": STACKTOP, "STACK_MAX": STACK_MAX };
+Module.asmLibraryArg = { "abort": abort, "assert": assert, "enlargeMemory": enlargeMemory, "getTotalMemory": getTotalMemory, "abortOnCannotGrowMemory": abortOnCannotGrowMemory, "abortStackOverflow": abortStackOverflow, "segfault": segfault, "alignfault": alignfault, "ftfault": ftfault, "nullFunc_iiii": nullFunc_iiii, "nullFunc_viiiii": nullFunc_viiiii, "nullFunc_vi": nullFunc_vi, "nullFunc_vii": nullFunc_vii, "nullFunc_ii": nullFunc_ii, "nullFunc_viii": nullFunc_viii, "nullFunc_v": nullFunc_v, "nullFunc_viiiiii": nullFunc_viiiiii, "nullFunc_viiii": nullFunc_viiii, "invoke_iiii": invoke_iiii, "invoke_viiiii": invoke_viiiii, "invoke_vi": invoke_vi, "invoke_vii": invoke_vii, "invoke_ii": invoke_ii, "invoke_viii": invoke_viii, "invoke_v": invoke_v, "invoke_viiiiii": invoke_viiiiii, "invoke_viiii": invoke_viiii, "_glUseProgram": _glUseProgram, "_glDeleteShader": _glDeleteShader, "_glVertexAttribPointer": _glVertexAttribPointer, "_glfwCreateWindow": _glfwCreateWindow, "_glGetProgramiv": _glGetProgramiv, "_pthread_key_create": _pthread_key_create, "_glfwPollEvents": _glfwPollEvents, "_abort": _abort, "_glUniformMatrix4fv": _glUniformMatrix4fv, "_glGetProgramInfoLog": _glGetProgramInfoLog, "_emscripten_set_main_loop_timing": _emscripten_set_main_loop_timing, "_emscripten_call_worker": _emscripten_call_worker, "___gxx_personality_v0": ___gxx_personality_v0, "_emscripten_set_mousemove_callback": _emscripten_set_mousemove_callback, "___assert_fail": ___assert_fail, "_glDeleteProgram": _glDeleteProgram, "___cxa_allocate_exception": ___cxa_allocate_exception, "___cxa_find_matching_catch": ___cxa_find_matching_catch, "_glfwMakeContextCurrent": _glfwMakeContextCurrent, "_glBindBuffer": _glBindBuffer, "_glGetShaderInfoLog": _glGetShaderInfoLog, "_glViewport": _glViewport, "_pthread_setspecific": _pthread_setspecific, "___setErrNo": ___setErrNo, "_glClearColor": _glClearColor, "_glGetUniformLocation": _glGetUniformLocation, "_glDisableVertexAttribArray": _glDisableVertexAttribArray, "_glClear": _glClear, "_emscripten_memcpy_big": _emscripten_memcpy_big, "___resumeException": ___resumeException, "__ZSt18uncaught_exceptionv": __ZSt18uncaught_exceptionv, "___cxa_begin_catch": ___cxa_begin_catch, "_pthread_getspecific": _pthread_getspecific, "_glUniform1ui": _glUniform1ui, "_emscripten_set_mousedown_callback": _emscripten_set_mousedown_callback, "__ZN16TerrainGenerator6UpdateEPviS0_": __ZN16TerrainGenerator6UpdateEPviS0_, "_emscripten_force_exit": _emscripten_force_exit, "_glShaderSource": _glShaderSource, "_pthread_once": _pthread_once, "_emscripten_worker_respond": _emscripten_worker_respond, "_emscripten_set_wheel_callback": _emscripten_set_wheel_callback, "_glEnable": _glEnable, "_emscripten_set_main_loop_arg": _emscripten_set_main_loop_arg, "_glfwInit": _glfwInit, "_glDrawElements": _glDrawElements, "_glfwSwapBuffers": _glfwSwapBuffers, "_emscripten_set_main_loop": _emscripten_set_main_loop, "_emscripten_asm_const_iii": _emscripten_asm_const_iii, "_glfwWindowHint": _glfwWindowHint, "_glGenBuffers": _glGenBuffers, "_glAttachShader": _glAttachShader, "_glfwTerminate": _glfwTerminate, "_llvm_sqrt_f32": _llvm_sqrt_f32, "_emscripten_create_worker": _emscripten_create_worker, "_emscripten_asm_const_i": _emscripten_asm_const_i, "_glCompileShader": _glCompileShader, "___cxa_throw": ___cxa_throw, "_glLinkProgram": _glLinkProgram, "_glCreateProgram": _glCreateProgram, "___syscall6": ___syscall6, "_glfwDestroyWindow": _glfwDestroyWindow, "_emscripten_get_now": _emscripten_get_now, "_glDeleteBuffers": _glDeleteBuffers, "_glBufferData": _glBufferData, "_glGetShaderiv": _glGetShaderiv, "___syscall140": ___syscall140, "_glfwSetErrorCallback": _glfwSetErrorCallback, "_glCreateShader": _glCreateShader, "_glEnableVertexAttribArray": _glEnableVertexAttribArray, "___syscall146": ___syscall146, "_glfwSetWindowSizeCallback": _glfwSetWindowSizeCallback, "DYNAMICTOP_PTR": DYNAMICTOP_PTR, "tempDoublePtr": tempDoublePtr, "ABORT": ABORT, "STACKTOP": STACKTOP, "STACK_MAX": STACK_MAX };
 // EMSCRIPTEN_START_ASM
 var asm =Module["asm"]// EMSCRIPTEN_END_ASM
 (Module.asmGlobalArg, Module.asmLibraryArg, buffer);

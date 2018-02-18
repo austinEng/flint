@@ -13,21 +13,23 @@ class TilesetBase {
 protected:
     Eigen::Matrix<float, 4, 4> transform;
 
-    virtual const std::vector<TileBase*>& SelectTiles(const flint::core::FrameState &frameState) = 0;
-    virtual void UpdateTiles(const flint::core::FrameState &frameState,
-                             flint::rendering::gl::CommandBuffer* commands) = 0;
-    virtual void LoadTiles() = 0;
-    virtual void UnloadTiles() = 0;
+    virtual void SelectTiles(const flint::core::FrameState &frameState) = 0;
+    virtual void UpdateTiles(const flint::core::FrameState &frameState, flint::rendering::gl::CommandBuffer* commands) = 0;
+    virtual void DrawTiles(const flint::core::FrameState &frameState, flint::rendering::gl::CommandBuffer* commands) = 0;
+    virtual void LoadTiles(flint::rendering::gl::CommandBuffer* commands) = 0;
+    virtual void UnloadTiles(flint::rendering::gl::CommandBuffer* commands) = 0;
 
-    const std::vector<TileBase*>* selectedTiles = nullptr;
+    std::vector<TileBase*> selectedTiles;
+    std::vector<TileBase*> loadQueue;
+    std::vector<TileBase*> unloadQueue;
 
 public:
     TilesetBase(const Eigen::Matrix<float, 4, 4> &transform) : transform(transform) {
     }
 
     const Eigen::Matrix<float, 4, 4>& Transform() const;
-    void Update(const flint::core::FrameState &frameState,
-                flint::rendering::gl::CommandBuffer* commands);
+    void Update(const flint::core::FrameState &frameState, flint::rendering::gl::CommandBuffer* commands);
+    void Draw(const flint::core::FrameState &frameState, flint::rendering::gl::CommandBuffer* commands);
     void Commit();
 
     virtual ~TilesetBase() {
@@ -38,21 +40,24 @@ public:
 template <typename Derived>
 class Tileset : public TilesetBase {
 protected:
-    virtual const std::vector<TileBase*>& SelectTiles(const flint::core::FrameState &frameState) override {
-        return static_cast<Derived*>(this)->SelectTilesImpl(frameState);
+    virtual void SelectTiles(const flint::core::FrameState &frameState) override {
+        static_cast<Derived*>(this)->SelectTilesImpl(frameState);
     }
 
-    virtual void UpdateTiles(const flint::core::FrameState &frameState,
-                             flint::rendering::gl::CommandBuffer* commands) override {
+    virtual void UpdateTiles(const flint::core::FrameState &frameState, flint::rendering::gl::CommandBuffer* commands) override {
         static_cast<Derived*>(this)->UpdateTilesImpl(frameState, commands);
     }
 
-    virtual void LoadTiles() override {
-        static_cast<Derived*>(this)->LoadTilesImpl();
+    virtual void DrawTiles(const flint::core::FrameState &frameState, flint::rendering::gl::CommandBuffer* commands) override {
+        static_cast<Derived*>(this)->DrawTilesImpl(frameState, commands);
     }
 
-    virtual void UnloadTiles() override {
-        static_cast<Derived*>(this)->UnloadTilesImpl();
+    virtual void LoadTiles(flint::rendering::gl::CommandBuffer* commands) override {
+        static_cast<Derived*>(this)->LoadTilesImpl(commands);
+    }
+
+    virtual void UnloadTiles(flint::rendering::gl::CommandBuffer* commands) override {
+        static_cast<Derived*>(this)->UnloadTilesImpl(commands);
     }
 
 public:

@@ -2,16 +2,52 @@
 #include <Eigen/Dense>
 #include <flint/debug/Print.h>
 #include "TerrainTileset.h"
+#include "TerrainTileContent.h"
 
 namespace flint {
 namespace tileset {
 
-void TerrainTileset::Touch(TerrainTile* tile) {
+void TerrainTileset::LRUCache::Append(TerrainTile::LRUNode* node) {
+    tail->next = node;
+    node->prev = tail;
+    tail = node;
+}
+
+void TerrainTileset::LRUCache::Splice(TerrainTile::LRUNode* n1, TerrainTile::LRUNode* n2) {
+    if (n1 == n2) {
+        return;
+    }
+
+    auto* n1_prev = n1->prev;
+    auto* n2_prev = n2->prev;
+    auto* n2_next = n2->next;
+
+    if (n2_prev) n2_prev->next = n2_next;
+    if (n2_next) n2_next->prev = n2_prev;
+
+    if (n1_prev) n1_prev->next = n2;
+    n1->prev = n2;
+    n2->prev = n1_prev;
+    n2->next = n1;
+
+    if (n1 == head) head = n2;
+    if (n2 == tail) tail = n2_prev;
+}
+
+TerrainTileset::TerrainTileset() 
+  : lruSentinel({ nullptr, nullptr, nullptr }),
+    lruCache({ &lruSentinel, &lruSentinel }) {
 
 }
 
-const std::vector<TileBase*>& TerrainTileset::SelectTilesImpl(const flint::core::FrameState &frameState) {
+void TerrainTileset::Touch(TerrainTile* tile) {
+    lruCache.Splice(&lruSentinel, &tile->lruNode);
+}
+
+void TerrainTileset::SelectTilesImpl(const flint::core::FrameState &frameState) {
     auto cameraIndex = (frameState.camera.GetPosition() / TERRAIN_ROOT_SIZE).template cast<int>();
+
+    lruCache.Splice(lruCache.head, &lruSentinel);
 
     std::vector<TerrainTile*> stack;
     stack.reserve(27);
@@ -51,13 +87,11 @@ const std::vector<TileBase*>& TerrainTileset::SelectTilesImpl(const flint::core:
             if (tile->HasRendererableContent()) {
                 if (tile->ContentReady()) {
                     if (tile->screenSpaceError > maximumScreenSpaceError) {
-                        TerrainTile* children;
-                        uint32_t childrenCount;
                         bool allVisibleRenderableChildrenReady = true;
                         bool hasRenderableChildren = false;
-                        tile->GetChildren(&children, &childrenCount);
-                        for (uint32_t i = 0; i < childrenCount; ++i) {
-                            TerrainTile* child = children + i;
+                        
+                        for (TerrainTile* child : tile->IterChildren()) {
+                            child->Update(frameState);
                             stack.push_back(child);
                             if (child->HasRendererableContent()) {
                                 hasRenderableChildren = true;
@@ -74,29 +108,57 @@ const std::vector<TileBase*>& TerrainTileset::SelectTilesImpl(const flint::core:
                         selectedTiles.push_back(tile);
                     }
                 } else {
-                    tile->LoadContent();
+                    loadQueue.push_back(tile);
                 }
             }
         }
     }
-    return selectedTiles;
 }
 
-void TerrainTileset::UpdateTilesImpl(
-        const flint::core::FrameState &frameState,
-        flint::rendering::gl::CommandBuffer* commands) {
-
+void TerrainTileset::UpdateTilesImpl(const flint::core::FrameState &frameState, flint::rendering::gl::CommandBuffer* commands) {
     for (TileBase* tile : selectedTiles) {
-        static_cast<TerrainTile*>(tile)->content->Update(frameState, commands);
+        tile->Update(frameState);
     }
 }
 
-void TerrainTileset::LoadTilesImpl() {
+void TerrainTileset::DrawTilesImpl(const flint::core::FrameState &frameState, flint::rendering::gl::CommandBuffer* commands) {
+    TerrainTileContentShaderProgram::GetInstance().Use(commands);
 
+    commands->Record<flint::rendering::gl::CommandType::UniformMatrix4fv>(
+        flint::rendering::gl::UniformMatrix4fvCmd{ "viewProj", 1, false });
+    commands->RecordData<float>(frameState.camera.GetViewProjection().data(), 16);
+
+    for (TileBase* tile : selectedTiles) {
+        tile->Draw(frameState, commands);
+    }
 }
 
-void TerrainTileset::UnloadTilesImpl() {
+void TerrainTileset::LoadTilesImpl(flint::rendering::gl::CommandBuffer* commands) {
+    for (TileBase* tile : loadQueue) {
+        tile->LoadContent(commands);
+    }
+}
 
+void TerrainTileset::UnloadTilesImpl(flint::rendering::gl::CommandBuffer* commands) {
+    auto* node = lruSentinel.next;
+    while (node) {
+        auto it = rootTiles.find(node->tile->index);
+        if (it != rootTiles.end()) {
+            rootTiles.erase(it);
+            // delete it->tile;
+        }
+
+        unloadQueue.push_back(node->tile);
+
+        node = node->next;
+    }
+
+    lruSentinel.next = nullptr;
+    lruCache.tail = &lruSentinel;
+
+    for (TileBase* tile : unloadQueue) {
+        tile->UnloadContent(commands);
+    }
 }
 
 }

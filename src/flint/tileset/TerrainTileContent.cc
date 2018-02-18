@@ -1,4 +1,5 @@
 #include <vector>
+#include <random>
 #include "TerrainTileContent.h"
 
 namespace flint {
@@ -7,159 +8,205 @@ namespace tileset {
 using namespace flint::rendering::gl;
 
 namespace {
-    template <typename T>
-    double noise3D(T x, T y, T z) {
-        double f = std::sin((Eigen::Matrix<T, 3, 1> {x, y, z}).dot(Eigen::Matrix<T, 3, 1> { 12.989, 78.233, 157 }) * 43758.5453);
-        return f - std::floor(f);
+    // http://www.iquilezles.org/www/articles/morenoise/morenoise.htm
+    float rand2D(const Eigen::Matrix<float, 2, 1> &v) {
+        double f = std::sin(static_cast<double>(v[0]) * 12.9898 + static_cast<double>(v[1]) * 78.233) * 43758.5453;
+        return static_cast<float>(f - std::floor(f));
     }
 
-    template <typename T>
-    double smoothNoise3D(T x, T y, T z) {
-        // 8
-        double far = (
-            noise3D(x - 1, y - 1, z - 1) +
-            noise3D(x - 1, y - 1, z + 1) +
-            noise3D(x - 1, y + 1, z - 1) +
-            noise3D(x - 1, y + 1, z + 1) +
-            noise3D(x + 1, y - 1, z - 1) +
-            noise3D(x + 1, y - 1, z + 1) +
-            noise3D(x + 1, y + 1, z - 1) +
-            noise3D(x + 1, y + 1, z + 1)
-        );
+    // returns 3D value noise and its 3 derivatives
+    Eigen::Matrix<float, 3, 1> noised(const Eigen::Matrix<float, 2, 1> &x) {
+        Eigen::Matrix<float, 2, 1> p = x.array().floor().matrix();
+        Eigen::Array<float, 2, 1> w = x - p;
 
-        // 27
-        double mid = (
-            noise3D(x - T(1), y - T(1), z - T(1)) +
-            noise3D(x - T(1), y - T(1), z - T(0)) +
-            noise3D(x - T(1), y - T(1), z + T(1)) +
-            noise3D(x - T(1), y - T(0), z - T(1)) +
-            noise3D(x - T(1), y - T(0), z - T(0)) +
-            noise3D(x - T(1), y - T(0), z + T(1)) +
-            noise3D(x - T(1), y + T(1), z - T(1)) +
-            noise3D(x - T(1), y + T(1), z - T(0)) +
-            noise3D(x - T(1), y + T(1), z + T(1)) +
-            noise3D(x - T(0), y - T(1), z - T(1)) +
-            noise3D(x - T(0), y - T(1), z - T(0)) +
-            noise3D(x - T(0), y - T(1), z + T(1)) +
-            noise3D(x - T(0), y - T(0), z - T(1)) +
-            noise3D(x - T(0), y - T(0), z - T(0)) +
-            noise3D(x - T(0), y - T(0), z + T(1)) +
-            noise3D(x - T(0), y + T(1), z - T(1)) +
-            noise3D(x - T(0), y + T(1), z - T(0)) +
-            noise3D(x - T(0), y + T(1), z + T(1)) +
-            noise3D(x + T(1), y - T(1), z - T(1)) +
-            noise3D(x + T(1), y - T(1), z - T(0)) +
-            noise3D(x + T(1), y - T(1), z + T(1)) +
-            noise3D(x + T(1), y - T(0), z - T(1)) +
-            noise3D(x + T(1), y - T(0), z - T(0)) +
-            noise3D(x + T(1), y - T(0), z + T(1)) +
-            noise3D(x + T(1), y + T(1), z - T(1)) +
-            noise3D(x + T(1), y + T(1), z - T(0)) +
-            noise3D(x + T(1), y + T(1), z + T(1))
-        );
+        Eigen::Matrix<float, 2, 1> u = w*w*w*(w*(w*6.0 - 15.0) + 10.0);
+        Eigen::Matrix<float, 2, 1> du = 30.0*w*w*(w*(w - 2.0) + 1.0);
 
-        // 6
-        double near = (
-            noise3D(x + T(0), y + T(0), z - T(1)) +
-            noise3D(x + T(0), y + T(0), z + T(1)) +
-            noise3D(x + T(0), y - T(0), z + T(0)) +
-            noise3D(x + T(0), y + T(0), z + T(0)) +
-            noise3D(x - T(0), y + T(0), z + T(0)) +
-            noise3D(x + T(1), y + T(0), z + T(0))
-        );
+        float a = rand2D(p + Eigen::Matrix<float, 2, 1>(0, 0));
+        float b = rand2D(p + Eigen::Matrix<float, 2, 1>(1, 0));
+        float c = rand2D(p + Eigen::Matrix<float, 2, 1>(0, 1));
+        float d = rand2D(p + Eigen::Matrix<float, 2, 1>(1, 1));
 
-        // 1
-        double self = noise3D(x, y, z);
-        
-        constexpr double counts[4] = { 8.0, 27.0, 6.0, 1.0 };
-        constexpr double weights[4] = { 64.0, 32.0, 16.0, 8.0 };
-        constexpr double influences[4] = { counts[0] / weights[0], counts[1] / weights[1], counts[2] / weights[2], counts[3] / weights[3] };
-        constexpr double denom = influences[0] + influences[1] + influences[2] + influences[3];
-        constexpr double normalized[4] = { influences[0] / denom / counts[0], influences[1] / denom / counts[1], influences[2] / denom / counts[2], influences[3] / denom / counts[3] };
+        float k0 = a;
+        float k1 = b - a;
+        float k2 = c - a;
+        float k4 = a - b - c + d;
 
-        return far * normalized[0] + mid * normalized[1] + near * normalized[2] + self * normalized[3];
+        Eigen::Array<float, 2, 1> deriv = 2.0 * du.array() * Eigen::Array<float, 2, 1>(k1 + k4*u[1], k2 + k4 * u[0]);
+        return Eigen::Matrix<float, 3, 1>(deriv[0], deriv[1], -1.0+2.0*(k0 + k1*u[0] + k2*u[1] + k4*u[0]*u[1]));
     }
 
-    template <typename T1, typename T2>
-    double cosineInterpolate(T1 a, T1 b, T2 t) {
-        double t_cos = t = (1.0 - std::cos(t * kPI)) * 0.5;
-        return a * (1.0 - t) + b * t_cos;
-    }
+    Eigen::Matrix<float, 3, 1> fbm(Eigen::Matrix<float,2, 1> p, uint32_t octaves) {
+        float f = 1.9;
+        float s = 0.4;
+        float b = 1.0;
+        float denom = 1.0 - s;
+        float a = 0.0;
+        auto d = Eigen::Matrix<float, 2, 1>(0.f, 0.f);
+        Eigen::Matrix<float, 2, 2> m, m2, m2i;
 
-    template <typename T>
-    double interpolateNoise3D(T x, T y, T z) {
-        T xi = std::floor(x);
-        T yi = std::floor(y);
-        T zi = std::floor(z);
-        T xf = x - xi;
-        T yf = y - yi;
-        T zf = z - zi;
+        m << 1.0, 0.0,
+             0.0, 1.0;
 
-        double p1 = smoothNoise3D(xi + T(0), yi + T(0), zi + T(0));
-        double p2 = smoothNoise3D(xi + T(0), yi + T(0), zi + T(1));
-        double p3 = smoothNoise3D(xi + T(0), yi + T(1), zi + T(0));
-        double p4 = smoothNoise3D(xi + T(0), yi + T(1), zi + T(1));
-        double p5 = smoothNoise3D(xi + T(1), yi + T(0), zi + T(0));
-        double p6 = smoothNoise3D(xi + T(1), yi + T(0), zi + T(1));
-        double p7 = smoothNoise3D(xi + T(1), yi + T(1), zi + T(0));
-        double p8 = smoothNoise3D(xi + T(1), yi + T(1), zi + T(1));
+        m2 << 0.8, 0.6,
+             -0.6, 0.8;
 
-        double i1 = cosineInterpolate(p1, p2, xf);
-        double i2 = cosineInterpolate(p3, p4, xf);
-        double i3 = cosineInterpolate(p5, p6, xf);
-        double i4 = cosineInterpolate(p7, p8, xf);
+        m2i << 0.8,-0.6,
+               0.6, 0.8;
 
-        double j1 = cosineInterpolate(i1, i2, yf);
-        double j2 = cosineInterpolate(i3, i4, yf);
-
-        double k1 = cosineInterpolate(j1, j2, zf);
-
-        return k1;
-    }
-
-    double multiOctaveNoise(float x, float y, float z, float persistence, uint32_t octaves, float wavelength, float amplitude) {
-        float total = 0.f;
-        for (uint32_t i = 0; i < octaves; ++i) {
-            double f = std::pow(1 / persistence, i) / wavelength;
-            double a = std::pow(persistence, i) * amplitude;
-            total += a * interpolateNoise3D(x * f, y * f, z * f);
+        for (uint32_t i = 0; i < octaves; i++) {
+            Eigen::Matrix<float, 3, 1> n = noised(p);
+            a += b*denom*n[2];
+            d += b*denom*m*n.topRows(2);
+            b *= s;
+            p = f*m2*p;
+            m = f*m2i*m;
         }
-        return total;
+        return Eigen::Matrix<float, 3, 1>(d[0], d[1], a);
+    }
+
+    Eigen::Matrix<float, 3, 1> terrain(Eigen::Matrix<float, 2, 1> p, uint32_t depth) {
+        constexpr float scale = 1.0 / TERRAIN_ROOT_SIZE;
+        uint32_t octaves = (depth + 1) * TERRAIN_SUBDIVISION_LEVEL;
+        constexpr float amp = 1000.f;
+        Eigen::Matrix<float, 3, 1> noise = amp * fbm(p * scale, octaves);
+        noise.topRows(2) *= scale;
+        return noise;
     }
 }
 
-TerrainTileContent::TerrainTileContent(TerrainTile* tile) : tile(tile), ready(false) {
+namespace {
+    const std::string vertexShader = std::string("") +
+R"(#version 300 es
+precision highp float;
 
+layout(location = 0) in vec3 position;
+layout(location = 1) in vec3 normal;
+layout(location = 2) in vec3 color;
+uniform mat4 viewProj;
+
+out vec3 fs_color;
+out vec3 fs_norm;
+out vec3 fs_pos;
+
+void main() {
+    fs_color = color;
+    fs_norm = normal;
+    fs_pos = position;
+    gl_Position = viewProj * vec4(position, 1.0);
+}
+)";
+
+    const std::string fragmentShader =
+R"(#version 300 es
+precision highp float;
+
+in vec3 fs_color;
+in vec3 fs_norm;
+in vec3 fs_pos;
+out vec4 outColor;
+
+const vec3 lightDir1 = normalize(vec3(1, 0.5, 0));
+const vec3 lightDir2 = normalize(vec3(0, 1, 1));
+const vec3 lightDir3 = normalize(vec3(-1, 5, -1));
+
+void main() {
+    float lightingTerm = clamp(
+        0.8 * max(0.0, dot(fs_norm, lightDir1)) +
+        0.3 * max(0.0, dot(fs_norm, lightDir2)) +
+        0.1 * max(0.0, dot(fs_norm, lightDir3)),
+    0.0, 1.0);
+    outColor = vec4(fs_norm, 1.0);
+    outColor = vec4(lightingTerm * fs_color, 1.0);
+}
+)";
 }
 
-void TerrainTileContent::CreateImpl() {   
+TerrainTileContentShaderProgram::TerrainTileContentShaderProgram() : created(false), committed(false) {
+    vertexShaderId = static_cast<uint32_t>(rand());
+    fragmentShaderId = static_cast<uint32_t>(rand());
+    programId = static_cast<uint32_t>(rand());
+}
+
+void TerrainTileContentShaderProgram::Create(flint::rendering::gl::CommandBuffer* commands) {
+    if (!created) {
+        created = true;
+        committed = false;
+
+        commands->Record<CommandType::CreateShader>(CreateShaderCmd{ vertexShaderId, ShaderType::VERTEX_SHADER, vertexShader.size() });
+        commands->RecordData<char>(vertexShader.data(), vertexShader.size());
+        commands->Record<CommandType::CreateShader>(CreateShaderCmd{ fragmentShaderId, ShaderType::FRAGMENT_SHADER, fragmentShader.size() });
+        commands->RecordData<char>(fragmentShader.data(), fragmentShader.size());
+        commands->Record<CommandType::CreateProgram>(CreateProgramCmd{ programId, 2 });
+        uint32_t shaders[] = { vertexShaderId, fragmentShaderId };
+        commands->RecordData<uint32_t>(shaders, 2);
+        commands->Record<CommandType::DeleteShader>(DeleteShaderCmd{ vertexShaderId });
+        commands->Record<CommandType::DeleteShader>(DeleteShaderCmd{ fragmentShaderId });
+    }
+}
+
+void TerrainTileContentShaderProgram::Use(flint::rendering::gl::CommandBuffer* commands) {
+    if (!committed) {
+        created = false;
+    }
+    commands->Record<CommandType::UseProgram>(UseProgramCmd{ programId });
+}
+
+void TerrainTileContentShaderProgram::Commit() {
+    created = true;
+    committed = true;
+}
+
+
+TerrainTileContent::TerrainTileContent(TerrainTile* tile) : tile(tile), ready(false), committed(false) {
+}
+
+void TerrainTileContent::CreateImpl(flint::rendering::gl::CommandBuffer* commands) {
+    TerrainTileContentShaderProgram::GetInstance().Create(commands);
+
     assert(tile->boundingVolume.hasValue());
+    
     auto min = tile->boundingVolume->min();
     auto max = tile->boundingVolume->max();
     auto diag = max - min;
 
-    constexpr uint32_t subdivisions = 4;
-    constexpr uint32_t indexCount = 6 * core::constPow(4, subdivisions);
-    constexpr uint32_t length = core::constPow(2, subdivisions) + 1;
+    constexpr uint32_t indexCount = 6 * core::constPow(4, TERRAIN_SUBDIVISION_LEVEL);
+    constexpr uint32_t length = core::constPow(2, TERRAIN_SUBDIVISION_LEVEL) + 1;
     constexpr uint32_t vertexCount = core::constPow(length, 2);
-    constexpr float stepSize = core::constPow(0.5f, subdivisions);
+    constexpr float stepSize = core::constPow(0.5f, TERRAIN_SUBDIVISION_LEVEL);
 
-    indices.resize(indexCount);
-    positions.resize(vertexCount);
-    normals.resize(vertexCount);
+    this->indexCount = indexCount;
+    this->bboxIndexCount = 24;
+
+    indices.resize(indexCount + this->bboxIndexCount);
+    positions.resize(vertexCount + 8);
+    normals.resize(vertexCount + 8);
+    colors.resize(vertexCount + 8);
 
     for (uint32_t j = 0; j < length; ++j) {
         for (uint32_t i = 0; i < length; ++i) {
             uint32_t index = j * length + i;
             positions[index][0] = min[0] + stepSize * i * diag[0];
             positions[index][2] = min[2] + stepSize * j * diag[2];
-            positions[index][1] = multiOctaveNoise(positions[index][0], 0.f, positions[index][2], 0.5f, 8, 500.f, 200.f);
+            auto noise = terrain({ positions[index][0], positions[index][2] }, tile->index.depth);
+            positions[index][1] = noise[2];
+            Eigen::Array<float, 3, 1> p{ positions[index][0], positions[index][1], positions[index][2] };
+            if (contentBoundingVolume) {
+                contentBoundingVolume->Merge(p);
+            } else {
+                contentBoundingVolume.set(core::AxisAlignedBox<3, float>(p, p));
+            }
 
-            normals[index][0] = 0.f;
-            normals[index][1] = 1.f;
-            normals[index][2] = 0.f;
+            auto normal = Eigen::Matrix<float, 3, 1>(-noise[0], 1.f, -noise[1]).normalized();
+            normals[index][0] = normal[0];
+            normals[index][1] = normal[1];
+            normals[index][2] = normal[2];
+
+            colors[index][0] = 0.8f;
+            colors[index][1] = 0.8f;
+            colors[index][2] = 0.8f;
         }
-    }   
+    }
 
     for (uint32_t j = 0; j < length - 1; ++j) {
         for (uint32_t i = 0; i < length - 1; ++i) {
@@ -175,23 +222,33 @@ void TerrainTileContent::CreateImpl() {
         }
     }
 
+    min = contentBoundingVolume->min();
+    max = contentBoundingVolume->max();
+    positions[vertexCount + 0] = { min[0], min[1], min[2] };
+    positions[vertexCount + 1] = { min[0], min[1], max[2] };
+    positions[vertexCount + 2] = { min[0], max[1], min[2] };
+    positions[vertexCount + 3] = { min[0], max[1], max[2] };
+    positions[vertexCount + 4] = { max[0], min[1], min[2] };
+    positions[vertexCount + 5] = { max[0], min[1], max[2] };
+    positions[vertexCount + 6] = { max[0], max[1], min[2] };
+    positions[vertexCount + 7] = { max[0], max[1], max[2] };
+    for (uint32_t i = 0; i < 8; ++i) normals[vertexCount + i] = { 0.f, 1.f, 0.f };
+    for (uint32_t i = 0; i < 8; ++i) colors[vertexCount + i] = { 1.f, 0.f, 0.f };
+
+    for (uint32_t i = 0; i < 8; ++i) indices[indexCount + i] = (vertexCount + i);
+    for (uint32_t i = 0; i < 8; ++i) indices[indexCount + i + 8] = (vertexCount + (2 * (i / 4) + i / 2 + 2 * (i % 2)));
+    for (uint32_t i = 0; i < 8; ++i) indices[indexCount + i + 16] = (vertexCount + (i / 2 + 4 * (i % 2)));
+
     indexBufferId = static_cast<uint32_t>(rand());
     positionBufferId = static_cast<uint32_t>(rand());
     normalBufferId = static_cast<uint32_t>(rand());
-
-    contentBoundingVolume.set(flint::core::AxisAlignedBox<3, float> (
-        { positions[0][0], positions[0][1], positions[0][2] },
-        { positions[0][0], positions[0][1], positions[0][2] }
-    ));
-
-    for (const auto& p : positions) {
-        contentBoundingVolume->Merge({ p[0], p[1], p[2] });
-    }
+    colorBufferId = static_cast<uint32_t>(rand());
 
     ready = true;
+    committed = false;
 }
 
-void TerrainTileContent::DestroyImpl() {
+void TerrainTileContent::DestroyImpl(flint::rendering::gl::CommandBuffer* commands) {
 
 }
 
@@ -204,7 +261,7 @@ bool TerrainTileContent::IsEmptyImpl() const {
     if (!parentContentReady) {
         return true;
     }
-    
+
     assert(tile->parent->content->contentBoundingVolume.hasValue());
     assert(tile->boundingVolume.hasValue());
     const auto& a = *tile->parent->content->contentBoundingVolume;
@@ -222,8 +279,11 @@ bool TerrainTileContent::IsReadyImpl() const {
     return ready;
 }
 
-void TerrainTileContent::UpdateImpl(const flint::core::FrameState &frameState,
-                                    flint::rendering::gl::CommandBuffer* commands) {
+void TerrainTileContent::UpdateImpl(const flint::core::FrameState &frameState) {
+
+}
+
+void TerrainTileContent::DrawImpl(const flint::core::FrameState &frameState, flint::rendering::gl::CommandBuffer* commands) {
     if (!IsEmpty() && IsReady()) {
         if (!committed) {
             commands->Record<CommandType::CreateBuffer>(CreateBufferCmd{ indexBufferId });
@@ -240,25 +300,39 @@ void TerrainTileContent::UpdateImpl(const flint::core::FrameState &frameState,
             commands->Record<CommandType::BindBuffer>(BindBufferCmd{ normalBufferId, BufferTarget::ARRAY_BUFFER });
             commands->Record<CommandType::BufferData>(BufferDataCmd{ BufferTarget::ARRAY_BUFFER, BufferUsage::STATIC_DRAW, static_cast<uint32_t>(normals.size() * 3 * sizeof(float)) });
             commands->RecordData<float>(&normals[0][0], 3 * normals.size());
+
+            commands->Record<CommandType::CreateBuffer>(CreateBufferCmd{ colorBufferId });
+            commands->Record<CommandType::BindBuffer>(BindBufferCmd{ colorBufferId, BufferTarget::ARRAY_BUFFER });
+            commands->Record<CommandType::BufferData>(BufferDataCmd{ BufferTarget::ARRAY_BUFFER, BufferUsage::STATIC_DRAW, static_cast<uint32_t>(colors.size() * 3 * sizeof(float)) });
+            commands->RecordData<float>(&colors[0][0], 3 * colors.size());
         }
 
         commands->Record<CommandType::BindBuffer>(BindBufferCmd{ positionBufferId, BufferTarget::ARRAY_BUFFER });
         commands->Record<CommandType::EnableVertexAttribArray>(EnableVertexAttribArrayCmd{ 0 });
         commands->Record<CommandType::VertexAttribPointer>(VertexAttribPointerCmd{ 0, 3, ComponentDatatype::FLOAT, false, 0, 0 });
+        
+        commands->Record<CommandType::BindBuffer>(BindBufferCmd{ normalBufferId, BufferTarget::ARRAY_BUFFER });
+        commands->Record<CommandType::EnableVertexAttribArray>(EnableVertexAttribArrayCmd{ 1 });
+        commands->Record<CommandType::VertexAttribPointer>(VertexAttribPointerCmd{ 1, 3, ComponentDatatype::FLOAT, false, 0, 0 });
 
+        commands->Record<CommandType::BindBuffer>(BindBufferCmd{ colorBufferId, BufferTarget::ARRAY_BUFFER });
+        commands->Record<CommandType::EnableVertexAttribArray>(EnableVertexAttribArrayCmd{ 2 });
+        commands->Record<CommandType::VertexAttribPointer>(VertexAttribPointerCmd{ 2, 3, ComponentDatatype::FLOAT, false, 0, 0 });
+        
         commands->Record<CommandType::BindBuffer>(BindBufferCmd{ indexBufferId, BufferTarget::ELEMENT_ARRAY_BUFFER });
-        commands->Record<CommandType::DrawElements>(DrawElementsCmd{ DrawMode::LINES, static_cast<uint32_t>(indices.size()), IndexDatatype::UNSIGNED_INT, 0 });
-
+        commands->Record<CommandType::DrawElements>(DrawElementsCmd{ DrawMode::TRIANGLES, indexCount, IndexDatatype::UNSIGNED_INT, 0 });
+        
+        commands->Record<CommandType::DrawElements>(DrawElementsCmd{ DrawMode::LINES, bboxIndexCount, IndexDatatype::UNSIGNED_INT, indexCount * sizeof(uint32_t) });
+        
         commands->Record<CommandType::DisableVertexAttribArray>(DisableVertexAttribArrayCmd{ 0 });
+        commands->Record<CommandType::DisableVertexAttribArray>(DisableVertexAttribArrayCmd{ 1 });
+        commands->Record<CommandType::DisableVertexAttribArray>(DisableVertexAttribArrayCmd{ 2 });
     }
 }
 
 void TerrainTileContent::CommitImpl() {
+    TerrainTileContentShaderProgram::GetInstance().Commit();
     committed = true;
-}
-
-TerrainTileContent::~TerrainTileContent() {
-    this->Destroy();
 }
 
 }

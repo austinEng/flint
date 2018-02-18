@@ -85,6 +85,7 @@ public:
         return reinterpret_cast<T*>(commandAlloc);
     }
 
+    CommandBlock* AcquireBlocks();
     void Reset();
 
 private:
@@ -97,7 +98,6 @@ private:
     uint8_t* currentPtr = nullptr;
     uint8_t* endPtr = nullptr;
 
-    CommandBlock* AcquireBlocks();
     bool GetNewBlock(size_t minimumSize);
 };
 

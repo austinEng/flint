@@ -1,4 +1,5 @@
 #pragma once
+#include <list>
 #include <map>
 #include "Tileset.h"
 #include "TerrainTile.h"
@@ -7,21 +8,34 @@ namespace flint {
 namespace tileset {
 
 class TerrainTileset : public Tileset<TerrainTileset> {
-    friend class Tileset<TerrainTileset>;
+public:
     std::map<TerrainTile::Index, TerrainTile*> rootTiles;
     float maximumScreenSpaceError = 20;
-    std::vector<TileBase*> selectedTiles;
+
+    TerrainTile::LRUNode lruSentinel;
+    struct LRUCache {
+        TerrainTile::LRUNode* head;
+        TerrainTile::LRUNode* tail;
+
+        void Append(TerrainTile::LRUNode* node);
+        void Splice(TerrainTile::LRUNode* node1, TerrainTile::LRUNode* node2);
+    };
+
+    LRUCache lruCache;
+
+    TerrainTileset();
 
     void Touch(TerrainTile* tile);
 
-    const std::vector<TileBase*>& SelectTilesImpl(const flint::core::FrameState &frameState);
+    void SelectTilesImpl(const flint::core::FrameState &frameState);
 
-    void UpdateTilesImpl(const flint::core::FrameState &frameState,
-                         flint::rendering::gl::CommandBuffer* commands);
+    void UpdateTilesImpl(const flint::core::FrameState &frameState, flint::rendering::gl::CommandBuffer* commands);
 
-    void LoadTilesImpl();
+    void DrawTilesImpl(const flint::core::FrameState &frameState, flint::rendering::gl::CommandBuffer* commands);
 
-    void UnloadTilesImpl();
+    void LoadTilesImpl(flint::rendering::gl::CommandBuffer* commands);
+
+    void UnloadTilesImpl(flint::rendering::gl::CommandBuffer* commands);
 };
 
 }

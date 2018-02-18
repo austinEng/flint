@@ -1,33 +1,34 @@
 #include "TerrainTile.h"
 #include "TerrainTileContent.h"
+#include "TerrainTileset.h"
 
 namespace flint {
 namespace tileset {
 
 TerrainTile::TerrainTile(const Index& index, TilesetBase* tileset, TerrainTile* parent)
-  : Base(tileset, parent), index(index) {
+    : Base(tileset, parent), index(index), lruNode({ this, nullptr, nullptr }) {
+    reinterpret_cast<TerrainTileset*>(this->tileset)->lruCache.Append(&lruNode);
     Init();
     content = new TerrainTileContent(this);
 }
 
-void TerrainTile::GetChildren(TerrainTile** firstChild, unsigned int* childCount) {
-    if (!children) {
-        CreateChildren();
+TerrainTile* TerrainTile::GetChildImpl(uint32_t index) {
+    assert(index < children.size());
+    if (!children[index]) {
+        TerrainTile* parent = reinterpret_cast<TerrainTile*>(this);
+        children[index] = new TerrainTile(TerrainTile::Index{
+            parent->index.depth + 1,
+            parent->index.i * 2 + static_cast<int>((index >> 2u) & 1u),
+            parent->index.j * 2 + static_cast<int>((index >> 1u) & 1u),
+            parent->index.k * 2 + static_cast<int>((index >> 0u) & 1u)
+        }, parent->tileset, parent);
     }
-
-    *firstChild = reinterpret_cast<TerrainTile*>(children);
-    *childCount = 8;
+    return children[index];
 }
 
-void TerrainTile::GetChildren(const TerrainTile** firstChild, unsigned int* childCount) const {
-    if (children) {
-        *firstChild = reinterpret_cast<TerrainTile*>(children);
-        *childCount = 8;
-    } else {
-        *firstChild = nullptr;
-        *childCount = 0;
-    }
-
+const TerrainTile* TerrainTile::GetChildImpl(uint32_t index) const {
+    assert(index < children.size());
+    return children[index];
 }
 
 flint::core::AxisAlignedBox<3, float> TerrainTile::ComputeBoundingVolumeImpl() const {
@@ -44,21 +45,18 @@ flint::core::AxisAlignedBox<3, float> TerrainTile::ComputeBoundingVolumeImpl() c
 }
 
 float TerrainTile::ComputeGeometricErrorImpl() const {
-    return static_cast<float>(10000.f * std::pow(0.5f, index.depth));
-}
+    // constexpr auto errorReduction = 1.0 / TERRAIN_SUBDIVISION_LEVEL;
+    // return static_cast<float>(TERRAIN_ROOT_GEOMETRIC_ERROR * std::pow(errorReduction, index.depth));
 
-void TerrainTile::CreateChildren() {
-    children = new TerrainTileChildren(this);
-}
-
-void TerrainTile::DeleteChildren() {
-    delete children;
-    children = nullptr;
+    constexpr float oneOverX = 0.4;
+    constexpr float x = 1.0 / oneOverX;
+    return TERRAIN_ROOT_GEOMETRIC_ERROR * core::constPow(oneOverX, index.depth) / (x - 1.0);
 }
 
 TerrainTile::~TerrainTile() {
-    DeleteChildren();
-    delete content;
+    for (TerrainTile* child : children) {
+        delete child;
+    }
 }
 
 void TerrainTile::Update(const flint::core::FrameState &frameState) {
@@ -98,43 +96,6 @@ core::AxisAlignedBox<3, float> TerrainTile::getBoundingVolume() const {
         assert(boundingVolume.hasValue());
         return boundingVolume.value();
     }
-}
-
-TerrainTileChildren::TerrainTileChildren(TerrainTile* parent) : tiles {{
-    TerrainTile(TerrainTile::Index {
-        parent->index.depth + 1,
-        parent->index.i * 2 + 0, parent->index.j * 2 + 0, parent->index.k * 2 + 0
-    }, parent->tileset, parent),
-    TerrainTile(TerrainTile::Index {
-        parent->index.depth + 1,
-        parent->index.i * 2 + 0, parent->index.j * 2 + 0, parent->index.k * 2 + 1
-    }, parent->tileset, parent),
-    TerrainTile(TerrainTile::Index {
-        parent->index.depth + 1,
-        parent->index.i * 2 + 0, parent->index.j * 2 + 1, parent->index.k * 2 + 0
-    }, parent->tileset, parent),
-    TerrainTile(TerrainTile::Index {
-        parent->index.depth + 1,
-        parent->index.i * 2 + 0, parent->index.j * 2 + 1, parent->index.k * 2 + 1
-    }, parent->tileset, parent),
-    TerrainTile(TerrainTile::Index {
-        parent->index.depth + 1,
-        parent->index.i * 2 + 1, parent->index.j * 2 + 0, parent->index.k * 2 + 0
-    }, parent->tileset, parent),
-    TerrainTile(TerrainTile::Index {
-        parent->index.depth + 1,
-        parent->index.i * 2 + 1, parent->index.j * 2 + 0, parent->index.k * 2 + 1
-    }, parent->tileset, parent),
-    TerrainTile(TerrainTile::Index {
-        parent->index.depth + 1,
-        parent->index.i * 2 + 1, parent->index.j * 2 + 1, parent->index.k * 2 + 0
-    }, parent->tileset, parent),
-    TerrainTile(TerrainTile::Index {
-        parent->index.depth + 1,
-        parent->index.i * 2 + 1, parent->index.j * 2 + 1, parent->index.k * 2 + 1
-    }, parent->tileset, parent),
-}} {
-
 }
 
 }

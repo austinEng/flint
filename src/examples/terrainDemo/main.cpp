@@ -18,9 +18,6 @@ static threading::Worker<TerrainGenerator> terrainGenerator;
 static flint::viewport::Renderer renderer;
 static flint::rendering::CommandBlock* terrainCommands = nullptr;
 
-static viewport::ShaderProgram shaderProgram;
-static GLint viewProjLocation;
-
 static void resizeCallback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
     frameState.width = width;
@@ -35,16 +32,13 @@ static void frame(void* ptr) {
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glUseProgram(shaderProgram.GetGLProgram());
-    glUniformMatrix4fv(viewProjLocation, 1, false, frameState.camera.GetViewProjection().data());
-
     if (terrainCommands) {
         renderer.ExecuteCommands(terrainCommands);
     }
 
     window->SwapBuffers();
 
-    // frameState.camera.Move({ 0, 0, 1 });
+    frameState.camera.Move({ 0, 0, 10 });
 
     static bool generating = false;
     if (!generating) {
@@ -87,37 +81,13 @@ int main(int argc, char** argv) {
     glClearColor(0.f, 0.f, 0.f, 1.f);
     glEnable(GL_DEPTH_TEST);
 
-    viewport::Shader vertexShader, fragmentShader;
-    vertexShader.Load(R"(#version 300 es
-        precision highp float;
-
-        layout(location = 0) in vec3 position;
-        uniform mat4 viewProj;
-
-        void main() {
-            gl_Position = viewProj * vec4(position, 1.0);
-        }
-    )", GL_VERTEX_SHADER);
-
-    fragmentShader.Load(R"(#version 300 es
-        precision highp float;
-
-        out vec4 outColor;
-
-        void main() {
-            outColor = vec4(0.8, 0.8, 0.8, 1.0);
-        }
-    )", GL_FRAGMENT_SHADER);
-
-    shaderProgram.Create(vertexShader, fragmentShader);
-    viewProjLocation = glGetUniformLocation(shaderProgram.GetGLProgram(), "viewProj");
-
+    frameState.camera.SetNearFar(0.1, 10000.0f);
     frameState.camera.SetAltitude(0);
-    frameState.camera.SetAzimuth(0);
+    frameState.camera.SetAzimuth(static_cast<float>(kPI/6.0));
     frameState.camera.SetDistance(100);
     frameState.camera.SetAspectRatio(static_cast<float>(width) / static_cast<float>(height));
     frameState.camera.LookAt({ 0, 0, 0 });
-    frameState.camera.Move({ 0, 100, 0 });
+    frameState.camera.Move({ 0, 10, 0 });
 
     viewport::CameraControls<float> controls(frameState.camera, window.GetGLFWWindow());
     controls.SetCurrent();
