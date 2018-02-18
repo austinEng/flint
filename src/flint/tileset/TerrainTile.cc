@@ -48,7 +48,7 @@ float TerrainTile::ComputeGeometricErrorImpl() const {
     // constexpr auto errorReduction = 1.0 / TERRAIN_SUBDIVISION_LEVEL;
     // return static_cast<float>(TERRAIN_ROOT_GEOMETRIC_ERROR * std::pow(errorReduction, index.depth));
 
-    constexpr float oneOverX = 0.4;
+    constexpr float oneOverX = 0.55;
     constexpr float x = 1.0 / oneOverX;
     return TERRAIN_ROOT_GEOMETRIC_ERROR * core::constPow(oneOverX, index.depth) / (x - 1.0);
 }

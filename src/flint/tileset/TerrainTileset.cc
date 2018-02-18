@@ -134,6 +134,10 @@ void TerrainTileset::DrawTilesImpl(const flint::core::FrameState &frameState, fl
 }
 
 void TerrainTileset::LoadTilesImpl(flint::rendering::gl::CommandBuffer* commands) {
+    std::sort(loadQueue.begin(), loadQueue.end(), [](const TileBase* a, const TileBase* b) {
+        return reinterpret_cast<const TerrainTile*>(a)->screenSpaceError - reinterpret_cast<const TerrainTile*>(b)->screenSpaceError;
+    });
+
     for (TileBase* tile : loadQueue) {
         tile->LoadContent(commands);
     }

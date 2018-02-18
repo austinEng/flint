@@ -9,7 +9,7 @@ namespace flint {
 namespace tileset {
 
 constexpr float TERRAIN_ROOT_SIZE = 5000.f;
-constexpr float TERRAIN_ROOT_GEOMETRIC_ERROR = 500000.f;
+constexpr float TERRAIN_ROOT_GEOMETRIC_ERROR = 1000000.f;
 constexpr uint32_t TERRAIN_SUBDIVISION_LEVEL = 5;
 
 class TerrainTileContent;

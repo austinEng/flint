@@ -36,10 +36,7 @@ namespace {
         return Eigen::Matrix<float, 3, 1>(deriv[0], deriv[1], -1.0+2.0*(k0 + k1*u[0] + k2*u[1] + k4*u[0]*u[1]));
     }
 
-    Eigen::Matrix<float, 3, 1> fbm(Eigen::Matrix<float,2, 1> p, uint32_t octaves) {
-        float f = 1.9;
-        float s = 0.4;
-        float b = 1.0;
+    Eigen::Matrix<float, 3, 1> fbm(float f, float s, float b, Eigen::Matrix<float,2, 1> p, uint32_t octaves) {
         float denom = 1.0 - s;
         float a = 0.0;
         auto d = Eigen::Matrix<float, 2, 1>(0.f, 0.f);
@@ -65,13 +62,31 @@ namespace {
         return Eigen::Matrix<float, 3, 1>(d[0], d[1], a);
     }
 
+    // return smoothstep and its derivative
+    Eigen::Matrix<float, 2, 1> smoothstepd(float a, float b, float x) {
+        if (x<a) return Eigen::Matrix<float, 2, 1>(0.0, 0.0);
+        if (x>b) return Eigen::Matrix<float, 2, 1>(1.0, 0.0);
+        float ir = 1.0 / (b - a);
+        x = (x - a) * ir;
+        return Eigen::Matrix<float, 2, 1>(x*x*(3.0 - 2.0*x), 6.0*x*(1.0 - x)*ir);
+    }
+
     Eigen::Matrix<float, 3, 1> terrain(Eigen::Matrix<float, 2, 1> p, uint32_t depth) {
         constexpr float scale = 1.0 / TERRAIN_ROOT_SIZE;
         uint32_t octaves = (depth + 1) * TERRAIN_SUBDIVISION_LEVEL;
-        constexpr float amp = 1000.f;
-        Eigen::Matrix<float, 3, 1> noise = amp * fbm(p * scale, octaves);
-        noise.topRows(2) *= scale;
-        return noise;
+        constexpr float amp = 5000.f;
+
+        Eigen::Matrix<float, 3, 1> cliffBase = fbm(1.9f, 0.55f, 0.5f, p * scale, octaves > 6 ? 6 : octaves);
+        Eigen::Matrix<float, 3, 1> fbmNoise = fbm(1.9f, 0.4, 1.0f, p * scale, octaves);
+
+        const float cliffFac = 0.1f;
+        Eigen::Matrix<float, 2, 1> cliffs = smoothstepd(-0.08f, -0.01f, cliffBase[2]);
+        fbmNoise[2] = fbmNoise[2] + cliffFac*cliffs[0];
+        fbmNoise.topRows(2) = fbmNoise.topRows(2) + cliffFac*cliffs[1]* cliffBase.topRows(2);
+        
+        fbmNoise[2] *= amp;
+        fbmNoise.topRows(2) *= amp*scale;
+        return fbmNoise;
     }
 }
 
