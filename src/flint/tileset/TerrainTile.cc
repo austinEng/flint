@@ -6,17 +6,18 @@ namespace flint {
 namespace tileset {
 
 TerrainTile::TerrainTile(const Index& index, TilesetBase* tileset, TerrainTile* parent)
-    : Base(tileset, parent), index(index), lruNode({ this, nullptr, nullptr }) {
-    reinterpret_cast<TerrainTileset*>(this->tileset)->lruCache.Append(&lruNode);
+    : Base(tileset, parent), index(index) {
+    reinterpret_cast<TerrainTileset*>(tileset)->lruCache.Append(&lruNode);
     Init();
     content = new TerrainTileContent(this);
 }
 
-TerrainTile* TerrainTile::GetChildImpl(uint32_t index) {
+std::shared_ptr<TerrainTile> TerrainTile::GetChildImpl(uint32_t index) {
     assert(index < children.size());
+
     if (!children[index]) {
         TerrainTile* parent = reinterpret_cast<TerrainTile*>(this);
-        children[index] = new TerrainTile(TerrainTile::Index{
+        children[index] = TerrainTile::Create(TerrainTile::Index{
             parent->index.depth + 1,
             parent->index.i * 2 + static_cast<int>((index >> 2u) & 1u),
             parent->index.j * 2 + static_cast<int>((index >> 1u) & 1u),
@@ -26,7 +27,7 @@ TerrainTile* TerrainTile::GetChildImpl(uint32_t index) {
     return children[index];
 }
 
-const TerrainTile* TerrainTile::GetChildImpl(uint32_t index) const {
+std::shared_ptr<const TerrainTile> TerrainTile::GetChildImpl(uint32_t index) const {
     assert(index < children.size());
     return children[index];
 }
@@ -45,17 +46,18 @@ flint::core::AxisAlignedBox<3, float> TerrainTile::ComputeBoundingVolumeImpl() c
 }
 
 float TerrainTile::ComputeGeometricErrorImpl() const {
-    // constexpr auto errorReduction = 1.0 / TERRAIN_SUBDIVISION_LEVEL;
-    // return static_cast<float>(TERRAIN_ROOT_GEOMETRIC_ERROR * std::pow(errorReduction, index.depth));
+    //constexpr auto errorReduction = 1.0 / TERRAIN_SUBDIVISION_LEVEL;
+    constexpr auto errorReduction = 0.5;
+    return static_cast<float>(TERRAIN_ROOT_GEOMETRIC_ERROR * std::pow(errorReduction, index.depth));
 
-    constexpr float oneOverX = 0.55;
-    constexpr float x = 1.0 / oneOverX;
-    return TERRAIN_ROOT_GEOMETRIC_ERROR * core::constPow(oneOverX, index.depth) / (x - 1.0);
+    //constexpr float oneOverX = 0.55;
+    //constexpr float x = 1.0 / oneOverX;
+    //return TERRAIN_ROOT_GEOMETRIC_ERROR * core::constPow(oneOverX, index.depth) / (x - 1.0);
 }
 
 TerrainTile::~TerrainTile() {
-    for (TerrainTile* child : children) {
-        delete child;
+    for (std::shared_ptr<TerrainTile>& child : children) {
+        child.reset();
     }
 }
 
@@ -81,6 +83,7 @@ void TerrainTile::Update(const flint::core::FrameState &frameState) {
     );
     distanceToCamera = std::max(1e-7f, d.dot(d));
 
+    geometricError = ComputeGeometricError();
     float sseDenominator = static_cast<float>(2.f * std::tan(0.5f * frameState.camera.GetFieldOfView()));
     screenSpaceError = (geometricError * frameState.height) / (distanceToCamera * sseDenominator);
 }

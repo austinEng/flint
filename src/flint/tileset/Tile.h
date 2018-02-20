@@ -1,4 +1,5 @@
 #pragma once
+#include <memory>
 #include <vector>
 #include <Eigen/Dense>
 #include <flint/core/FrameState.h>
@@ -38,11 +39,11 @@ public:
             index++;
             return i;
         }
-        T* operator*() {
-            return reinterpret_cast<T*>(tile->GetChild(index));
+        std::shared_ptr<T> operator*() {
+            return std::static_pointer_cast<T, TileBase>(tile->GetChild(index));
         }
-        T* operator->() {
-            return reinterpret_cast<T*>(tile->GetChild(index));
+        std::shared_ptr<T> operator->() {
+            return std::static_pointer_cast<T, TileBase>(tile->GetChild(index));
         }
         bool operator==(const children_iterator& rhs) {
             return tile == rhs.tile && index == rhs.index;
@@ -64,11 +65,11 @@ public:
             index++;
             return i;
         }
-        const T* operator*() {
-            return reinterpret_cast<const T*>(tile->GetChild(index));
+        std::shared_ptr<const T> operator*() {
+            return std::static_pointer_cast<const T, const TileBase>(tile->GetChild(index));
         }
-        const T* operator->() {
-            return reinterpret_cast<const T*>(tile->GetChild(index));
+        std::shared_ptr<const T> operator->() {
+            return std::static_pointer_cast<const T, const TileBase>(tile->GetChild(index));
         }
         bool operator==(const const_children_iterator& rhs) {
             return tile == rhs.tile && index == rhs.index;
@@ -81,8 +82,8 @@ public:
         uint32_t index = 0;
     };
 
-    virtual TileBase* GetChild(uint32_t index) = 0;
-    virtual const TileBase* GetChild(uint32_t index) const = 0;
+    virtual std::shared_ptr<TileBase> GetChild(uint32_t index) = 0;
+    virtual std::shared_ptr<const TileBase> GetChild(uint32_t index) const = 0;
 
     bool ContentReady() const;
     bool HasRendererableContent() const;
@@ -166,11 +167,11 @@ public:
       : TileBase(tileset, parent, transform) {
     }
 
-    virtual TileBase* GetChild(uint32_t index) override {
+    virtual std::shared_ptr<TileBase> GetChild(uint32_t index) override {
         return static_cast<Derived*>(this)->GetChildImpl(index);
     }
 
-    virtual const TileBase* GetChild(uint32_t index) const override {
+    virtual std::shared_ptr<const TileBase> GetChild(uint32_t index) const override {
         return static_cast<const Derived*>(this)->GetChildImpl(index);
     }
 

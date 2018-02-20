@@ -8,6 +8,13 @@ struct TerrainGenerator {
         return "TerrainGenerator";
     }
 
+    struct UpdateResponse {
+        size_t serializedResourceCommandsStart;
+        size_t serializedDrawCommandsStart;
+        size_t serializedResourceCommandsSize;
+        size_t serializedDrawCommandsSize;
+    };
+
     static threading::WorkerBase::WorkerResponse Update(void* data, int size, void* arg);
 
     static int Main(int argc, char** argv, threading::Worker<TerrainGenerator>* worker = nullptr);

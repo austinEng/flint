@@ -13,8 +13,9 @@ namespace flint {
 namespace viewport {
 
 
-Renderer::Renderer() {
-
+Renderer::Renderer(flint::core::FrameState* frameState) : frameState(frameState) {
+    vaoMap.emplace(0, 0);
+    bufferMap.emplace(0, 0);
 }
 
 Renderer::~Renderer() {
@@ -93,11 +94,11 @@ static GLenum GLShaderType(ShaderType shaderType) {
     }
 }
 
-uint32_t Renderer::GetUniformLocation(const char* name) {
+int Renderer::GetUniformLocation(const char* name) {
     auto& locations = locationMap.at(currentProgramId);
     auto it = locations.find(name);
     if (it == locations.end()) {
-        uint32_t location = glGetUniformLocation(programMap.at(currentProgramId).GetGLProgram(), name);
+        int location = glGetUniformLocation(programMap.at(currentProgramId).GetGLProgram(), name);
         locations.emplace(name, location);
         return location;
     }
@@ -109,6 +110,7 @@ void Renderer::ExecuteCommands(const CommandBlock* commands) {
 
     CommandType c;
     while (iter.NextCommandId(&c)) {
+        // PrintCommandType(c);
         switch (c) {
             case CommandType::Clear: {
                 auto* cmd = iter.NextCommand<ClearCmd>();
@@ -119,11 +121,31 @@ void Renderer::ExecuteCommands(const CommandBlock* commands) {
                 );
                 break;
             }
+            case CommandType::CreateVertexArray: {
+                auto* cmd = iter.NextCommand<CreateVertexArrayCmd>();
+                GLuint vao;
+                glGenVertexArrays(1, &vao);
+                auto it = vaoMap.emplace(cmd->vaoId, vao);
+                assert(it.second);
+                break;
+            }
+            case CommandType::BindVertexArray: {
+                auto* cmd = iter.NextCommand<BindVertexArrayCmd>();
+                glBindVertexArray(vaoMap.at(cmd->vaoId));
+                break;
+            }
+            case CommandType::DeleteVertexArray: {
+                auto* cmd = iter.NextCommand<DeleteVertexArrayCmd>();
+                GLuint vao = vaoMap.at(cmd->vaoId);
+                glDeleteVertexArrays(1, &vao);
+                break;
+            }
             case CommandType::CreateBuffer: {
                 auto* cmd = iter.NextCommand<CreateBufferCmd>();
                 GLuint buf;
                 glGenBuffers(1, &buf);
-                bufferMap.emplace(cmd->bufferId, buf);
+                auto it = bufferMap.emplace(cmd->bufferId, buf);
+                assert(it.second);
                 break;
             }
             case CommandType::BindBuffer: {
@@ -149,7 +171,8 @@ void Renderer::ExecuteCommands(const CommandBlock* commands) {
                 const char* data = iter.NextData<char>(cmd->size);
                 Shader shader;
                 if (shader.Load(data, GLShaderType(cmd->type), cmd->size)) {
-                    shaderMap.emplace(cmd->shaderId, std::move(shader));
+                    auto it = shaderMap.emplace(cmd->shaderId, std::move(shader));
+                    assert(it.second);
                 }
                 break;
             }
@@ -167,8 +190,9 @@ void Renderer::ExecuteCommands(const CommandBlock* commands) {
                 }
                 ShaderProgram program;
                 if (program.Create(shaders.data(), cmd->count)) {
-                    programMap.emplace(cmd->programId, std::move(program));
-                    locationMap.emplace(cmd->programId, std::map<std::string, uint32_t>{});
+                    auto it = programMap.emplace(cmd->programId, std::move(program));
+                    assert(it.second);
+                    locationMap.emplace(cmd->programId, std::map<std::string, int>{});
                 }
                 break;
             }
@@ -182,6 +206,11 @@ void Renderer::ExecuteCommands(const CommandBlock* commands) {
                 auto* cmd = iter.NextCommand<UseProgramCmd>();
                 currentProgramId = cmd->programId;
                 glUseProgram(programMap.at(currentProgramId).GetGLProgram());
+                auto& locations = locationMap.at(currentProgramId);
+                int location = GetUniformLocation("viewProj");
+                if (location >= 0) {
+                    glUniformMatrix4fv(location, 1, false, frameState->camera.GetViewProjection().data());
+                }
                 break;
             }
             case CommandType::Uniform1ui: {
@@ -221,6 +250,7 @@ void Renderer::ExecuteCommands(const CommandBlock* commands) {
             }
             case CommandType::DrawArrays: {
                 auto* cmd = iter.NextCommand<DrawArraysCmd>();
+                glDrawArrays(GLDrawMode(cmd->mode), cmd->start, cmd->count);
                 break;
             }
         }

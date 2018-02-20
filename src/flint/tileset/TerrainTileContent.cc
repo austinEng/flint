@@ -137,16 +137,15 @@ void main() {
 )";
 }
 
-TerrainTileContentShaderProgram::TerrainTileContentShaderProgram() : created(false), committed(false) {
-    vertexShaderId = static_cast<uint32_t>(rand());
-    fragmentShaderId = static_cast<uint32_t>(rand());
-    programId = static_cast<uint32_t>(rand());
+TerrainTileContentShaderProgram::TerrainTileContentShaderProgram() : created(false) {
+    vertexShaderId = static_cast<uint32_t>(rand() % UINT32_MAX);
+    fragmentShaderId = static_cast<uint32_t>(rand() % UINT32_MAX);
+    programId = static_cast<uint32_t>(rand() % UINT32_MAX);
 }
 
 void TerrainTileContentShaderProgram::Create(flint::rendering::gl::CommandBuffer* commands) {
     if (!created) {
         created = true;
-        committed = false;
 
         commands->Record<CommandType::CreateShader>(CreateShaderCmd{ vertexShaderId, ShaderType::VERTEX_SHADER, vertexShader.size() });
         commands->RecordData<char>(vertexShader.data(), vertexShader.size());
@@ -161,19 +160,11 @@ void TerrainTileContentShaderProgram::Create(flint::rendering::gl::CommandBuffer
 }
 
 void TerrainTileContentShaderProgram::Use(flint::rendering::gl::CommandBuffer* commands) {
-    if (!committed) {
-        created = false;
-    }
     commands->Record<CommandType::UseProgram>(UseProgramCmd{ programId });
 }
 
-void TerrainTileContentShaderProgram::Commit() {
-    created = true;
-    committed = true;
-}
 
-
-TerrainTileContent::TerrainTileContent(TerrainTile* tile) : tile(tile), ready(false), committed(false) {
+TerrainTileContent::TerrainTileContent(TerrainTile* tile) : tile(tile), ready(false) {
 }
 
 void TerrainTileContent::CreateImpl(flint::rendering::gl::CommandBuffer* commands) {
@@ -193,10 +184,10 @@ void TerrainTileContent::CreateImpl(flint::rendering::gl::CommandBuffer* command
     this->indexCount = indexCount;
     this->bboxIndexCount = 24;
 
-    indices.resize(indexCount + this->bboxIndexCount);
-    positions.resize(vertexCount + 8);
-    normals.resize(vertexCount + 8);
-    colors.resize(vertexCount + 8);
+    std::vector<uint32_t> indices(indexCount + 2 * this->bboxIndexCount);
+    std::vector<std::array<float, 3>> positions(vertexCount + 16);
+    std::vector<std::array<float, 3>> normals(vertexCount + 16);
+    std::vector<std::array<float, 3>> colors(vertexCount + 16);
 
     for (uint32_t j = 0; j < length; ++j) {
         for (uint32_t i = 0; i < length; ++i) {
@@ -248,23 +239,90 @@ void TerrainTileContent::CreateImpl(flint::rendering::gl::CommandBuffer* command
     positions[vertexCount + 6] = { max[0], max[1], min[2] };
     positions[vertexCount + 7] = { max[0], max[1], max[2] };
     for (uint32_t i = 0; i < 8; ++i) normals[vertexCount + i] = { 0.f, 1.f, 0.f };
-    for (uint32_t i = 0; i < 8; ++i) colors[vertexCount + i] = { 1.f, 0.f, 0.f };
-
+    for (uint32_t i = 0; i < 8; ++i) colors[vertexCount + i] = { 0.f, 0.f, 1.f };
     for (uint32_t i = 0; i < 8; ++i) indices[indexCount + i] = (vertexCount + i);
     for (uint32_t i = 0; i < 8; ++i) indices[indexCount + i + 8] = (vertexCount + (2 * (i / 4) + i / 2 + 2 * (i % 2)));
     for (uint32_t i = 0; i < 8; ++i) indices[indexCount + i + 16] = (vertexCount + (i / 2 + 4 * (i % 2)));
 
-    indexBufferId = static_cast<uint32_t>(rand());
-    positionBufferId = static_cast<uint32_t>(rand());
-    normalBufferId = static_cast<uint32_t>(rand());
-    colorBufferId = static_cast<uint32_t>(rand());
+    min = tile->boundingVolume->min();
+    max = tile->boundingVolume->max();
+    positions[vertexCount + 8 + 0] = { min[0], min[1], min[2] };
+    positions[vertexCount + 8 + 1] = { min[0], min[1], max[2] };
+    positions[vertexCount + 8 + 2] = { min[0], max[1], min[2] };
+    positions[vertexCount + 8 + 3] = { min[0], max[1], max[2] };
+    positions[vertexCount + 8 + 4] = { max[0], min[1], min[2] };
+    positions[vertexCount + 8 + 5] = { max[0], min[1], max[2] };
+    positions[vertexCount + 8 + 6] = { max[0], max[1], min[2] };
+    positions[vertexCount + 8 + 7] = { max[0], max[1], max[2] };
+    for (uint32_t i = 0; i < 8; ++i) normals[vertexCount + 8 + i] = { 0.f, 1.f, 0.f };
+    for (uint32_t i = 0; i < 8; ++i) colors[vertexCount + 8 + i] = { 1.f, 0.f, 0.f };
+    for (uint32_t i = 0; i < 8; ++i) indices[indexCount + this->bboxIndexCount + i] = (vertexCount + 8 + i);
+    for (uint32_t i = 0; i < 8; ++i) indices[indexCount + this->bboxIndexCount + i + 8] = (vertexCount + 8 + (2 * (i / 4) + i / 2 + 2 * (i % 2)));
+    for (uint32_t i = 0; i < 8; ++i) indices[indexCount + this->bboxIndexCount + i + 16] = (vertexCount + 8 + (i / 2 + 4 * (i % 2)));
+
+    rendering::gl::SerialCounted<rendering::gl::Buffer> indexBuffer(new rendering::gl::Buffer{
+        BufferUsage::STATIC_DRAW,
+        BufferTarget::ELEMENT_ARRAY_BUFFER,
+        indices.data(),
+        indices.size(),
+    });
+
+    rendering::gl::SerialCounted<rendering::gl::Buffer> positionBuffer(new rendering::gl::Buffer{
+        BufferUsage::STATIC_DRAW,
+        BufferTarget::ARRAY_BUFFER,
+        positions.data(),
+        3 * positions.size(),
+    });
+
+    rendering::gl::SerialCounted<rendering::gl::Buffer> normalBuffer(new rendering::gl::Buffer{
+        BufferUsage::STATIC_DRAW,
+        BufferTarget::ARRAY_BUFFER,
+        normals.data(),
+        3 * normals.size(),
+    });
+
+    rendering::gl::SerialCounted<rendering::gl::Buffer> colorBuffer(new rendering::gl::Buffer{
+        BufferUsage::STATIC_DRAW,
+        BufferTarget::ARRAY_BUFFER,
+        colors.data(),
+        3 * colors.size(),
+    });
+
+    vertexArray.Create();
+
+    commands->Record<CommandType::CreateVertexArray>(CreateVertexArrayCmd{ vertexArray });
+    commands->Record<CommandType::BindVertexArray>(BindVertexArrayCmd{ vertexArray });
+
+    indexBuffer->CreateAndUpload<uint32_t>(commands, indexBuffer);
+
+    positionBuffer->CreateAndUpload<float>(commands, positionBuffer);
+    commands->Record<CommandType::VertexAttribPointer>(VertexAttribPointerCmd{ 0, 3, ComponentDatatype::FLOAT, false, 0, 0 });
+    commands->Record<CommandType::EnableVertexAttribArray>(EnableVertexAttribArrayCmd{ 0 });
+
+    normalBuffer->CreateAndUpload<float>(commands, normalBuffer);
+    commands->Record<CommandType::VertexAttribPointer>(VertexAttribPointerCmd{ 1, 3, ComponentDatatype::FLOAT, false, 0, 0 });
+    commands->Record<CommandType::EnableVertexAttribArray>(EnableVertexAttribArrayCmd{ 1 });
+
+    colorBuffer->CreateAndUpload<float>(commands, colorBuffer);
+    commands->Record<CommandType::VertexAttribPointer>(VertexAttribPointerCmd{ 2, 3, ComponentDatatype::FLOAT, false, 0, 0 });
+    commands->Record<CommandType::EnableVertexAttribArray>(EnableVertexAttribArrayCmd{ 2 });
+
+    commands->Record<CommandType::BindVertexArray>(BindVertexArrayCmd{ 0 });
+
+    commands->Record<CommandType::DeleteBuffer>(DeleteBufferCmd{ indexBuffer });
+    commands->Record<CommandType::DeleteBuffer>(DeleteBufferCmd{ positionBuffer });
+    commands->Record<CommandType::DeleteBuffer>(DeleteBufferCmd{ normalBuffer });
+    commands->Record<CommandType::DeleteBuffer>(DeleteBufferCmd{ colorBuffer });
 
     ready = true;
-    committed = false;
 }
 
 void TerrainTileContent::DestroyImpl(flint::rendering::gl::CommandBuffer* commands) {
-
+    if (ready) {
+        commands->Record<CommandType::DeleteVertexArray>(DeleteVertexArrayCmd{ vertexArray });
+        vertexArray.Release();
+        ready = false;
+    }
 }
 
 bool TerrainTileContent::IsEmptyImpl() const {
@@ -300,54 +358,10 @@ void TerrainTileContent::UpdateImpl(const flint::core::FrameState &frameState) {
 
 void TerrainTileContent::DrawImpl(const flint::core::FrameState &frameState, flint::rendering::gl::CommandBuffer* commands) {
     if (!IsEmpty() && IsReady()) {
-        if (!committed) {
-            commands->Record<CommandType::CreateBuffer>(CreateBufferCmd{ indexBufferId });
-            commands->Record<CommandType::BindBuffer>(BindBufferCmd{ indexBufferId, BufferTarget::ELEMENT_ARRAY_BUFFER });
-            commands->Record<CommandType::BufferData>(BufferDataCmd{ BufferTarget::ELEMENT_ARRAY_BUFFER, BufferUsage::STATIC_DRAW , static_cast<uint32_t>(indices.size() * sizeof(uint32_t)) });
-            commands->RecordData<uint32_t>(indices.data(), indices.size());
-
-            commands->Record<CommandType::CreateBuffer>(CreateBufferCmd{ positionBufferId });
-            commands->Record<CommandType::BindBuffer>(BindBufferCmd{ positionBufferId, BufferTarget::ARRAY_BUFFER });
-            commands->Record<CommandType::BufferData>(BufferDataCmd{ BufferTarget::ARRAY_BUFFER, BufferUsage::STATIC_DRAW, static_cast<uint32_t>(positions.size() * 3 * sizeof(float)) });
-            commands->RecordData<float>(&positions[0][0], 3 * positions.size());
-
-            commands->Record<CommandType::CreateBuffer>(CreateBufferCmd{ normalBufferId });
-            commands->Record<CommandType::BindBuffer>(BindBufferCmd{ normalBufferId, BufferTarget::ARRAY_BUFFER });
-            commands->Record<CommandType::BufferData>(BufferDataCmd{ BufferTarget::ARRAY_BUFFER, BufferUsage::STATIC_DRAW, static_cast<uint32_t>(normals.size() * 3 * sizeof(float)) });
-            commands->RecordData<float>(&normals[0][0], 3 * normals.size());
-
-            commands->Record<CommandType::CreateBuffer>(CreateBufferCmd{ colorBufferId });
-            commands->Record<CommandType::BindBuffer>(BindBufferCmd{ colorBufferId, BufferTarget::ARRAY_BUFFER });
-            commands->Record<CommandType::BufferData>(BufferDataCmd{ BufferTarget::ARRAY_BUFFER, BufferUsage::STATIC_DRAW, static_cast<uint32_t>(colors.size() * 3 * sizeof(float)) });
-            commands->RecordData<float>(&colors[0][0], 3 * colors.size());
-        }
-
-        commands->Record<CommandType::BindBuffer>(BindBufferCmd{ positionBufferId, BufferTarget::ARRAY_BUFFER });
-        commands->Record<CommandType::EnableVertexAttribArray>(EnableVertexAttribArrayCmd{ 0 });
-        commands->Record<CommandType::VertexAttribPointer>(VertexAttribPointerCmd{ 0, 3, ComponentDatatype::FLOAT, false, 0, 0 });
-        
-        commands->Record<CommandType::BindBuffer>(BindBufferCmd{ normalBufferId, BufferTarget::ARRAY_BUFFER });
-        commands->Record<CommandType::EnableVertexAttribArray>(EnableVertexAttribArrayCmd{ 1 });
-        commands->Record<CommandType::VertexAttribPointer>(VertexAttribPointerCmd{ 1, 3, ComponentDatatype::FLOAT, false, 0, 0 });
-
-        commands->Record<CommandType::BindBuffer>(BindBufferCmd{ colorBufferId, BufferTarget::ARRAY_BUFFER });
-        commands->Record<CommandType::EnableVertexAttribArray>(EnableVertexAttribArrayCmd{ 2 });
-        commands->Record<CommandType::VertexAttribPointer>(VertexAttribPointerCmd{ 2, 3, ComponentDatatype::FLOAT, false, 0, 0 });
-        
-        commands->Record<CommandType::BindBuffer>(BindBufferCmd{ indexBufferId, BufferTarget::ELEMENT_ARRAY_BUFFER });
+        commands->Record<CommandType::BindVertexArray>(BindVertexArrayCmd{ vertexArray });
         commands->Record<CommandType::DrawElements>(DrawElementsCmd{ DrawMode::TRIANGLES, indexCount, IndexDatatype::UNSIGNED_INT, 0 });
-        
-        commands->Record<CommandType::DrawElements>(DrawElementsCmd{ DrawMode::LINES, bboxIndexCount, IndexDatatype::UNSIGNED_INT, indexCount * sizeof(uint32_t) });
-        
-        commands->Record<CommandType::DisableVertexAttribArray>(DisableVertexAttribArrayCmd{ 0 });
-        commands->Record<CommandType::DisableVertexAttribArray>(DisableVertexAttribArrayCmd{ 1 });
-        commands->Record<CommandType::DisableVertexAttribArray>(DisableVertexAttribArrayCmd{ 2 });
+        commands->Record<CommandType::DrawElements>(DrawElementsCmd{ DrawMode::LINES, 2 * bboxIndexCount, IndexDatatype::UNSIGNED_INT, indexCount * sizeof(uint32_t) });
     }
-}
-
-void TerrainTileContent::CommitImpl() {
-    TerrainTileContentShaderProgram::GetInstance().Commit();
-    committed = true;
 }
 
 }

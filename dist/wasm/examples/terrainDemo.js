@@ -7230,7 +7230,7 @@ function _emscripten_asm_const_iii(code, a0, a1) {
 
 STATIC_BASE = Runtime.GLOBAL_BASE;
 
-STATICTOP = STATIC_BASE + 8784;
+STATICTOP = STATIC_BASE + 8848;
 /* global initializers */  __ATINIT__.push({ func: function() { __GLOBAL__sub_I_main_cpp() } });
 
 
@@ -7239,7 +7239,7 @@ memoryInitializer = Module["wasmJSMethod"].indexOf("asmjs") >= 0 || Module["wasm
 
 
 
-var STATIC_BUMP = 8784;
+var STATIC_BUMP = 8848;
 Module["STATIC_BASE"] = STATIC_BASE;
 Module["STATIC_BUMP"] = STATIC_BUMP;
 
@@ -9168,6 +9168,12 @@ function copyTempDouble(ptr) {
       GLctx.shaderSource(GL.shaders[shader], source);
     }
 
+  function _glDrawArrays(mode, first, count) {
+  
+      GLctx.drawArrays(mode, first, count);
+  
+    }
+
   function _glUniform1ui(location, v0) {
       GLctx.uniform1ui(GL.uniforms[location], v0);
     }
@@ -9310,6 +9316,17 @@ function copyTempDouble(ptr) {
       return dest;
     } 
 
+  function _glGetShaderInfoLog(shader, maxLength, length, infoLog) {
+      var log = GLctx.getShaderInfoLog(GL.shaders[shader]);
+      if (log === null) log = '(unknown error)';
+      if (maxLength > 0 && infoLog) {
+        var numBytesWrittenExclNull = stringToUTF8(log, infoLog, maxLength);
+        if (length) SAFE_HEAP_STORE(((length)|0), ((numBytesWrittenExclNull)|0), 4);
+      } else {
+        if (length) SAFE_HEAP_STORE(((length)|0), ((0)|0), 4);
+      }
+    }
+
   
   function ___setErrNo(value) {
       if (Module['___errno_location']) SAFE_HEAP_STORE(((Module['___errno_location']())|0), ((value)|0), 4);
@@ -9384,6 +9401,14 @@ function copyTempDouble(ptr) {
       GLFW.swapBuffers(winid);
     }
 
+  function _glDeleteVertexArrays(n, vaos) {
+      for (var i = 0; i < n; i++) {
+        var id = ((SAFE_HEAP_LOAD((((vaos)+(i*4))|0), 4, 0))|0);
+        GLctx['deleteVertexArray'](GL.vaos[id]);
+        GL.vaos[id] = null;
+      }
+    }
+
   function _glCreateShader(shaderType) {
       var id = GL.getNewId(GL.shaders);
       GL.shaders[id] = GLctx.createShader(shaderType);
@@ -9405,15 +9430,8 @@ function copyTempDouble(ptr) {
       GLctx.vertexAttribPointer(index, size, type, !!normalized, stride, ptr);
     }
 
-  function _glGetShaderInfoLog(shader, maxLength, length, infoLog) {
-      var log = GLctx.getShaderInfoLog(GL.shaders[shader]);
-      if (log === null) log = '(unknown error)';
-      if (maxLength > 0 && infoLog) {
-        var numBytesWrittenExclNull = stringToUTF8(log, infoLog, maxLength);
-        if (length) SAFE_HEAP_STORE(((length)|0), ((numBytesWrittenExclNull)|0), 4);
-      } else {
-        if (length) SAFE_HEAP_STORE(((length)|0), ((0)|0), 4);
-      }
+  function _glBindVertexArray(vao) {
+      GLctx['bindVertexArray'](GL.vaos[vao]);
     }
 
   function _glGetUniformLocation(program, name) {
@@ -10613,6 +10631,22 @@ function copyTempDouble(ptr) {
   }
   }
 
+  function _glGenVertexArrays(n, arrays) {
+  
+      for (var i = 0; i < n; i++) {
+        var vao = GLctx['createVertexArray']();
+        if (!vao) {
+          GL.recordError(0x0502 /* GL_INVALID_OPERATION */);
+          while(i < n) SAFE_HEAP_STORE((((arrays)+(i++*4))|0), ((0)|0), 4);
+          return;
+        }
+        var id = GL.getNewId(GL.vaos);
+        vao.name = id;
+        GL.vaos[id] = vao;
+        SAFE_HEAP_STORE((((arrays)+(i*4))|0), ((id)|0), 4);
+      }
+    }
+
   function _glDeleteBuffers(n, buffers) {
       for (var i = 0; i < n; i++) {
         var id = ((SAFE_HEAP_LOAD((((buffers)+(i*4))|0), 4, 0))|0);
@@ -10863,7 +10897,7 @@ function invoke_viiii(index,a1,a2,a3,a4) {
 
 Module.asmGlobalArg = { "Math": Math, "Int8Array": Int8Array, "Int16Array": Int16Array, "Int32Array": Int32Array, "Uint8Array": Uint8Array, "Uint16Array": Uint16Array, "Uint32Array": Uint32Array, "Float32Array": Float32Array, "Float64Array": Float64Array, "NaN": NaN, "Infinity": Infinity, "byteLength": byteLength };
 
-Module.asmLibraryArg = { "abort": abort, "assert": assert, "enlargeMemory": enlargeMemory, "getTotalMemory": getTotalMemory, "abortOnCannotGrowMemory": abortOnCannotGrowMemory, "abortStackOverflow": abortStackOverflow, "segfault": segfault, "alignfault": alignfault, "ftfault": ftfault, "nullFunc_iiii": nullFunc_iiii, "nullFunc_viiiii": nullFunc_viiiii, "nullFunc_vi": nullFunc_vi, "nullFunc_vii": nullFunc_vii, "nullFunc_ii": nullFunc_ii, "nullFunc_viii": nullFunc_viii, "nullFunc_v": nullFunc_v, "nullFunc_viiiiii": nullFunc_viiiiii, "nullFunc_viiii": nullFunc_viiii, "invoke_iiii": invoke_iiii, "invoke_viiiii": invoke_viiiii, "invoke_vi": invoke_vi, "invoke_vii": invoke_vii, "invoke_ii": invoke_ii, "invoke_viii": invoke_viii, "invoke_v": invoke_v, "invoke_viiiiii": invoke_viiiiii, "invoke_viiii": invoke_viiii, "_glUseProgram": _glUseProgram, "_glDeleteShader": _glDeleteShader, "_glVertexAttribPointer": _glVertexAttribPointer, "_glfwCreateWindow": _glfwCreateWindow, "_glGetProgramiv": _glGetProgramiv, "_pthread_key_create": _pthread_key_create, "_glfwPollEvents": _glfwPollEvents, "_abort": _abort, "_glUniformMatrix4fv": _glUniformMatrix4fv, "_glGetProgramInfoLog": _glGetProgramInfoLog, "_emscripten_set_main_loop_timing": _emscripten_set_main_loop_timing, "_emscripten_call_worker": _emscripten_call_worker, "___gxx_personality_v0": ___gxx_personality_v0, "_emscripten_set_mousemove_callback": _emscripten_set_mousemove_callback, "___assert_fail": ___assert_fail, "_glDeleteProgram": _glDeleteProgram, "___cxa_allocate_exception": ___cxa_allocate_exception, "___cxa_find_matching_catch": ___cxa_find_matching_catch, "_glfwMakeContextCurrent": _glfwMakeContextCurrent, "_glBindBuffer": _glBindBuffer, "_glGetShaderInfoLog": _glGetShaderInfoLog, "_glViewport": _glViewport, "_pthread_setspecific": _pthread_setspecific, "___setErrNo": ___setErrNo, "_glClearColor": _glClearColor, "_glGetUniformLocation": _glGetUniformLocation, "_glDisableVertexAttribArray": _glDisableVertexAttribArray, "_glClear": _glClear, "_emscripten_memcpy_big": _emscripten_memcpy_big, "___resumeException": ___resumeException, "__ZSt18uncaught_exceptionv": __ZSt18uncaught_exceptionv, "___cxa_begin_catch": ___cxa_begin_catch, "_pthread_getspecific": _pthread_getspecific, "_glUniform1ui": _glUniform1ui, "_emscripten_set_mousedown_callback": _emscripten_set_mousedown_callback, "__ZN16TerrainGenerator6UpdateEPviS0_": __ZN16TerrainGenerator6UpdateEPviS0_, "_emscripten_force_exit": _emscripten_force_exit, "_glShaderSource": _glShaderSource, "_pthread_once": _pthread_once, "_emscripten_worker_respond": _emscripten_worker_respond, "_emscripten_set_wheel_callback": _emscripten_set_wheel_callback, "_glEnable": _glEnable, "_emscripten_set_main_loop_arg": _emscripten_set_main_loop_arg, "_glfwInit": _glfwInit, "_glDrawElements": _glDrawElements, "_glfwSwapBuffers": _glfwSwapBuffers, "_emscripten_set_main_loop": _emscripten_set_main_loop, "_emscripten_asm_const_iii": _emscripten_asm_const_iii, "_glfwWindowHint": _glfwWindowHint, "_glGenBuffers": _glGenBuffers, "_glAttachShader": _glAttachShader, "_glfwTerminate": _glfwTerminate, "_llvm_sqrt_f32": _llvm_sqrt_f32, "_emscripten_create_worker": _emscripten_create_worker, "_emscripten_asm_const_i": _emscripten_asm_const_i, "_glCompileShader": _glCompileShader, "___cxa_throw": ___cxa_throw, "_glLinkProgram": _glLinkProgram, "_glCreateProgram": _glCreateProgram, "___syscall6": ___syscall6, "_glfwDestroyWindow": _glfwDestroyWindow, "_emscripten_get_now": _emscripten_get_now, "_glDeleteBuffers": _glDeleteBuffers, "_glBufferData": _glBufferData, "_glGetShaderiv": _glGetShaderiv, "___syscall140": ___syscall140, "_glfwSetErrorCallback": _glfwSetErrorCallback, "_glCreateShader": _glCreateShader, "_glEnableVertexAttribArray": _glEnableVertexAttribArray, "___syscall146": ___syscall146, "_glfwSetWindowSizeCallback": _glfwSetWindowSizeCallback, "DYNAMICTOP_PTR": DYNAMICTOP_PTR, "tempDoublePtr": tempDoublePtr, "ABORT": ABORT, "STACKTOP": STACKTOP, "STACK_MAX": STACK_MAX };
+Module.asmLibraryArg = { "abort": abort, "assert": assert, "enlargeMemory": enlargeMemory, "getTotalMemory": getTotalMemory, "abortOnCannotGrowMemory": abortOnCannotGrowMemory, "abortStackOverflow": abortStackOverflow, "segfault": segfault, "alignfault": alignfault, "ftfault": ftfault, "nullFunc_iiii": nullFunc_iiii, "nullFunc_viiiii": nullFunc_viiiii, "nullFunc_vi": nullFunc_vi, "nullFunc_vii": nullFunc_vii, "nullFunc_ii": nullFunc_ii, "nullFunc_viii": nullFunc_viii, "nullFunc_v": nullFunc_v, "nullFunc_viiiiii": nullFunc_viiiiii, "nullFunc_viiii": nullFunc_viiii, "invoke_iiii": invoke_iiii, "invoke_viiiii": invoke_viiiii, "invoke_vi": invoke_vi, "invoke_vii": invoke_vii, "invoke_ii": invoke_ii, "invoke_viii": invoke_viii, "invoke_v": invoke_v, "invoke_viiiiii": invoke_viiiiii, "invoke_viiii": invoke_viiii, "_glUseProgram": _glUseProgram, "_glDeleteShader": _glDeleteShader, "_glVertexAttribPointer": _glVertexAttribPointer, "_glfwCreateWindow": _glfwCreateWindow, "_glGetProgramiv": _glGetProgramiv, "_pthread_key_create": _pthread_key_create, "_glfwPollEvents": _glfwPollEvents, "_abort": _abort, "_glUniformMatrix4fv": _glUniformMatrix4fv, "_glGenVertexArrays": _glGenVertexArrays, "_glDrawArrays": _glDrawArrays, "_glGetProgramInfoLog": _glGetProgramInfoLog, "_emscripten_set_main_loop_timing": _emscripten_set_main_loop_timing, "_emscripten_call_worker": _emscripten_call_worker, "___gxx_personality_v0": ___gxx_personality_v0, "_emscripten_set_mousemove_callback": _emscripten_set_mousemove_callback, "___assert_fail": ___assert_fail, "_glDeleteProgram": _glDeleteProgram, "___cxa_allocate_exception": ___cxa_allocate_exception, "___cxa_find_matching_catch": ___cxa_find_matching_catch, "_glfwMakeContextCurrent": _glfwMakeContextCurrent, "_glBindBuffer": _glBindBuffer, "_glGetShaderInfoLog": _glGetShaderInfoLog, "_glViewport": _glViewport, "_pthread_setspecific": _pthread_setspecific, "___setErrNo": ___setErrNo, "_glClearColor": _glClearColor, "_glGetUniformLocation": _glGetUniformLocation, "_glDisableVertexAttribArray": _glDisableVertexAttribArray, "_glClear": _glClear, "_emscripten_memcpy_big": _emscripten_memcpy_big, "_emscripten_set_main_loop_arg": _emscripten_set_main_loop_arg, "__ZSt18uncaught_exceptionv": __ZSt18uncaught_exceptionv, "___cxa_begin_catch": ___cxa_begin_catch, "_pthread_getspecific": _pthread_getspecific, "_glUniform1ui": _glUniform1ui, "_emscripten_set_mousedown_callback": _emscripten_set_mousedown_callback, "__ZN16TerrainGenerator6UpdateEPviS0_": __ZN16TerrainGenerator6UpdateEPviS0_, "_emscripten_force_exit": _emscripten_force_exit, "_glShaderSource": _glShaderSource, "_glDeleteVertexArrays": _glDeleteVertexArrays, "_pthread_once": _pthread_once, "_emscripten_worker_respond": _emscripten_worker_respond, "_emscripten_set_wheel_callback": _emscripten_set_wheel_callback, "_glEnable": _glEnable, "___resumeException": ___resumeException, "_glfwInit": _glfwInit, "_glDrawElements": _glDrawElements, "_glfwSwapBuffers": _glfwSwapBuffers, "_emscripten_set_main_loop": _emscripten_set_main_loop, "_emscripten_asm_const_iii": _emscripten_asm_const_iii, "_glfwWindowHint": _glfwWindowHint, "_glGenBuffers": _glGenBuffers, "_glAttachShader": _glAttachShader, "_glfwTerminate": _glfwTerminate, "_llvm_sqrt_f32": _llvm_sqrt_f32, "_emscripten_create_worker": _emscripten_create_worker, "_emscripten_asm_const_i": _emscripten_asm_const_i, "_glCompileShader": _glCompileShader, "___cxa_throw": ___cxa_throw, "_glLinkProgram": _glLinkProgram, "_glCreateProgram": _glCreateProgram, "___syscall6": ___syscall6, "_glBindVertexArray": _glBindVertexArray, "_glfwDestroyWindow": _glfwDestroyWindow, "_emscripten_get_now": _emscripten_get_now, "_glDeleteBuffers": _glDeleteBuffers, "_glBufferData": _glBufferData, "_glGetShaderiv": _glGetShaderiv, "___syscall140": ___syscall140, "_glfwSetErrorCallback": _glfwSetErrorCallback, "_glCreateShader": _glCreateShader, "_glEnableVertexAttribArray": _glEnableVertexAttribArray, "___syscall146": ___syscall146, "_glfwSetWindowSizeCallback": _glfwSetWindowSizeCallback, "DYNAMICTOP_PTR": DYNAMICTOP_PTR, "tempDoublePtr": tempDoublePtr, "ABORT": ABORT, "STACKTOP": STACKTOP, "STACK_MAX": STACK_MAX };
 // EMSCRIPTEN_START_ASM
 var asm =Module["asm"]// EMSCRIPTEN_END_ASM
 (Module.asmGlobalArg, Module.asmLibraryArg, buffer);

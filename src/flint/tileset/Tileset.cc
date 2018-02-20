@@ -18,13 +18,5 @@ void TilesetBase::Draw(const flint::core::FrameState &frameState, flint::renderi
     DrawTiles(frameState, commands);
 }
 
-void TilesetBase::Commit() {
-    for (TileBase* tile : selectedTiles) {
-        tile->content->Commit();
-    }
-    loadQueue.resize(0);
-    unloadQueue.resize(0);
-}
-
 }
 }

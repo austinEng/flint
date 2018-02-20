@@ -9,7 +9,7 @@ namespace tileset {
 
 class TerrainTileset : public Tileset<TerrainTileset> {
 public:
-    std::map<TerrainTile::Index, TerrainTile*> rootTiles;
+    std::map<TerrainTile::Index, std::shared_ptr<TerrainTile>> rootTiles;
     float maximumScreenSpaceError = 20;
 
     TerrainTile::LRUNode lruSentinel;
@@ -25,7 +25,7 @@ public:
 
     TerrainTileset();
 
-    void Touch(TerrainTile* tile);
+    void Touch(std::shared_ptr<TerrainTile> tile);
 
     void SelectTilesImpl(const flint::core::FrameState &frameState);
 

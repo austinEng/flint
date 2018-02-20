@@ -31,6 +31,11 @@ public:
         return *this;
     }
 
+    template <typename T>
+    CommandBuffer& RecordData(const void* data, size_t count = 1) {
+        return RecordData(reinterpret_cast<const T*>(data), count);
+    }
+
     const CommandAllocator& Allocator() const;
     CommandAllocator* Allocator();
     void Reset();

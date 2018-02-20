@@ -9,6 +9,9 @@ namespace gl {
 
 enum class CommandType {
     Clear,
+    CreateVertexArray,
+    BindVertexArray,
+    DeleteVertexArray,
     CreateBuffer,
     BindBuffer,
     BufferData,
@@ -30,6 +33,18 @@ enum class CommandType {
 
 struct ClearCmd {
     uint32_t clearBits;
+};
+
+struct CreateVertexArrayCmd {
+    uint32_t vaoId;
+};
+
+struct BindVertexArrayCmd {
+    uint32_t vaoId;
+};
+
+struct DeleteVertexArrayCmd {
+    uint32_t vaoId;
 };
 
 struct CreateBufferCmd {
@@ -123,6 +138,32 @@ struct DrawArraysCmd {
     uint32_t count;
     size_t start;
 };
+
+static void PrintCommandType(CommandType c) {
+    switch (c) {
+    case CommandType::Clear: printf("Clear\n"); break;
+    case CommandType::CreateVertexArray: printf("CreateVertexArray\n"); break;
+    case CommandType::BindVertexArray: printf("BindVertexArray\n"); break;
+    case CommandType::DeleteVertexArray: printf("DeleteVertexArray\n"); break;
+    case CommandType::CreateBuffer: printf("CreateBuffer\n"); break;
+    case CommandType::BindBuffer: printf("BindBuffer\n"); break;
+    case CommandType::BufferData: printf("BufferData\n"); break;
+    case CommandType::DeleteBuffer: printf("DeleteBuffer\n"); break;
+    case CommandType::CreateShader: printf("CreateShader\n"); break;
+    case CommandType::DeleteShader: printf("DeleteShader\n"); break;
+    case CommandType::CreateProgram: printf("CreateProgram\n"); break;
+    case CommandType::DeleteProgram: printf("DeleteProgram\n"); break;
+    case CommandType::UseProgram: printf("UseProgram\n"); break;
+    case CommandType::Uniform1ui: printf("Uniform1ui\n"); break;
+    case CommandType::Uniform1f: printf("Uniform1f\n"); break;
+    case CommandType::UniformMatrix4fv: printf("UniformMatrix4fv\n"); break;
+    case CommandType::EnableVertexAttribArray: printf("EnableVertexAttribArray\n"); break;
+    case CommandType::DisableVertexAttribArray: printf("DisableVertexAttribArray\n"); break;
+    case CommandType::VertexAttribPointer: printf("VertexAttribPointer\n"); break;
+    case CommandType::DrawElements: printf("DrawElements\n"); break;
+    case CommandType::DrawArrays: printf("DrawArrays\n"); break;
+    }
+}
 
 }
 

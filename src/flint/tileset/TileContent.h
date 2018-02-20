@@ -19,8 +19,6 @@ public:
 
     virtual void Draw(const flint::core::FrameState &frameState, flint::rendering::gl::CommandBuffer* commands) = 0;
 
-    virtual void Commit() = 0;
-
     virtual ~TileContentBase() {
 
     }
@@ -51,10 +49,6 @@ public:
 
     virtual void Draw(const flint::core::FrameState &frameState, flint::rendering::gl::CommandBuffer* commands) override {
         static_cast<Derived*>(this)->DrawImpl(frameState, commands);
-    }
-
-    virtual void Commit() override {
-        static_cast<Derived*>(this)->CommitImpl();
     }
 
     virtual ~TileContent() {

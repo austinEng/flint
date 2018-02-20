@@ -9,7 +9,7 @@ namespace flint {
 namespace tileset {
 
 constexpr float TERRAIN_ROOT_SIZE = 5000.f;
-constexpr float TERRAIN_ROOT_GEOMETRIC_ERROR = 1000000.f;
+constexpr float TERRAIN_ROOT_GEOMETRIC_ERROR = 2000000.f;
 constexpr uint32_t TERRAIN_SUBDIVISION_LEVEL = 5;
 
 class TerrainTileContent;
@@ -35,9 +35,16 @@ public:
         }
     };
 
-    TerrainTile() = delete;
     TerrainTile(const Index& index, TilesetBase* tileset, TerrainTile* parent = nullptr);
+    TerrainTile() = delete;
     ~TerrainTile();
+
+    template <typename... Args>
+    static std::shared_ptr<TerrainTile> Create(Args&&... args) {
+        std::shared_ptr<TerrainTile> ptr = std::make_shared<TerrainTile>(std::forward<Args>(args)...);
+        ptr->lruNode.tile = ptr;
+        return ptr;
+    }
 
     void Update(const flint::core::FrameState &frameState);
 
@@ -50,7 +57,7 @@ public:
     bool deleted = false;
 
     struct LRUNode {
-        TerrainTile* tile = nullptr;
+        std::shared_ptr<TerrainTile> tile;
         LRUNode* prev = nullptr;
         LRUNode* next = nullptr;
     } lruNode;
@@ -71,9 +78,9 @@ public:
         return const_children_iterator<TerrainTile>(this, 8);
     }
 
-    TerrainTile* GetChildImpl(uint32_t index);
+    std::shared_ptr<TerrainTile> GetChildImpl(uint32_t index);
 
-    const TerrainTile* GetChildImpl(uint32_t index) const;
+    std::shared_ptr<const TerrainTile> GetChildImpl(uint32_t index) const;
 
     flint::core::AxisAlignedBox<3, float> ComputeBoundingVolumeImpl() const;
 
@@ -82,7 +89,7 @@ public:
 private:
     core::AxisAlignedBox<3, float> getBoundingVolume() const;
 
-    std::array<TerrainTile*, 8> children = {};
+    std::array<std::shared_ptr<TerrainTile>, 8> children = {};
 };
 
 }

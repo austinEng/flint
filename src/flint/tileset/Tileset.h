@@ -1,4 +1,5 @@
 #pragma once
+#include <memory>
 #include <vector>
 #include <Eigen/Dense>
 #include <flint/core/FrameState.h>
@@ -19,9 +20,9 @@ protected:
     virtual void LoadTiles(flint::rendering::gl::CommandBuffer* commands) = 0;
     virtual void UnloadTiles(flint::rendering::gl::CommandBuffer* commands) = 0;
 
-    std::vector<TileBase*> selectedTiles;
-    std::vector<TileBase*> loadQueue;
-    std::vector<TileBase*> unloadQueue;
+    std::vector<std::shared_ptr<TileBase>> selectedTiles;
+    std::vector<std::shared_ptr<TileBase>> loadQueue;
+    std::vector<std::shared_ptr<TileBase>> unloadQueue;
 
 public:
     TilesetBase(const Eigen::Matrix<float, 4, 4> &transform) : transform(transform) {
@@ -30,7 +31,6 @@ public:
     const Eigen::Matrix<float, 4, 4>& Transform() const;
     void Update(const flint::core::FrameState &frameState, flint::rendering::gl::CommandBuffer* commands);
     void Draw(const flint::core::FrameState &frameState, flint::rendering::gl::CommandBuffer* commands);
-    void Commit();
 
     virtual ~TilesetBase() {
     }
