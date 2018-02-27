@@ -1,5 +1,7 @@
 #include <vector>
 #include <random>
+#include <steel/geometry/BoundingBoxGeometry.h>
+#include <steel/shader/WireProgram.h>
 #include "TerrainTileContent.h"
 
 namespace steel {
@@ -8,7 +10,11 @@ namespace tileset {
 using namespace flint;
 using namespace steel::rendering::gl;
 
+#ifdef TERRAIN_SHADER_OFFSETS
 static constexpr bool kUseShaderOffsets = true;
+#else
+static constexpr bool kUseShaderOffsets = false;
+#endif
 
 static constexpr uint32_t indexCount = 6 * core::constPow(4, TERRAIN_SUBDIVISION_LEVEL);
 static constexpr uint32_t bboxIndexCount = 24;
@@ -277,20 +283,21 @@ void main() {
 }
 
 TerrainTileContentShaderProgram::TerrainTileContentShaderProgram() : created(false) {
-    vertexShaderId = static_cast<uint32_t>(rand() % UINT32_MAX);
-    fragmentShaderId = static_cast<uint32_t>(rand() % UINT32_MAX);
-    programId = static_cast<uint32_t>(rand() % UINT32_MAX);
 }
 
 void TerrainTileContentShaderProgram::Create(steel::rendering::gl::CommandBuffer* commands) {
     if (!created) {
         created = true;
 
+        rendering::gl::SerialCounted<rendering::gl::Shader> vertexShaderId(new rendering::gl::Shader);
+        rendering::gl::SerialCounted<rendering::gl::Shader> fragmentShaderId(new rendering::gl::Shader);
+        program.Create();
+
         commands->Record<CommandType::CreateShader>(CreateShaderCmd{ vertexShaderId, ShaderType::VERTEX_SHADER, vertexShader.size() });
         commands->RecordData<char>(vertexShader.data(), vertexShader.size());
         commands->Record<CommandType::CreateShader>(CreateShaderCmd{ fragmentShaderId, ShaderType::FRAGMENT_SHADER, fragmentShader.size() });
         commands->RecordData<char>(fragmentShader.data(), fragmentShader.size());
-        commands->Record<CommandType::CreateProgram>(CreateProgramCmd{ programId, 2 });
+        commands->Record<CommandType::CreateProgram>(CreateProgramCmd{ program, 2 });
         uint32_t shaders[] = { vertexShaderId, fragmentShaderId };
         commands->RecordData<uint32_t>(shaders, 2);
         commands->Record<CommandType::DeleteShader>(DeleteShaderCmd{ vertexShaderId });
@@ -299,7 +306,7 @@ void TerrainTileContentShaderProgram::Create(steel::rendering::gl::CommandBuffer
 }
 
 void TerrainTileContentShaderProgram::Use(steel::rendering::gl::CommandBuffer* commands) {
-    commands->Record<CommandType::UseProgram>(UseProgramCmd{ programId });
+    commands->Record<CommandType::UseProgram>(UseProgramCmd{ program });
 }
 
 TerrainTileContentGeometry::TerrainTileContentGeometry() : created(false) {
@@ -404,6 +411,8 @@ float TerrainTileContent::GeometricError(uint32_t depth) {
 
 void TerrainTileContent::CreateImpl(steel::rendering::gl::CommandBuffer* commands) {
     TerrainTileContentShaderProgram::GetInstance().Create(commands);
+    steel::shader::WireProgram::GetInstance().Create(commands);
+    steel::geometry::BoundingBoxGeometry::GetInstance().Create(commands);
 
     assert(tile->boundingVolume);
     auto min = tile->boundingVolume->min();
@@ -414,9 +423,9 @@ void TerrainTileContent::CreateImpl(steel::rendering::gl::CommandBuffer* command
         TerrainTileContentGeometry::GetInstance().Create(commands);
     } else {
         std::vector<uint32_t> indices(indexCount + bboxIndexCount);
-        std::vector<std::array<float, 3>> positions(vertexCount + 8);
-        std::vector<std::array<float, 3>> normals(vertexCount + 8);
-        std::vector<std::array<float, 3>> colors(vertexCount + 8);
+        std::vector<std::array<float, 3>> positions(vertexCount);
+        std::vector<std::array<float, 3>> normals(vertexCount);
+        std::vector<std::array<float, 3>> colors(vertexCount);
 
         for (uint32_t j = 0; j < vertexLength; ++j) {
             for (uint32_t i = 0; i < vertexLength; ++i) {
@@ -457,23 +466,6 @@ void TerrainTileContent::CreateImpl(steel::rendering::gl::CommandBuffer* command
                 indices[6 * index + 5] = vertexIndex + vertexLength;
             }
         }
-
-        min = contentBoundingVolume->min();
-        max = contentBoundingVolume->max();
-        positions[vertexCount + 0] = { min[0], min[1], min[2] };
-        positions[vertexCount + 1] = { min[0], min[1], max[2] };
-        positions[vertexCount + 2] = { min[0], max[1], min[2] };
-        positions[vertexCount + 3] = { min[0], max[1], max[2] };
-        positions[vertexCount + 4] = { max[0], min[1], min[2] };
-        positions[vertexCount + 5] = { max[0], min[1], max[2] };
-        positions[vertexCount + 6] = { max[0], max[1], min[2] };
-        positions[vertexCount + 7] = { max[0], max[1], max[2] };
-        for (uint32_t i = 0; i < 8; ++i) normals[vertexCount + i] = { 0.f, 1.f, 0.f };
-        for (uint32_t i = 0; i < 8; ++i) colors[vertexCount + i] = { 0.f, 0.f, 1.f };
-        for (uint32_t i = 0; i < 8; ++i) indices[indexCount + i] = (vertexCount + i);
-        for (uint32_t i = 0; i < 8; ++i) indices[indexCount + i + 8] = (vertexCount + (2 * (i / 4) + i / 2 + 2 * (i % 2)));
-        for (uint32_t i = 0; i < 8; ++i) indices[indexCount + i + 16] = (vertexCount + (i / 2 + 4 * (i % 2)));
-
 
         rendering::gl::SerialCounted<rendering::gl::Buffer> indexBuffer(new rendering::gl::Buffer{
             BufferUsage::STATIC_DRAW,
@@ -595,6 +587,29 @@ void TerrainTileContent::DrawImpl(const flint::core::FrameState &frameState, ste
             commands->Record<CommandType::DrawElements>(DrawElementsCmd{ DrawMode::LINES, bboxIndexCount, IndexDatatype::UNSIGNED_INT, indexCount * sizeof(uint32_t) });
         }
     }
+}
+
+void TerrainTileContent::DrawBoundingBoxImpl(const flint::core::FrameState &frameState, steel::rendering::gl::CommandBuffer* commands) {
+    auto bv = tile->getBoundingVolume();
+    auto min = bv.min();
+    auto max = bv.max();
+    auto diag = max - min;
+
+    Eigen::Matrix<float, 4, 4> modelMatrix;
+    modelMatrix <<
+        diag[0], 0.f, 0.f, min[0],
+        0.f, diag[1], 0.f, min[1],
+        0.f, 0.f, diag[2], min[2],
+        0.f, 0.f, 0.f, 1.f;
+
+    commands->Record<CommandType::UniformMatrix4fv>(UniformMatrix4fvCmd{ "modelMatrix", 1, false });
+    commands->RecordData<float>(modelMatrix.data(), 16);
+
+    static float color[4] = { 0.0, 0.0, 1.0, 1.0 };
+    commands->Record<CommandType::Uniform4fv>(Uniform4fvCmd{ "color", 1 });
+    commands->RecordData<float>(color, 4);
+    
+    steel::geometry::BoundingBoxGeometry::GetInstance().Draw(frameState, commands);
 }
 
 }

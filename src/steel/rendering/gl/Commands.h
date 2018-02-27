@@ -24,6 +24,7 @@ enum class CommandType {
     Uniform1ui,
     Uniform1f,
     UniformMatrix4fv,
+    Uniform4fv,
     EnableVertexAttribArray,
     DisableVertexAttribArray,
     VertexAttribPointer,
@@ -109,6 +110,12 @@ struct UniformMatrix4fvCmd {
     // float* values;
 };
 
+struct Uniform4fvCmd {
+    char location[64];
+    uint32_t count;
+    // float* values;
+};
+
 struct EnableVertexAttribArrayCmd {
     int32_t location;
 };
@@ -157,6 +164,7 @@ static void PrintCommandType(CommandType c) {
     case CommandType::Uniform1ui: printf("Uniform1ui\n"); break;
     case CommandType::Uniform1f: printf("Uniform1f\n"); break;
     case CommandType::UniformMatrix4fv: printf("UniformMatrix4fv\n"); break;
+    case CommandType::Uniform4fv: printf("Uniform4fv\n"); break;
     case CommandType::EnableVertexAttribArray: printf("EnableVertexAttribArray\n"); break;
     case CommandType::DisableVertexAttribArray: printf("DisableVertexAttribArray\n"); break;
     case CommandType::VertexAttribPointer: printf("VertexAttribPointer\n"); break;

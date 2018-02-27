@@ -12,9 +12,7 @@ namespace tileset {
 class TerrainTileContentShaderProgram {
 private:
     TerrainTileContentShaderProgram();
-    uint32_t vertexShaderId;
-    uint32_t fragmentShaderId;
-    uint32_t programId;
+    rendering::gl::SerialCounted<rendering::gl::ShaderProgram> program;
 public:
     static TerrainTileContentShaderProgram& GetInstance() {
         static TerrainTileContentShaderProgram instance;
@@ -75,6 +73,7 @@ private:
     bool IsReadyImpl() const;
     void UpdateImpl(const flint::core::FrameState &frameState);
     void DrawImpl(const flint::core::FrameState &frameState, steel::rendering::gl::CommandBuffer* commands);
+    void DrawBoundingBoxImpl(const flint::core::FrameState &frameState, steel::rendering::gl::CommandBuffer* commands);
 };
 
 }

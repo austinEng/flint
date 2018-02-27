@@ -229,6 +229,12 @@ void Renderer::ExecuteCommands(const CommandBlock* commands) {
                 glUniformMatrix4fv(GetUniformLocation(cmd->location), cmd->count, cmd->transpose, data);
                 break;
             }
+            case CommandType::Uniform4fv: {
+                auto* cmd = iter.NextCommand<Uniform4fvCmd>();
+                const float* data = iter.NextData<float>(cmd->count * 4);
+                glUniform4fv(GetUniformLocation(cmd->location), cmd->count, data);
+                break;
+            }
             case CommandType::EnableVertexAttribArray: {
                 auto* cmd = iter.NextCommand<EnableVertexAttribArrayCmd>();
                 glEnableVertexAttribArray(cmd->location);

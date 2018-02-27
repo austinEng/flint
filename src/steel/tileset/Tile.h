@@ -95,6 +95,7 @@ public:
     void Update(const flint::core::FrameState &frameState);
 
     void Draw(const flint::core::FrameState &frameState, steel::rendering::gl::CommandBuffer* commands);
+    void DrawBoundingBox(const flint::core::FrameState &frameState, steel::rendering::gl::CommandBuffer* commands);
 
     virtual ~TileBase();
 };

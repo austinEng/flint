@@ -84,9 +84,9 @@ public:
 
     float ComputeGeometricErrorImpl() const;
 
-private:
     flint::core::AxisAlignedBox<3, float> getBoundingVolume() const;
 
+private:
     std::array<std::shared_ptr<TerrainTile>, 4> children = {};
 };
 

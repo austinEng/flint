@@ -18,6 +18,7 @@ public:
     virtual void Update(const flint::core::FrameState &frameState) = 0;
 
     virtual void Draw(const flint::core::FrameState &frameState, steel::rendering::gl::CommandBuffer* commands) = 0;
+    virtual void DrawBoundingBox(const flint::core::FrameState &frameState, steel::rendering::gl::CommandBuffer* commands) = 0;
 
     virtual ~TileContentBase() {
 
@@ -49,6 +50,10 @@ public:
 
     virtual void Draw(const flint::core::FrameState &frameState, steel::rendering::gl::CommandBuffer* commands) override {
         static_cast<Derived*>(this)->DrawImpl(frameState, commands);
+    }
+
+    virtual void DrawBoundingBox(const flint::core::FrameState &frameState, steel::rendering::gl::CommandBuffer* commands) override {
+        static_cast<Derived*>(this)->DrawBoundingBoxImpl(frameState, commands);
     }
 
     virtual ~TileContent() {

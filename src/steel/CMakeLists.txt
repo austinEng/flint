@@ -1,6 +1,10 @@
 file(GLOB_RECURSE SOURCES *.cc)
 file(GLOB_RECURSE HEADERS *.h)
 
+if (TERRAIN_SHADER_OFFSETS)
+  add_definitions(-DTERRAIN_SHADER_OFFSETS)
+endif()
+
 add_library(steel ${SOURCES} ${HEADERS})
 set_target_properties(steel PROPERTIES LINKER_LANGUAGE CXX)
 target_link_libraries(steel flint)

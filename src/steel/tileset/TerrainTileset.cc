@@ -2,6 +2,7 @@
 #include <vector>
 #include <Eigen/Dense>
 #include <flint/debug/Print.h>
+#include <steel/shader/WireProgram.h>
 #include "TerrainTileset.h"
 #include "TerrainTileContent.h"
 
@@ -131,6 +132,11 @@ void TerrainTileset::DrawTilesImpl(const flint::core::FrameState &frameState, st
     TerrainTileContentShaderProgram::GetInstance().Use(commands);
     for (std::shared_ptr<TileBase> tile : selectedTiles) {
         tile->Draw(frameState, commands);
+    }
+
+    steel::shader::WireProgram::GetInstance().Use(commands);
+    for (std::shared_ptr<TileBase> tile : selectedTiles) {
+        tile->DrawBoundingBox(frameState, commands);
     }
 }
 

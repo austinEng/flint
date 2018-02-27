@@ -52,6 +52,13 @@ void TileBase::Draw(const flint::core::FrameState &frameState, steel::rendering:
     content->Draw(frameState, commands);
 }
 
+void TileBase::DrawBoundingBox(const flint::core::FrameState &frameState, steel::rendering::gl::CommandBuffer* commands) {
+    if (content) {
+        content->DrawBoundingBox(frameState, commands);
+    }
+}
+
+
 TileBase::~TileBase() {
     delete content;
     content = nullptr;

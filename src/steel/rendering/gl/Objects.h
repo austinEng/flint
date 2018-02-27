@@ -22,6 +22,9 @@ struct Buffer {
     }
 };
 
+struct Shader {};
+struct ShaderProgram {};
+
 }
 }
 }
