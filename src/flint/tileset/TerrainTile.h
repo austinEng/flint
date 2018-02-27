@@ -8,7 +8,7 @@
 namespace flint {
 namespace tileset {
 
-constexpr float TERRAIN_ROOT_SIZE = 5000.f;
+constexpr float TERRAIN_ROOT_SIZE = 50000.f;
 constexpr float TERRAIN_ROOT_GEOMETRIC_ERROR = 2000000.f;
 constexpr uint32_t TERRAIN_SUBDIVISION_LEVEL = 5;
 
@@ -23,14 +23,12 @@ public:
         unsigned int depth;
         int i;
         int j;
-        int k;
 
         constexpr friend bool operator<(const Index &a, const Index &b) {
             return (
                 a.depth != b.depth ? a.depth < b.depth :
                 a.i != b.i ? a.i < b.i :
-                a.j != b.j ? a.j < b.j :
-                a.k != b.k ? a.k < b.k : false
+                a.j != b.j ? a.j < b.j : false
             );
         }
     };
@@ -67,7 +65,7 @@ public:
     }
 
     children_iterator<TerrainTile> ChildrenEnd() {
-        return children_iterator<TerrainTile>(this, 8);
+        return children_iterator<TerrainTile>(this, 4);
     }
 
     const_children_iterator<TerrainTile> ChildrenBegin() const {
@@ -75,7 +73,7 @@ public:
     }
 
     const_children_iterator<TerrainTile> ChildrenEnd() const {
-        return const_children_iterator<TerrainTile>(this, 8);
+        return const_children_iterator<TerrainTile>(this, 4);
     }
 
     std::shared_ptr<TerrainTile> GetChildImpl(uint32_t index);
@@ -89,7 +87,7 @@ public:
 private:
     core::AxisAlignedBox<3, float> getBoundingVolume() const;
 
-    std::array<std::shared_ptr<TerrainTile>, 8> children = {};
+    std::array<std::shared_ptr<TerrainTile>, 4> children = {};
 };
 
 }

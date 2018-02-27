@@ -24,7 +24,25 @@ public:
     void Create(flint::rendering::gl::CommandBuffer* commands);
     void Use(flint::rendering::gl::CommandBuffer* commands);
     TerrainTileContentShaderProgram(const TerrainTileContentShaderProgram&) = delete;
-    void operator=(const TerrainTileContentShaderProgram&) = delete;
+    TerrainTileContentShaderProgram& operator=(const TerrainTileContentShaderProgram&) = delete;
+
+    bool created = false;
+};
+
+class TerrainTileContentGeometry {
+private:
+    TerrainTileContentGeometry();
+    rendering::gl::SerialCounted<rendering::gl::VertexArray> vertexArray;
+public:
+    static TerrainTileContentGeometry& GetInstance() {
+        static TerrainTileContentGeometry instance;
+        return instance;
+    }
+
+    void Create(flint::rendering::gl::CommandBuffer* commands);
+    void Draw(const flint::core::FrameState &frameState, flint::rendering::gl::CommandBuffer* commands);
+    TerrainTileContentGeometry(const TerrainTileContentGeometry&) = delete;
+    TerrainTileContentGeometry& operator=(const TerrainTileContentGeometry&) = delete;
 
     bool created = false;
 };
@@ -35,15 +53,21 @@ class TerrainTileContent : public TileContent<TerrainTileContent> {
 public:
     TerrainTileContent() = delete;
     TerrainTileContent(TerrainTile* tile);
+    
+    struct TerrainSample {
+        float height;
+        Eigen::Matrix<float, 3, 1> normal;
+    };
+
+    static TerrainSample SampleTerrain(float x, float z, uint32_t depth);
+    static float GeometricError(uint32_t depth);
 
 private:
     TerrainTile* tile;
     bool ready = false;
 
-    uint32_t indexCount;
-    uint32_t bboxIndexCount;
-
     rendering::gl::SerialCounted<rendering::gl::VertexArray> vertexArray;
+    Eigen::Matrix<float, 4, 4> modelMatrix;
 
     void CreateImpl(flint::rendering::gl::CommandBuffer* commands);
     void DestroyImpl(flint::rendering::gl::CommandBuffer* commands);

@@ -19,9 +19,8 @@ std::shared_ptr<TerrainTile> TerrainTile::GetChildImpl(uint32_t index) {
         TerrainTile* parent = reinterpret_cast<TerrainTile*>(this);
         children[index] = TerrainTile::Create(TerrainTile::Index{
             parent->index.depth + 1,
-            parent->index.i * 2 + static_cast<int>((index >> 2u) & 1u),
-            parent->index.j * 2 + static_cast<int>((index >> 1u) & 1u),
-            parent->index.k * 2 + static_cast<int>((index >> 0u) & 1u)
+            parent->index.i * 2 + static_cast<int>((index >> 1u) & 1u),
+            parent->index.j * 2 + static_cast<int>((index >> 0u) & 1u),
         }, parent->tileset, parent);
     }
     return children[index];
@@ -36,23 +35,24 @@ flint::core::AxisAlignedBox<3, float> TerrainTile::ComputeBoundingVolumeImpl() c
     float size = static_cast<float>(std::pow(0.5f, index.depth) * TERRAIN_ROOT_SIZE);
     Eigen::Array<float, 3, 1> base (
         size * index.i - 0.5f * TERRAIN_ROOT_SIZE,
-        size * index.j - 0.5f * TERRAIN_ROOT_SIZE,
-        size * index.k - 0.5f * TERRAIN_ROOT_SIZE
+        -TERRAIN_ROOT_SIZE * 0.5f,
+        size * index.j - 0.5f * TERRAIN_ROOT_SIZE
     );
 
     return flint::core::AxisAlignedBox<3, float>(
-        base, base + Eigen::Array<float, 3, 1>(size, size, size)
+        base, base + Eigen::Array<float, 3, 1>(size, TERRAIN_ROOT_SIZE, size)
     );
 }
 
 float TerrainTile::ComputeGeometricErrorImpl() const {
     //constexpr auto errorReduction = 1.0 / TERRAIN_SUBDIVISION_LEVEL;
-    constexpr auto errorReduction = 0.5;
-    return static_cast<float>(TERRAIN_ROOT_GEOMETRIC_ERROR * std::pow(errorReduction, index.depth));
+    //constexpr auto errorReduction = 0.5;
+    //return static_cast<float>(TERRAIN_ROOT_GEOMETRIC_ERROR * std::pow(errorReduction, index.depth));
 
-    //constexpr float oneOverX = 0.55;
-    //constexpr float x = 1.0 / oneOverX;
-    //return TERRAIN_ROOT_GEOMETRIC_ERROR * core::constPow(oneOverX, index.depth) / (x - 1.0);
+    return TerrainTileContent::GeometricError(index.depth);
+    // constexpr float oneOverX = 0.4;
+    // constexpr float x = 1.0 / oneOverX;
+    // return TERRAIN_ROOT_GEOMETRIC_ERROR * core::constPow(oneOverX, index.depth) / (x - 1.0);
 }
 
 TerrainTile::~TerrainTile() {
@@ -66,6 +66,8 @@ void TerrainTile::Update(const flint::core::FrameState &frameState) {
         return;
     }
     lastVisitedFrameNumber = frameState.frameNumber;
+
+    content->Update(frameState);
 
     auto bv = getBoundingVolume();
     visibilityPlaneMask = parent ?

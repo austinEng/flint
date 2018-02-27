@@ -220,6 +220,7 @@ void Renderer::ExecuteCommands(const CommandBlock* commands) {
             }
             case CommandType::Uniform1f: {
                 auto* cmd = iter.NextCommand<Uniform1fCmd>();
+                glUniform1f(GetUniformLocation(cmd->location), cmd->value);
                 break;
             }
             case CommandType::UniformMatrix4fv: {

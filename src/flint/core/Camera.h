@@ -70,7 +70,7 @@ class Camera {
     }
 
     public:
-        Camera() : _cullingVolume(ComputeCullingVolume()) {
+        Camera() : _viewDirty(true), _projectionDirty(true), _cullingVolume(ComputeCullingVolume()) {
 
         }
 
@@ -116,9 +116,14 @@ class Camera {
             _viewDirty = true;
         }
 
-        void Move(const Eigen::Matrix<T, 3, 1> dir) {
+        void Move(const Eigen::Matrix<T, 3, 1> &dir) {
             this->Recalculate();
             _center += _right * dir[0] + _up * dir[1] + -_eyeDir * dir[2];
+            _viewDirty = true;
+        }
+
+        void MoveGlobal(const Eigen::Matrix<T, 3, 1> &dir) {
+            _center += dir;
             _viewDirty = true;
         }
 
@@ -138,18 +143,12 @@ class Camera {
         }
 
         const Eigen::Matrix<T, 4, 4>& GetProjection() const {
-            if (_projectionDirty) {
-                this->Recalculate();
-            }
-
+            this->Recalculate();
             return _projection;
         }
 
         const Eigen::Matrix<T, 4, 4>& GetView() const {
-            if (_viewDirty) {
-                this->Recalculate();
-            }
-
+            this->Recalculate();
             return _view;
         }
 
@@ -162,7 +161,18 @@ class Camera {
         }
 
         Eigen::Matrix<T, 3, 1> GetPosition() const {
+            this->Recalculate();
             return _center + _eyeDir * _radius;
+        }
+
+        Eigen::Matrix<T, 3, 1> GetForward() const {
+            this->Recalculate();
+            return -_eyeDir;
+        }
+
+        void SetPosition(const Eigen::Matrix<T, 3, 1> &newPos) {
+            _center += (newPos - GetPosition());
+            _viewDirty = true;
         }
 
         CullingVolume<3, 6, T> ComputeCullingVolume() {
@@ -175,8 +185,8 @@ class Camera {
             T n = _near;
             T f = _far;
 
-            Eigen::Matrix<T, 3, 1> forward = -_eyeDir;
-            Eigen::Matrix<T, 3, 1> eyePos = _center + _eyeDir * _radius;
+            Eigen::Matrix<T, 3, 1> forward = GetForward();
+            Eigen::Matrix<T, 3, 1> eyePos = GetPosition();
             Eigen::Matrix<T, 3, 1> nearPlaneCenter = eyePos + forward * n;
             Eigen::Matrix<T, 3, 1> farPlaneCenter = eyePos + forward * f;
 

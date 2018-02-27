@@ -55,29 +55,25 @@ void TerrainTileset::SelectTilesImpl(const flint::core::FrameState &frameState) 
     lruCache.Splice(lruCache.head, &lruSentinel);
 
     std::vector<std::weak_ptr<TerrainTile>> stack;
-    stack.reserve(27);
+    stack.reserve(0);
 
     for (int i = -1; i <= 1; ++i) {
         for (int j = -1; j <= 1; ++j) {
-            for (int k = -1; k <= 1; ++k) {
+            TerrainTile::Index index {
+                0,
+                cameraIndex[0] + i,
+                cameraIndex[2] + j,
+            };
 
-                TerrainTile::Index index {
-                    0,
-                    cameraIndex[0] + i,
-                    cameraIndex[1] + j,
-                    cameraIndex[2] + k,
-                };
-
-                std::shared_ptr<TerrainTile> rootTile;
-                auto it = rootTiles.find(index);
-                if (it == rootTiles.end()) {
-                    rootTile = TerrainTile::Create(index, this);
-                    rootTiles.emplace(index, rootTile);
-                } else {
-                    rootTile = it->second;
-                }
-                stack.push_back(rootTile);
+            std::shared_ptr<TerrainTile> rootTile;
+            auto it = rootTiles.find(index);
+            if (it == rootTiles.end()) {
+                rootTile = TerrainTile::Create(index, this);
+                rootTiles.emplace(index, rootTile);
+            } else {
+                rootTile = it->second;
             }
+            stack.push_back(rootTile);
         }
     }
 
@@ -174,6 +170,10 @@ void TerrainTileset::UnloadTilesImpl(flint::rendering::gl::CommandBuffer* comman
 
     lruSentinel.next = nullptr;
     lruCache.tail = &lruSentinel;
+}
+
+TerrainTileContent::TerrainSample TerrainTileset::SampleTerrain(float x, float z, uint32_t depth) const {
+    return TerrainTileContent::SampleTerrain(x, z, depth);
 }
 
 }

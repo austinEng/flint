@@ -55,7 +55,6 @@ threading::WorkerBase::WorkerResponse TerrainGenerator::Update(void* data, int s
     ptr = ptr + serializedDrawCommandsSize;
 
     updateResponseBuffer.resize(reinterpret_cast<size_t>(ptr));
-    //std::vector<uint8_t> buffer(sizeof(UpdateResponse) + serializedResourceCommandsSize + serializedDrawCommandsSize);
     auto* response = reinterpret_cast<UpdateResponse*>(updateResponseBuffer.data());
     response->serializedResourceCommandsStart = reinterpret_cast<size_t>(serializedResourceCommandsStart);
     response->serializedDrawCommandsStart = reinterpret_cast<size_t>(serializedDrawCommandsStart);
@@ -65,12 +64,6 @@ threading::WorkerBase::WorkerResponse TerrainGenerator::Update(void* data, int s
     memcpy(&updateResponseBuffer[response->serializedDrawCommandsStart], serializedDrawCommands, serializedDrawCommandsSize);
 
     return { updateResponseBuffer.data(), static_cast<int>(updateResponseBuffer.size()) };
-
-    //std::vector<uint8_t> data(sizeof(UpdateResponse) + serializedResourceCommandsSize + serializedDrawCommandsSize);
-
-    /*delete serializedCommands;
-    commandBuffer->Allocator()->Serialize(&serializedCommands, &serializedCommandsSize);
-    return { serializedCommands, static_cast<int>(serializedCommandsSize) };*/
 }
 
 WORKER_MAIN(TerrainGenerator, {

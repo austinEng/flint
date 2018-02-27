@@ -25,6 +25,10 @@ CommandBlock* CommandAllocator::AcquireBlocks() {
     return ret;
 }
 
+const CommandBlock* CommandAllocator::GetBlocks() const {
+    return blocks;
+}
+
 bool CommandAllocator::GetNewBlock(size_t minimumSize) {
     if (currentBlock->nextBlock == nullptr) {
         // Allocate blocks doubling sizes each time, to a maximum of 16k (or at least minimumSize).

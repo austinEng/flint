@@ -3,6 +3,7 @@
 #include <map>
 #include "Tileset.h"
 #include "TerrainTile.h"
+#include "TerrainTileContent.h"
 
 namespace flint {
 namespace tileset {
@@ -36,6 +37,8 @@ public:
     void LoadTilesImpl(flint::rendering::gl::CommandBuffer* commands);
 
     void UnloadTilesImpl(flint::rendering::gl::CommandBuffer* commands);
+
+    TerrainTileContent::TerrainSample SampleTerrain(float x, float z, uint32_t depth) const;
 };
 
 }

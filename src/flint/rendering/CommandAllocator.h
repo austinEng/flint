@@ -86,6 +86,7 @@ public:
     }
 
     CommandBlock* AcquireBlocks();
+    const CommandBlock* GetBlocks() const;
     void Reset();
 
 private:
