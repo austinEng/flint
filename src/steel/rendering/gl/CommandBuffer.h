@@ -1,10 +1,10 @@
 #pragma once
 #include <stdint.h>
-#include <flint/rendering/CommandAllocator.h>
+#include <steel/rendering/CommandAllocator.h>
 #include "Commands.h"
 #include "Enums.h"
 
-namespace flint {
+namespace steel {
 namespace rendering {
 namespace gl {
 

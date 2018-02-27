@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-namespace flint {
+namespace steel {
 namespace rendering {
 
 struct CommandBlock {

@@ -5,7 +5,7 @@
 #include "TerrainTileset.h"
 #include "TerrainTileContent.h"
 
-namespace flint {
+namespace steel {
 namespace tileset {
 
 void TerrainTileset::LRUCache::Append(TerrainTile::LRUNode* node) {
@@ -39,7 +39,7 @@ void TerrainTileset::LRUCache::Splice(TerrainTile::LRUNode* n1, TerrainTile::LRU
     if (n2 == tail) tail = n2_prev;
 }
 
-TerrainTileset::TerrainTileset() 
+TerrainTileset::TerrainTileset()
   : lruCache({ &lruSentinel, &lruSentinel }) {
 
 }
@@ -90,7 +90,7 @@ void TerrainTileset::SelectTilesImpl(const flint::core::FrameState &frameState) 
                     if (tile->screenSpaceError > maximumScreenSpaceError) {
                         bool allVisibleRenderableChildrenReady = true;
                         bool hasRenderableChildren = false;
-                        
+
                         for (std::shared_ptr<TerrainTile> child : tile->IterChildren()) {
                             Touch(child);
                             child->Update(frameState);
@@ -121,20 +121,20 @@ void TerrainTileset::SelectTilesImpl(const flint::core::FrameState &frameState) 
     }
 }
 
-void TerrainTileset::UpdateTilesImpl(const flint::core::FrameState &frameState, flint::rendering::gl::CommandBuffer* commands) {
+void TerrainTileset::UpdateTilesImpl(const flint::core::FrameState &frameState, steel::rendering::gl::CommandBuffer* commands) {
     for (std::shared_ptr<TileBase> tile : selectedTiles) {
         tile->Update(frameState);
     }
 }
 
-void TerrainTileset::DrawTilesImpl(const flint::core::FrameState &frameState, flint::rendering::gl::CommandBuffer* commands) {
+void TerrainTileset::DrawTilesImpl(const flint::core::FrameState &frameState, steel::rendering::gl::CommandBuffer* commands) {
     TerrainTileContentShaderProgram::GetInstance().Use(commands);
     for (std::shared_ptr<TileBase> tile : selectedTiles) {
         tile->Draw(frameState, commands);
     }
 }
 
-void TerrainTileset::LoadTilesImpl(flint::rendering::gl::CommandBuffer* commands) {
+void TerrainTileset::LoadTilesImpl(steel::rendering::gl::CommandBuffer* commands) {
     std::sort(loadQueue.begin(), loadQueue.end(), [](std::shared_ptr<const TileBase> a, std::shared_ptr<const TileBase> b) {
         return std::static_pointer_cast<const TerrainTile, const TileBase>(a)->screenSpaceError > std::static_pointer_cast<const TerrainTile, const TileBase>(b)->screenSpaceError;
     });
@@ -151,14 +151,14 @@ void TerrainTileset::LoadTilesImpl(flint::rendering::gl::CommandBuffer* commands
     loadQueue.clear();
 }
 
-void TerrainTileset::UnloadTilesImpl(flint::rendering::gl::CommandBuffer* commands) {
+void TerrainTileset::UnloadTilesImpl(steel::rendering::gl::CommandBuffer* commands) {
     auto* node = lruSentinel.next;
     while (node) {
         auto* current = node;
         auto ptr = current->tile;
         node = current->next;
         current->tile.reset();
-        
+
         if (ptr) {
             ptr->UnloadContent(commands);
             auto it = rootTiles.find(ptr->index);

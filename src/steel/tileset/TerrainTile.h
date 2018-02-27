@@ -5,7 +5,7 @@
 #include "Tileset.h"
 #include "Tile.h"
 
-namespace flint {
+namespace steel {
 namespace tileset {
 
 constexpr float TERRAIN_ROOT_SIZE = 50000.f;
@@ -85,7 +85,7 @@ public:
     float ComputeGeometricErrorImpl() const;
 
 private:
-    core::AxisAlignedBox<3, float> getBoundingVolume() const;
+    flint::core::AxisAlignedBox<3, float> getBoundingVolume() const;
 
     std::array<std::shared_ptr<TerrainTile>, 4> children = {};
 };

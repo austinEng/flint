@@ -1,13 +1,13 @@
 #include <assert.h>
 #include <string>
-#include <flint/rendering/CommandIterator.h>
-#include <flint/rendering/gl/Commands.h>
-#include <flint/rendering/gl/Enums.h>
+#include <steel/rendering/CommandIterator.h>
+#include <steel/rendering/gl/Commands.h>
+#include <steel/rendering/gl/Enums.h>
 #include <flint/debug/Print.h>
 #include "Renderer.h"
 
-using namespace flint::rendering;
-using namespace flint::rendering::gl;
+using namespace steel::rendering;
+using namespace steel::rendering::gl;
 
 namespace flint {
 namespace viewport {

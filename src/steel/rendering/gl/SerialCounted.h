@@ -2,7 +2,7 @@
 #include <map>
 #include <memory>
 
-namespace flint {
+namespace steel {
 namespace rendering {
 namespace gl {
 

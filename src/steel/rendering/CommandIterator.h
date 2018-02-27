@@ -4,7 +4,7 @@
 #include "CommandAllocator.h"
 #include "CommandBlock.h"
 
-namespace flint {
+namespace steel {
 namespace rendering {
 
 class CommandAllocator;
@@ -33,7 +33,7 @@ public:
 
     template <typename T>
     T* NextCommand() {
-        uint8_t* commandPtr = core::Align<alignof(T)>(currentPtr);
+        uint8_t* commandPtr = flint::core::Align<alignof(T)>(currentPtr);
         currentPtr = commandPtr + sizeof(T);
         assert(currentPtr <= currentBlock->data + currentBlock->size);
         return reinterpret_cast<T*>(commandPtr);
@@ -46,7 +46,7 @@ public:
         assert(hasId);
         assert(id == CommandBlock::CommandData);
 
-        uint8_t* commandPtr = core::Align<alignof(T)>(currentPtr);
+        uint8_t* commandPtr = flint::core::Align<alignof(T)>(currentPtr);
         currentPtr = commandPtr + count * sizeof(T);
         assert(currentPtr <= currentBlock->data + currentBlock->size);
         return reinterpret_cast<T*>(commandPtr);

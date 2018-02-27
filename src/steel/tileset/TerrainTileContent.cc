@@ -2,10 +2,11 @@
 #include <random>
 #include "TerrainTileContent.h"
 
-namespace flint {
+namespace steel {
 namespace tileset {
 
-using namespace flint::rendering::gl;
+using namespace flint;
+using namespace steel::rendering::gl;
 
 static constexpr bool kUseShaderOffsets = true;
 
@@ -31,7 +32,7 @@ namespace {
         seed = seed ^ (seed >> 4u);
         seed *= 668265261u;
         seed = seed ^ (seed >> 15u);
-        
+
         return static_cast<float>(seed) / 4294967296.f;
     }
 
@@ -107,7 +108,7 @@ namespace {
         Eigen::Matrix<float, 2, 1> cliffs = smoothstepd(-0.08f, -0.01f, cliffBase[2]);
         fbmNoise[2] = fbmNoise[2] + cliffFac*cliffs[0];
         fbmNoise.topRows(2) = fbmNoise.topRows(2) + cliffFac*cliffs[1]* cliffBase.topRows(2);
-        
+
         fbmNoise[2] *= terrainAmplitude;
         fbmNoise.topRows(2) *= terrainAmplitude * terrainScale;
         return fbmNoise;
@@ -154,7 +155,7 @@ vec3 noised(vec2 x) {
 
     vec2 u = w*w*w*(w*(w*6.0 - 15.0) + 10.0);
     vec2 du = 30.0*w*w*(w*(w - 2.0) + 1.0);
-    
+
     float a = wangHash(p + vec2(0, 0));
     float b = wangHash(p + vec2(1, 0));
     float c = wangHash(p + vec2(0, 1));
@@ -173,7 +174,7 @@ vec3 fbm(float f, float s, float b, vec2 p, int octaves) {
     float denom = 1.0 - s;
     float a = 0.0;
     vec2 d = vec2(0.0, 0.0);
-    
+
     mat2 m = mat2(
         1.0, 0.0,
         0.0, 1.0
@@ -217,7 +218,7 @@ vec3 terrain(vec2 p, uint d) {
     vec2 cliffs = smoothstepd(-0.08, -0.01, cliffBase[2]);
     fbmNoise.z = fbmNoise.z + cliffFac * cliffs[0];
     fbmNoise.xy = fbmNoise.xy + cliffFac * cliffs[1] * cliffBase.xy;
-        
+
     fbmNoise.z *= terrainAmplitude;
     fbmNoise.xy *= terrainAmplitude * terrainScale;
     return fbmNoise;
@@ -229,7 +230,7 @@ void main() {
         vec3 noise = terrain(p.xz, depth);
         vec3 terrain_position = vec3(p.x, noise[2], p.z);
         vec3 terrain_normal = normalize(vec3(-noise.x, 1.0, -noise.y));
-    
+
         fs_color = vec3(0.8);
         fs_norm = terrain_normal;
         fs_pos = terrain_position;
@@ -268,7 +269,7 @@ void main() {
     if (screenSpaceError > 20.0) {
         color = vec3(1.0, 0.2, 0.2);
     }
-    
+
     outColor = vec4(fs_norm, 1.0);
     outColor = vec4(lightingTerm * color, 1.0);
 }
@@ -281,7 +282,7 @@ TerrainTileContentShaderProgram::TerrainTileContentShaderProgram() : created(fal
     programId = static_cast<uint32_t>(rand() % UINT32_MAX);
 }
 
-void TerrainTileContentShaderProgram::Create(flint::rendering::gl::CommandBuffer* commands) {
+void TerrainTileContentShaderProgram::Create(steel::rendering::gl::CommandBuffer* commands) {
     if (!created) {
         created = true;
 
@@ -297,7 +298,7 @@ void TerrainTileContentShaderProgram::Create(flint::rendering::gl::CommandBuffer
     }
 }
 
-void TerrainTileContentShaderProgram::Use(flint::rendering::gl::CommandBuffer* commands) {
+void TerrainTileContentShaderProgram::Use(steel::rendering::gl::CommandBuffer* commands) {
     commands->Record<CommandType::UseProgram>(UseProgramCmd{ programId });
 }
 
@@ -401,7 +402,7 @@ float TerrainTileContent::GeometricError(uint32_t depth) {
     return heightError * tileArea / static_cast<float>(vertexCount);
 }
 
-void TerrainTileContent::CreateImpl(flint::rendering::gl::CommandBuffer* commands) {
+void TerrainTileContent::CreateImpl(steel::rendering::gl::CommandBuffer* commands) {
     TerrainTileContentShaderProgram::GetInstance().Create(commands);
 
     assert(tile->boundingVolume);
@@ -426,7 +427,7 @@ void TerrainTileContent::CreateImpl(flint::rendering::gl::CommandBuffer* command
                 auto sample = SampleTerrain(positions[index][0], positions[index][2], tile->index.depth);
                 positions[index][1] = sample.height;
                 Eigen::Array<float, 3, 1> p{ positions[index][0], positions[index][1], positions[index][2] };
-                
+
                 if (contentBoundingVolume) {
                     contentBoundingVolume->Merge(p);
                 } else {
@@ -528,11 +529,11 @@ void TerrainTileContent::CreateImpl(flint::rendering::gl::CommandBuffer* command
         commands->Record<CommandType::DeleteBuffer>(DeleteBufferCmd{ normalBuffer });
         commands->Record<CommandType::DeleteBuffer>(DeleteBufferCmd{ colorBuffer });
     }
-    
+
     ready = true;
 }
 
-void TerrainTileContent::DestroyImpl(flint::rendering::gl::CommandBuffer* commands) {
+void TerrainTileContent::DestroyImpl(steel::rendering::gl::CommandBuffer* commands) {
     if (ready) {
         if (!kUseShaderOffsets) {
             commands->Record<CommandType::DeleteVertexArray>(DeleteVertexArrayCmd{ vertexArray });
@@ -580,7 +581,7 @@ void TerrainTileContent::UpdateImpl(const flint::core::FrameState &frameState) {
     }
 }
 
-void TerrainTileContent::DrawImpl(const flint::core::FrameState &frameState, flint::rendering::gl::CommandBuffer* commands) {
+void TerrainTileContent::DrawImpl(const flint::core::FrameState &frameState, steel::rendering::gl::CommandBuffer* commands) {
     if (!IsEmpty() && IsReady()) {
         commands->Record<CommandType::Uniform1ui>(Uniform1uiCmd{ "depth", tile->index.depth });
         commands->Record<CommandType::Uniform1f>(Uniform1fCmd{ "screenSpaceError", tile->screenSpaceError });

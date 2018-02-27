@@ -66,6 +66,7 @@ endif()
 
 add_subdirectory(src/threading)
 add_subdirectory(src/flint)
+add_subdirectory(src/steel)
 add_subdirectory(src/flint_viewport)
 
 if (BUILD_TESTS AND NOT EMSCRIPTEN)

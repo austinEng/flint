@@ -2,7 +2,7 @@
 #include "CommandBuffer.h"
 #include "Enums.h"
 
-namespace flint {
+namespace steel {
 namespace rendering {
 namespace gl {
 

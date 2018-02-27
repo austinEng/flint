@@ -5,8 +5,10 @@
 #include <flint/debug/Print.h>
 #include "CommandBlock.h"
 
-namespace flint {
+namespace steel {
 namespace rendering {
+
+using namespace flint;
 
 CommandBlock::~CommandBlock() {
     delete data;

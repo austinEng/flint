@@ -1,8 +1,10 @@
 #include <algorithm>
 #include "CommandAllocator.h"
 
-namespace flint {
+namespace steel {
 namespace rendering {
+
+using namespace flint;
 
 CommandAllocator::CommandAllocator() : blocks(nullptr), lastAllocationSize(2048) {
 }

@@ -2,8 +2,10 @@
 #include "TerrainTileContent.h"
 #include "TerrainTileset.h"
 
-namespace flint {
+namespace steel {
 namespace tileset {
+
+using namespace flint;
 
 TerrainTile::TerrainTile(const Index& index, TilesetBase* tileset, TerrainTile* parent)
     : Base(tileset, parent), index(index) {
@@ -94,7 +96,7 @@ bool TerrainTile::IsVisible() const {
     return visibilityPlaneMask != core::CullingMaskOutside;
 }
 
-core::AxisAlignedBox<3, float> TerrainTile::getBoundingVolume() const {
+flint::core::AxisAlignedBox<3, float> TerrainTile::getBoundingVolume() const {
     if (ContentReady() && HasRendererableContent() && content->contentBoundingVolume.hasValue()) {
         return content->contentBoundingVolume.value();
     } else {

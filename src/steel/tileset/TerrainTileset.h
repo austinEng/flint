@@ -5,7 +5,7 @@
 #include "TerrainTile.h"
 #include "TerrainTileContent.h"
 
-namespace flint {
+namespace steel {
 namespace tileset {
 
 class TerrainTileset : public Tileset<TerrainTileset> {
@@ -30,13 +30,13 @@ public:
 
     void SelectTilesImpl(const flint::core::FrameState &frameState);
 
-    void UpdateTilesImpl(const flint::core::FrameState &frameState, flint::rendering::gl::CommandBuffer* commands);
+    void UpdateTilesImpl(const flint::core::FrameState &frameState, steel::rendering::gl::CommandBuffer* commands);
 
-    void DrawTilesImpl(const flint::core::FrameState &frameState, flint::rendering::gl::CommandBuffer* commands);
+    void DrawTilesImpl(const flint::core::FrameState &frameState, steel::rendering::gl::CommandBuffer* commands);
 
-    void LoadTilesImpl(flint::rendering::gl::CommandBuffer* commands);
+    void LoadTilesImpl(steel::rendering::gl::CommandBuffer* commands);
 
-    void UnloadTilesImpl(flint::rendering::gl::CommandBuffer* commands);
+    void UnloadTilesImpl(steel::rendering::gl::CommandBuffer* commands);
 
     TerrainTileContent::TerrainSample SampleTerrain(float x, float z, uint32_t depth) const;
 };

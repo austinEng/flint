@@ -4,11 +4,11 @@
 #include <Eigen/Dense>
 #include <flint/core/FrameState.h>
 #include <flint/core/AxisAlignedBox.h>
-#include <flint/rendering/gl/CommandBuffer.h>
+#include <steel/rendering/gl/CommandBuffer.h>
 #include "Tileset.h"
 #include "TileContent.h"
 
-namespace flint {
+namespace steel {
 namespace tileset {
 
 class TilesetBase;
@@ -26,7 +26,7 @@ public:
 
     flint::core::Optional<flint::core::AxisAlignedBox<3, float>> boundingVolume;
     float geometricError;
-    core::PlaneMask visibilityPlaneMask;
+    flint::core::PlaneMask visibilityPlaneMask;
 
     TileBase(TilesetBase* tileset, TileBase* parent, const Eigen::Matrix<float, 4, 4> &transform);
 
@@ -88,13 +88,13 @@ public:
     bool ContentReady() const;
     bool HasRendererableContent() const;
 
-    bool LoadContent(flint::rendering::gl::CommandBuffer* commands);
+    bool LoadContent(steel::rendering::gl::CommandBuffer* commands);
 
-    void UnloadContent(flint::rendering::gl::CommandBuffer* commands);
+    void UnloadContent(steel::rendering::gl::CommandBuffer* commands);
 
     void Update(const flint::core::FrameState &frameState);
 
-    void Draw(const flint::core::FrameState &frameState, flint::rendering::gl::CommandBuffer* commands);
+    void Draw(const flint::core::FrameState &frameState, steel::rendering::gl::CommandBuffer* commands);
 
     virtual ~TileBase();
 };

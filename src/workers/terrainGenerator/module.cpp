@@ -1,16 +1,17 @@
 #include <flint/core/FrameState.h>
 #include <flint/core/AxisAlignedBox.h>
-#include <flint/tileset/Tileset.h>
-#include <flint/tileset/TerrainTileset.h>
-#include <flint/rendering/gl/Commands.h>
-#include <flint/rendering/gl/CommandBuffer.h>
+#include <steel/tileset/Tileset.h>
+#include <steel/tileset/TerrainTileset.h>
+#include <steel/rendering/gl/Commands.h>
+#include <steel/rendering/gl/CommandBuffer.h>
 #include "module.h"
 #include <iostream>
 #include <vector>
 
 using namespace flint;
-using namespace flint::rendering;
-using namespace flint::rendering::gl;
+using namespace steel;
+using namespace steel::rendering;
+using namespace steel::rendering::gl;
 
 static core::FrameState frameState;
 static tileset::TerrainTileset* terrainTileset;

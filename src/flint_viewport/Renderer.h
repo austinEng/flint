@@ -1,6 +1,6 @@
 #pragma once
 #include <map>
-#include <flint/rendering/CommandBlock.h>
+#include <steel/rendering/CommandBlock.h>
 #include <flint/core/FrameState.h>
 #include "GL.h"
 #include "Shader.h"
@@ -14,7 +14,7 @@ public:
     Renderer(flint::core::FrameState* frameState);
     ~Renderer();
 
-    void ExecuteCommands(const rendering::CommandBlock* commands);
+    void ExecuteCommands(const steel::rendering::CommandBlock* commands);
 private:
     flint::core::FrameState* frameState;
     uint32_t currentProgramId = 0;

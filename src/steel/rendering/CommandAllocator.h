@@ -8,7 +8,7 @@
 #include "CommandIterator.h"
 #include "CommandBlock.h"
 
-namespace flint {
+namespace steel {
 namespace rendering {
 
 class CommandIterator;
@@ -42,8 +42,8 @@ public:
         }
 
         uint32_t* idAlloc = reinterpret_cast<uint32_t*>(currentPtr);
-        uint8_t* commandAlloc = static_cast<uint8_t*>(core::Align<alignof(T)>(currentPtr + sizeof(uint32_t)));
-        uint8_t* nextPtr = core::Align<alignof(uint32_t)>(commandAlloc + sizeof(T));
+        uint8_t* commandAlloc = static_cast<uint8_t*>(flint::core::Align<alignof(T)>(currentPtr + sizeof(uint32_t)));
+        uint8_t* nextPtr = flint::core::Align<alignof(uint32_t)>(commandAlloc + sizeof(T));
 
         if (nextPtr + sizeof(uint32_t) > endPtr) {
             *idAlloc = CommandBlock::EndOfBlock;
@@ -67,8 +67,8 @@ public:
         }
 
         uint32_t* idAlloc = reinterpret_cast<uint32_t*>(currentPtr);
-        uint8_t* commandAlloc = core::Align<alignof(T)>(currentPtr + sizeof(uint32_t));
-        uint8_t* nextPtr = core::Align<alignof(uint32_t)>(commandAlloc + sizeof(T) * count);
+        uint8_t* commandAlloc = flint::core::Align<alignof(T)>(currentPtr + sizeof(uint32_t));
+        uint8_t* nextPtr = flint::core::Align<alignof(uint32_t)>(commandAlloc + sizeof(T) * count);
 
         if (nextPtr + sizeof(uint32_t) > endPtr) {
             *idAlloc = CommandBlock::EndOfBlock;

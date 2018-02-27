@@ -58,7 +58,7 @@ if (FLINT_VIEWPORT_DEPENDENCIES)
     add_dependencies(flint_viewport ${FLINT_VIEWPORT_DEPENDENCIES})
 endif()
 add_dependencies(flint_viewport flint)
-target_link_libraries(flint_viewport flint ${FLINT_VIEWPORT_LINK_LIBRARIES})
+target_link_libraries(flint_viewport flint steel ${FLINT_VIEWPORT_LINK_LIBRARIES})
 
 set(INCLUDE_DEST "include/flint_viewport")
 set(LIB_DEST "lib/${CMAKE_BUILD_TYPE}")

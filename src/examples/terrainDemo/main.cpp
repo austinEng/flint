@@ -1,18 +1,21 @@
 #include <iostream>
 #include <list>
+#include <vector>
 #include <flint/core/FrameState.h>
 #include <flint_viewport/Window.h>
 #include <flint_viewport/CameraControls.h>
 #include <flint_viewport/Renderer.h>
 #include <flint_viewport/Shader.h>
 #include <flint_viewport/ShaderProgram.h>
-#include <flint/rendering/gl/Commands.h>
-#include <flint/rendering/gl/CommandBuffer.h>
-#include <flint/tileset/TerrainTileset.h>
+#include <steel/rendering/gl/Commands.h>
+#include <steel/rendering/gl/CommandBuffer.h>
+#include <steel/tileset/TerrainTileset.h>
 #include "../workers/terrainGenerator/module.h"
 
 using namespace flint;
-using namespace flint::rendering::gl;
+using namespace steel;
+using namespace steel::rendering;
+using namespace steel::rendering::gl;
 
 static constexpr bool traverseMainThread = true;
 
@@ -20,8 +23,8 @@ static core::FrameState frameState;
 static viewport::CameraControls<float>* cameraControls;
 static threading::Worker<TerrainGenerator>* terrainGenerator = nullptr;
 static flint::viewport::Renderer renderer(&frameState);
-static flint::rendering::CommandBlock* terrainCommands = nullptr;
-static std::list<std::pair<flint::rendering::CommandBlock*, std::vector<uint8_t>>> commandQueue;
+static CommandBlock* terrainCommands = nullptr;
+static std::list<std::pair<CommandBlock*, std::vector<uint8_t>>> commandQueue;
 
 static tileset::TerrainTileset* terrainTileset = nullptr;
 static CommandBuffer* commandBuffer = nullptr;
@@ -79,9 +82,6 @@ static void frame(void* ptr) {
         if (!generating) {
             generating = true;
             terrainGenerator->Call<&TerrainGenerator::Update>(&frameState, sizeof(core::FrameState), nullptr, [](void* data, int size, void* arg) {
-                using namespace flint::rendering;
-                using namespace flint::rendering::gl;
-
                 static std::vector<uint8_t> dest[2];
                 static uint32_t d = 0;
 
@@ -98,7 +98,7 @@ static void frame(void* ptr) {
 
                     dest[d].resize(response->serializedDrawCommandsSize);
                     std::copy(drawCommandsData, drawCommandsData + response->serializedDrawCommandsSize, dest[d].begin());
-                    terrainCommands = flint::rendering::CommandBlock::Deserialize(&dest[d][0], response->serializedDrawCommandsSize);
+                    terrainCommands = CommandBlock::Deserialize(&dest[d][0], response->serializedDrawCommandsSize);
                     d = 1 - d;
                 }
                 generating = false;

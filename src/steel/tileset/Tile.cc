@@ -1,6 +1,6 @@
 #include "Tile.h"
 
-namespace flint {
+namespace steel {
 namespace tileset {
 
 TileBase::TileBase(TilesetBase* tileset, TileBase* parent, const Eigen::Matrix<float, 4, 4> &transform)
@@ -9,7 +9,7 @@ TileBase::TileBase(TilesetBase* tileset, TileBase* parent, const Eigen::Matrix<f
     transform(transform),
     parentTransform(parent ? parent->computedTransform : tileset->Transform()),
     computedTransform(parentTransform * transform),
-    visibilityPlaneMask(core::CullingMaskIndeterminate) {
+    visibilityPlaneMask(flint::core::CullingMaskIndeterminate) {
 }
 
 bool TileBase::ContentReady() const {
@@ -21,7 +21,7 @@ bool TileBase::HasRendererableContent() const {
 }
 
 
-bool TileBase::LoadContent(flint::rendering::gl::CommandBuffer* commands) {
+bool TileBase::LoadContent(steel::rendering::gl::CommandBuffer* commands) {
     if (!HasRendererableContent()) {
         return false;
     }
@@ -30,7 +30,7 @@ bool TileBase::LoadContent(flint::rendering::gl::CommandBuffer* commands) {
     return true;
 }
 
-void TileBase::UnloadContent(flint::rendering::gl::CommandBuffer* commands) {
+void TileBase::UnloadContent(steel::rendering::gl::CommandBuffer* commands) {
     if (!HasRendererableContent()) {
         return;
     }
@@ -45,7 +45,7 @@ void TileBase::Update(const flint::core::FrameState &frameState) {
     content->Update(frameState);
 }
 
-void TileBase::Draw(const flint::core::FrameState &frameState, flint::rendering::gl::CommandBuffer* commands) {
+void TileBase::Draw(const flint::core::FrameState &frameState, steel::rendering::gl::CommandBuffer* commands) {
     if (!ContentReady() || !HasRendererableContent()) {
         return;
     }

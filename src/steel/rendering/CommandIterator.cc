@@ -2,8 +2,10 @@
 #include <flint/debug/Print.h>
 #include "CommandIterator.h"
 
-namespace flint {
+namespace steel {
 namespace rendering {
+
+using namespace flint;
 
 CommandIterator::CommandIterator() {
     Reset();

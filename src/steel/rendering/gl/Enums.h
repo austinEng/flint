@@ -1,6 +1,6 @@
 #pragma once
 
-namespace flint {
+namespace steel {
 namespace rendering {
 namespace gl {
 

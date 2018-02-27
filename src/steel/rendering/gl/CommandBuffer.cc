@@ -1,7 +1,7 @@
 #include <assert.h>
 #include "CommandBuffer.h"
 
-namespace flint {
+namespace steel {
 namespace rendering {
 namespace gl {
 
