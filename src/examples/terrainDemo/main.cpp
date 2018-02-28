@@ -131,7 +131,7 @@ int main(int argc, char** argv) {
     glClearColor(0.f, 0.f, 0.f, 1.f);
     glEnable(GL_DEPTH_TEST);
 
-    frameState.camera.SetNearFar(0.1, 20000.0f);
+    frameState.camera.SetNearFar(0.1, 40000.0f);
     frameState.camera.SetAltitude(0);
     frameState.camera.SetAzimuth(static_cast<float>(kPI/6.0));
     frameState.camera.SetDistance(0.01);

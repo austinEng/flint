@@ -110,7 +110,6 @@ void Renderer::ExecuteCommands(const CommandBlock* commands) {
 
     CommandType c;
     while (iter.NextCommandId(&c)) {
-        // PrintCommandType(c);
         switch (c) {
             case CommandType::Clear: {
                 auto* cmd = iter.NextCommand<ClearCmd>();
@@ -207,9 +206,12 @@ void Renderer::ExecuteCommands(const CommandBlock* commands) {
                 currentProgramId = cmd->programId;
                 glUseProgram(programMap.at(currentProgramId).GetGLProgram());
                 auto& locations = locationMap.at(currentProgramId);
-                int location = GetUniformLocation("viewProj");
-                if (location >= 0) {
+                int location;
+                if ((location = GetUniformLocation("viewProj")) >= 0) {
                     glUniformMatrix4fv(location, 1, false, frameState->camera.GetViewProjection().data());
+                }
+                if ((location = GetUniformLocation("cameraPosition")) >= 0) {
+                    glUniform3fv(location, 1, frameState->camera.GetPosition().data());
                 }
                 break;
             }

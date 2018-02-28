@@ -237,7 +237,7 @@ void main() {
         vec3 terrain_position = vec3(p.x, noise[2], p.z);
         vec3 terrain_normal = normalize(vec3(-noise.x, 1.0, -noise.y));
 
-        fs_color = vec3(0.8);
+        fs_color = vec3(0.2);
         fs_norm = terrain_normal;
         fs_pos = terrain_position;
         gl_Position = viewProj * vec4(terrain_position, 1.0);
@@ -257,27 +257,47 @@ precision highp float;
 in vec3 fs_color;
 in vec3 fs_norm;
 in vec3 fs_pos;
-out vec4 outColor;
+uniform vec3 cameraPosition;
 uniform float screenSpaceError;
 
-const vec3 lightDir1 = normalize(vec3(1, 0.5, 0));
-const vec3 lightDir2 = normalize(vec3(0, 1, 1));
-const vec3 lightDir3 = normalize(vec3(-1, 5, -1));
+out vec4 outColor;
+
+const float exposure = 1.0;
+const vec3 ambientColor = 0.25 * normalize(vec3(0.5, 0.5, 1));
+const vec3 sunColor = 2.0 * normalize(vec3(1.5, 0.7, 0.3));
+const vec3 sunDirection = normalize(vec3(1, 2, 1));
+const vec3 worldUp = normalize(vec3(0, 1, 0));
+const vec3 fogColor = vec3(0, 0, 0);
+const float fogDensity = 0.00005;
+
+const float specularHardness = 2.0;
+const vec3 specularColor = vec3(0.1);
 
 void main() {
-    float lightingTerm = clamp(
-        0.8 * max(0.0, dot(fs_norm, lightDir1)) +
-        0.3 * max(0.0, dot(fs_norm, lightDir2)) +
-        0.1 * max(0.0, dot(fs_norm, lightDir3)),
-    0.0, 1.0);
     vec3 color = fs_color;
-
     if (screenSpaceError > 20.0) {
         color = vec3(1.0, 0.2, 0.2);
     }
 
-    outColor = vec4(fs_norm, 1.0);
-    outColor = vec4(lightingTerm * color, 1.0);
+    vec3 cameraVec = cameraPosition - fs_pos;
+    vec3 cameraDir = normalize(cameraVec);
+
+    float sunDiffuseIntensity = max(0.0, dot(fs_norm, sunDirection));
+    float sunSpecularIntensity = pow(max(0.0, dot(fs_norm, normalize(sunDirection + cameraDir))), specularHardness);
+
+    vec3 ambientTerm = ambientColor * max(0.0, dot(fs_norm, worldUp)) * color;
+    vec3 diffuseTerm = sunColor * sunDiffuseIntensity * color;
+    vec3 specularTerm = sunColor * sunSpecularIntensity * specularColor;
+
+    color = vec3(ambientTerm + diffuseTerm + specularTerm);
+
+    color = 1.0 - exp(-color * exposure);
+    color = pow(color, vec3(1.0 / 2.2));
+
+    float fogDistance = length(cameraVec);
+    color = mix(fogColor, color, exp(-pow(fogDistance * fogDensity, 2.0)));
+
+    outColor = vec4(color, 1.0);
 }
 )";
 }
@@ -608,7 +628,7 @@ void TerrainTileContent::DrawBoundingBoxImpl(const flint::core::FrameState &fram
     static float color[4] = { 0.0, 0.0, 1.0, 1.0 };
     commands->Record<CommandType::Uniform4fv>(Uniform4fvCmd{ "color", 1 });
     commands->RecordData<float>(color, 4);
-    
+
     steel::geometry::BoundingBoxGeometry::GetInstance().Draw(frameState, commands);
 }
 
