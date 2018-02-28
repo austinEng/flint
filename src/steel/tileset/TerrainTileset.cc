@@ -130,6 +130,12 @@ void TerrainTileset::UpdateTilesImpl(const flint::core::FrameState &frameState, 
 
 void TerrainTileset::DrawTilesImpl(const flint::core::FrameState &frameState, steel::rendering::gl::CommandBuffer* commands) {
     TerrainTileContentShaderProgram::GetInstance().Use(commands);
+
+    // Sort tiles for early Z
+    std::sort(selectedTiles.begin(), selectedTiles.end(), [](std::shared_ptr<const TileBase> a, std::shared_ptr<const TileBase> b) {
+        return std::static_pointer_cast<const TerrainTile, const TileBase>(a)->distanceToCamera < std::static_pointer_cast<const TerrainTile, const TileBase>(b)->distanceToCamera;
+    });
+
     for (std::shared_ptr<TileBase> tile : selectedTiles) {
         tile->Draw(frameState, commands);
     }
