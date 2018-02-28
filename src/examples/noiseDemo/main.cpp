@@ -2,6 +2,7 @@
 #include <chrono>
 #include <cstdlib>
 #include <cmath>
+#include <flint/debug/Print.h>
 #include <flint/core/Math.h>
 #include <flint/core/Camera.h>
 #include <flint/geometry/Sphere.h>
@@ -10,31 +11,61 @@
 #include <flint_viewport/Shader.h>
 #include <flint_viewport/ShaderProgram.h>
 #include <flint_viewport/CameraControls.h>
+#include "../workers/createGeometry/module.h"
 
 using namespace flint;
 
-float frequency = 1.0f;
-geometry::SphereBuffer<3> sphereBuffer;
-core::Camera<float> camera;
-float smallNoiseStrength = 2.0;
-float _smallNoiseStrength = smallNoiseStrength;
-float largeNoiseStrength = 0.1;
-float _largeNoiseStrength = largeNoiseStrength;
-unsigned int _drawMode = 0;
-GLenum drawModes[] = { GL_TRIANGLES, GL_LINES };
+static float frequency = 1.0f;
+static core::Camera<float> camera;
+static float smallNoiseStrength = 2.0;
+static float _smallNoiseStrength = smallNoiseStrength;
+static float largeNoiseStrength = 0.1;
+static float _largeNoiseStrength = largeNoiseStrength;
+static unsigned int _drawMode = 0;
+static GLenum drawModes[] = { GL_TRIANGLES, GL_LINES };
+static float subdivisions = 6.0;
+static float enableWorkers = 1.0;
 
-GLint viewProjLocation, timeLocation, smallNoiseStrengthLocation, largeNoiseStrengthLocation;
-GLint positionLocation;
-std::array<GLuint, 2> buffers = {};
-GLuint& indexBuffer = buffers[0];
-GLuint& vertexBuffer = buffers[1];
-viewport::ShaderProgram shaderProgram;
-unsigned int elementCount;
-float t = 0;
+static GLint viewProjLocation, timeLocation, smallNoiseStrengthLocation, largeNoiseStrengthLocation;
+static GLint positionLocation;
+static std::array<GLuint, 2> buffers = {};
+static GLuint& indexBuffer = buffers[0];
+static GLuint& vertexBuffer = buffers[1];
+static viewport::ShaderProgram shaderProgram;
+static unsigned int elementCount = 0;
+static float t = 0;
+
+static threading::Worker<CreateGeometry> createGeometryWorker;
 
 static void resizeCallback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
     camera.SetAspectRatio(static_cast<float>(width) / static_cast<float>(height));
+}
+
+static void uploadSphere(const geometry::GeometryBuffer &sphereBuffer) {
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(flint::geometry::GeometryBuffer::Index) * sphereBuffer.GetIndexCount(), sphereBuffer.GetIndexBuffer(), GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Eigen::Array<float, 3, 1>) * sphereBuffer.GetVertexCount(), sphereBuffer.template GetPositionBuffer<Eigen::Array<float, 3, 1>>(), GL_STATIC_DRAW);
+}
+
+static void createSphere() {
+    geometry::SphereBuffer<3>::CreateArgs createSphereArgs({{{ 0, 0, 0 }, 6}, static_cast<unsigned int>(subdivisions)});
+    if (enableWorkers) {
+        createGeometryWorker.Call<&CreateGeometry::createSphereBuffer>(&createSphereArgs, sizeof(createSphereArgs), nullptr, [](void* data, int size, void* arg) {
+            auto sphereBuffer = geometry::GeometryBuffer(reinterpret_cast<char*>(data));
+            assert(sphereBuffer.ByteLength() == size);
+            elementCount = sphereBuffer.GetIndexCount();
+            debugPrint("Created icosphere with %d triangles, %d vertices\n", elementCount / 3, sphereBuffer.GetVertexCount());
+            uploadSphere(sphereBuffer);
+        });
+    } else {
+        auto sphereBuffer = geometry::SphereBuffer<3>::Create(&createSphereArgs);
+        elementCount = sphereBuffer.GetIndexCount();
+        debugPrint("Created icosphere with %d triangles, %d vertices\n", elementCount / 3, sphereBuffer.GetVertexCount());
+        uploadSphere(sphereBuffer);
+    }
 }
 
 static void frame(void* ptr) {
@@ -59,14 +90,16 @@ static void frame(void* ptr) {
         glUniform1f(largeNoiseStrengthLocation, largeNoiseStrength);
     }
 
-    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-    glEnableVertexAttribArray(positionLocation);
-    glVertexAttribPointer(positionLocation, 3, GL_FLOAT, false, 0, 0);
+    if (elementCount > 0) {
+        glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+        glEnableVertexAttribArray(positionLocation);
+        glVertexAttribPointer(positionLocation, 3, GL_FLOAT, false, 0, 0);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-    glDrawElements(drawModes[_drawMode], elementCount, GL_UNSIGNED_INT, 0);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
+        glDrawElements(drawModes[_drawMode], elementCount, GL_UNSIGNED_INT, 0);
 
-    glDisableVertexAttribArray(positionLocation);
+        glDisableVertexAttribArray(positionLocation);
+    }
 
     window->SwapBuffers();
 }
@@ -81,10 +114,6 @@ int main(int argc, char** argv) {
         height = atoi(argv[2]);
     }
 
-    sphereBuffer = geometry::SphereBuffer<3>::Create(geometry::Sphere<3>({ 0, 0, 0 }, 6), 6);
-    elementCount = sphereBuffer.GetTriangles().size() * 3;
-    printf("Created icosphere with %d vertices\n", sphereBuffer.GetPositions().size());
-
     viewport::Window window("Noise Demo", width, height);
     glfwSetWindowSizeCallback(window.GetGLFWWindow(), resizeCallback);
 
@@ -94,11 +123,7 @@ int main(int argc, char** argv) {
 
     glGenBuffers(buffers.size(), buffers.data());
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(sphereBuffer.GetTriangles()[0]) * sphereBuffer.GetTriangles().size(), sphereBuffer.GetTriangles().data(), GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(sphereBuffer.GetPositions()[0]) * sphereBuffer.GetPositions().size(), sphereBuffer.GetPositions().data(), GL_STATIC_DRAW);
+    createSphere();
 
     viewport::Shader vertexShader, fragmentShader;
     vertexShader.Load(R"(
@@ -385,6 +410,17 @@ extern "C" {
     EMSCRIPTEN_KEEPALIVE
     void updateDrawMode(unsigned int drawMode) {
         _drawMode = drawMode;
+    }
+
+    EMSCRIPTEN_KEEPALIVE
+    void updateSubdivisions(float value) {
+        subdivisions = value;
+        createSphere();
+    }
+
+    EMSCRIPTEN_KEEPALIVE
+    void updateEnableWorkers(float value) {
+        enableWorkers = value;
     }
 }
 

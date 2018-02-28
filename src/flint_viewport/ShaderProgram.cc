@@ -9,12 +9,40 @@ ShaderProgram::ShaderProgram() : program(0) {
 
 }
 
+ShaderProgram::ShaderProgram(ShaderProgram&& other) {
+    program = other.program;
+    other.program = 0;
+}
+
+ShaderProgram& ShaderProgram::operator=(ShaderProgram&& other) {
+    if (this != &other) {
+        program = other.program;
+        other.program = 0;
+    }
+    return *this;
+}
+
 ShaderProgram::~ShaderProgram() {
-    glDeleteProgram(program);
+    if (program != 0) {
+        glDeleteProgram(program);
+    }
+    program = 0;
 }
 
 GLuint ShaderProgram::GetGLProgram() const {
     return program;
+}
+
+bool ShaderProgram::Create(Shader** shaders, uint32_t count) {
+    this->~ShaderProgram();
+    program = glCreateProgram();
+    if (!program) {
+        return false;
+    }
+    for (uint32_t i = 0; i < count; ++i) {
+        AttachShader(*shaders[i]);
+    }
+    return LinkProgram();
 }
 
 void ShaderProgram::AttachShader(const Shader& shader) {

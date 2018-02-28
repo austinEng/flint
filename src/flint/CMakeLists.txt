@@ -8,6 +8,7 @@ ExternalProject_Add(eigen
     INSTALL_COMMAND ""
     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${PROJECT_BINARY_DIR}
 )
+set_target_properties(eigen PROPERTIES EXCLUDE_FROM_ALL TRUE)
 set(EIGEN_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/eigen-prefix/src/eigen)
 
 ExternalProject_Add(tinyobjloader
@@ -15,6 +16,7 @@ ExternalProject_Add(tinyobjloader
     GIT_TAG v1.0.6
     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${PROJECT_BINARY_DIR}
 )
+set_target_properties(tinyobjloader PROPERTIES EXCLUDE_FROM_ALL TRUE)
 
 file(GLOB_RECURSE SOURCES *.cc)
 file(GLOB_RECURSE HEADERS *.h)
@@ -26,12 +28,15 @@ add_dependencies(flint eigen tinyobjloader)
 set(INCLUDE_DEST "include/flint")
 set(LIB_DEST "lib/${CMAKE_BUILD_TYPE}")
 
+target_include_directories(flint SYSTEM PUBLIC
+  $<BUILD_INTERFACE:${EP_PREFIX}/include>
+  $<BUILD_INTERFACE:${EIGEN_INCLUDE_DIR}>
+  $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>
+)
+
 target_include_directories(flint PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-  $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>
-  $<BUILD_INTERFACE:${EP_PREFIX}/include>
-  $<BUILD_INTERFACE:${EIGEN_INCLUDE_DIR}>
   $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${INCLUDE_DEST}>
 )
 

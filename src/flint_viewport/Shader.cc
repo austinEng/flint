@@ -8,17 +8,37 @@ namespace viewport {
 
     }
 
-    Shader::~Shader() {
-        glDeleteShader(shader);
+    Shader::Shader(Shader&& other) {
+        shader = other.shader;
+        other.shader = 0;
     }
 
-    bool Shader::Load(const char* src, GLenum type) {
+    Shader& Shader::operator=(Shader&& other) {
+        if (this != &other) {
+            shader = other.shader;
+            other.shader = 0;
+        }
+        return *this;
+    }
+
+    Shader::~Shader() {
+        if (shader != 0) {
+            glDeleteShader(shader);
+        }
+        shader = 0;
+    }
+
+    bool Shader::Load(const char* src, GLenum type, size_t length) {
+        // delete shader if one exists here
+        this->~Shader();
+
         shader = glCreateShader(type);
         if (!shader) {
             return false;
         }
 
-        glShaderSource(shader, 1, &src, nullptr);
+        GLint len = static_cast<GLint>(length);
+        glShaderSource(shader, 1, &src, len == 0 ? nullptr : &len);
         glCompileShader(shader);
 
         GLint compiled;

@@ -1,7 +1,7 @@
 #pragma once
-
-#include <Eigen/Dense>
+#include <memory>
 #include <vector>
+#include <Eigen/Dense>
 #include <flint/core/Math.h>
 #include "GeometryBuffer.h"
 #include "Sphere.h"
@@ -13,27 +13,27 @@ template <unsigned int D, typename T = precision_t>
 class SphereBufferBase : public GeometryBuffer {
 
 public:
-    const TriangleList& GetTriangles() const {
-        return triangles;
-    }
+    // const TriangleList& GetTriangles() const {
+    //     return triangles;
+    // }
 
-    const VertexList<Eigen::Array<T, D, 1>>& GetPositions() const {
-        return positions;
-    }
+    // const VertexList<Eigen::Array<T, D, 1>>& GetPositions() const {
+    //     return positions;
+    // }
 
-    const VertexList<Eigen::Array<T, D, 1>>& GetNormals() const {
-        return normals;
-    }
+    // const VertexList<Eigen::Array<T, D, 1>>& GetNormals() const {
+    //     return normals;
+    // }
 
-    const VertexList<Eigen::Array<T, 2, 1>>& GetUVs() const {
-        return uvs;
-    }
+    // const VertexList<Eigen::Array<T, 2, 1>>& GetUVs() const {
+    //     return uvs;
+    // }
 
 protected:
-    TriangleList triangles;
-    VertexList<Eigen::Array<T, D, 1>> positions;
-    VertexList<Eigen::Array<T, D, 1>> normals;
-    VertexList<Eigen::Array<T, 2, 1>> uvs;
+    // TriangleList triangles;
+    // VertexList<Eigen::Array<T, D, 1>> positions;
+    // VertexList<Eigen::Array<T, D, 1>> normals;
+    // VertexList<Eigen::Array<T, 2, 1>> uvs;
 };
 
 template <unsigned int D, typename T = precision_t>
@@ -43,8 +43,37 @@ template <typename T>
 class SphereBuffer<3, T> : public SphereBufferBase<3, T> {
 
 public:
+    struct CreateArgs {
+        Sphere<3, T> sphere;
+        unsigned int subdivisions;
+        // SphereBuffer* buffer;
+        // std::allocator<char> alloc;
+        // unsigned int bytes;
+    };
+
+    // static CreateArgs* GetRequiredMemory(const Sphere<3, T> &sphere, unsigned int subdivisions) {
+    //     unsigned int bytes = (
+    //         sizeof(CreateArgs) +
+    //         sizeof(SphereBuffer) +
+    //         20 * core::constPow(4, subdivisions) * sizeof(GeometryBuffer::Triangle) +
+    //         12 * core::constPow(2, subdivisions) * sizeof(Eigen::Array<T, 3, 1>) +
+    //         12 * core::constPow(2, subdivisions) * sizeof(Eigen::Array<T, 3, 1>)
+    //     );
+
+    //     std::allocator<char> alloc;
+    //     char* ptr = alloc.allocate(bytes);
+    //     CreateArgs* args = reinterpret_cast<CreateArgs*>(ptr);
+    //     args->alloc = alloc;
+    //     args->buffer = reinterpret_cast<SphereBuffer*>(ptr + sizeof(CreateArgs));
+    //     args->subdivisions = subdivisions;
+    //     args->sphere = sphere;
+    //     args->bytes = bytes;
+
+    //     return args;
+    // }
+
     // https://schneide.wordpress.com/2016/07/15/generating-an-icosphere-in-c/
-    static SphereBuffer Create(const Sphere<3, T> &sphere, unsigned int subdivisions) {
+    static GeometryBuffer Create(CreateArgs* args) {
         static constexpr T X = static_cast<T>(.525731112119133606);
         static constexpr T Z = static_cast<T>(.850650808352039932);
         static constexpr T N = static_cast<T>(0);
@@ -67,7 +96,7 @@ public:
         GeometryBuffer::VertexList<Eigen::Array<T, 3, 1>> nextVertices;
         GeometryBuffer::TriangleList nextTriangles;
 
-        for (unsigned int s = 0; s < subdivisions; ++s) {
+        for (unsigned int s = 0; s < args->subdivisions; ++s) {
             nextTriangles.clear();
             nextVertices.clear();
             nextTriangles.reserve(triangles.size() * 4);
@@ -91,15 +120,86 @@ public:
             std::swap(vertices, nextVertices);
         }
 
-        SphereBuffer buffer;
-        buffer.triangles = triangles;
-        buffer.normals = vertices;
-        buffer.positions.reserve(vertices.size());
-        for (unsigned int i = 0; i < vertices.size(); ++i) {
-            buffer.positions.push_back(vertices[i] * sphere.getRadius() + sphere.getCenter());
-        }
+        unsigned int indexCount = triangles.size() * 3;
+        unsigned int vertexCount = vertices.size();
+        unsigned int offset = 0;
 
-        return buffer;
+        GeometryBuffer sphereBuffer(
+            indexCount * sizeof(GeometryBuffer::Index) +
+            vertexCount * sizeof(Eigen::Array<T, 3, 1>) +
+            vertexCount * sizeof(Eigen::Array<T, 3, 1>)
+        );
+
+        sphereBuffer.info().indexCount = indexCount;
+        sphereBuffer.info().vertexCount = vertexCount;
+
+        sphereBuffer.info().indexOffset = offset;
+
+        offset += indexCount * sizeof(GeometryBuffer::Index);
+        sphereBuffer.info().positionOffset = offset;
+
+        offset += vertexCount * sizeof(Eigen::Array<T, 3, 1>);
+        sphereBuffer.info().normalOffset = offset;
+
+        offset += vertexCount * sizeof(Eigen::Array<T, 3, 1>);
+        sphereBuffer.info().uvOffset = offset;
+
+        std::copy(triangles.begin(), triangles.end(), sphereBuffer.template GetIndexBuffer<GeometryBuffer::Triangle>());
+
+        std::transform(vertices.begin(), vertices.end(), sphereBuffer.template GetPositionBuffer<Eigen::Array<T, 3, 1>>(), [&](const auto& normal) {
+            return normal * args->sphere.getRadius() + args->sphere.getCenter();
+        });
+
+        std::copy(vertices.begin(), vertices.end(), sphereBuffer.template GetNormalBuffer<Eigen::Array<T, 3, 1>>());
+
+        return sphereBuffer;
+
+        // SphereBuffer buffer;
+        // buffer.triangles = triangles;
+        // buffer.normals = vertices;
+        // buffer.positions.reserve(vertices.size());
+
+        // unsigned int bytes = (
+        //     sizeof(CreateArgs) +
+        //     sizeof(SphereBuffer) +
+        //     20 * core::constPow(4, subdivisions) * sizeof(GeometryBuffer::Triangle) +
+        //     12 * core::constPow(2, subdivisions) * sizeof(Eigen::Array<T, 3, 1>) +
+        //     12 * core::constPow(2, subdivisions) * sizeof(Eigen::Array<T, 3, 1>)
+        // );
+        // std::allocator<char> alloc;
+        // char* ptr = alloc.allocate(bytes);
+        // CreateArgs* returnArgs = reinterpret_cast<CreateArgs*>(ptr);
+        // returnArgs->alloc = alloc;
+        // returnArgs->buffer = reinterpret_cast<SphereBuffer*>(ptr + sizeof(CreateArgs));
+        // returnArgs->subdivisions = args->subdivisions;
+        // returnArgs->sphere = args->sphere;
+        // returnArgs->bytes = bytes;
+
+        // std::allocator<char> alloc;
+        // unsigned int bytes = (
+        //     sizeof(ReturnArgs) +
+        //     sizeof(SphereBuffer) +
+        //     triangles.size() + sizeof(GeometryBuffer::Triangle) +
+        //     vertices.size() + sizeof(Eigen::Array<T, 3, 1>) +
+        //     vertices.size() + sizeof(Eigen::Array<T, 3, 1>)
+        // );
+        // char* ptr = alloc.allocate(bytes);
+
+        // ReturnArgs* returnArgs = reinterpret_cast<ReturnArgs*>(ptr);
+        // returnArgs->bytes = bytes;
+        // // returnArgs->alloc = alloc;
+
+        // SphereBuffer* sphereBuffer = new(returnArgs->buffer + sizeof(ReturnArgs)) SphereBuffer();
+        // sphereBuffer->triangles = std::vector<GeometryBuffer::Triangle>(triangles, alloc);
+        // sphereBuffer->normals = GeometryBuffer::VertexList<Eigen::Array<T, 3, 1>>(vertices, alloc);
+        // sphereBuffer->positions = GeometryBuffer::VertexList<Eigen::Array<T, 3, 1>>(vertices.size(), alloc);
+
+        // for (unsigned int i = 0; i < vertices.size(); ++i) {
+        //     // buffer.positions.push_back(vertices[i] * args->sphere.getRadius() + args->sphere.getCenter());
+        //     sphereBuffer->positions[i] = vertices[i] * args->sphere.getRadius() + args->sphere.getCenter();
+        // }
+
+        // return returnArgs;
     }
 };
 

@@ -1,100 +1,85 @@
-const fs = require('fs');
+const fs = require('fs-extra');
 const path = require('path');
 const webpack = require('webpack');
-const StringReplacePlugin = require('string-replace-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-const suffix = (@WASM@ ? 'wasm' : 'js');
+module.exports = function(env) {
+  const context = path.resolve(__dirname, env.root);
 
-function replaceWithRequire(match) {
-  const fname = match.substring(1, match.length - 1);
-  if (fs.existsSync(path.join('@CMAKE_CURRENT_BINARY_DIR@', 'src/examples', fname))) {
-    return 'require(\"./' + fname + '\")';
-  } else {
-    return fname;
+  const examples = {
+    'examples/windowDemo': path.posix.join(__dirname, 'src/examples/windowDemo/main'),
+    'examples/noiseDemo': path.posix.join(__dirname, 'src/examples/noiseDemo/main'),
+    'examples/terrainDemo': path.posix.join(__dirname, 'src/examples/terrainDemo/main'),
+  };
+
+  function walk(dir) {
+    const files = fs.readdirSync(dir);
+    files.forEach(function(file) {
+      const filePath = path.join(dir, file);
+      if (fs.statSync(filePath).isDirectory()) {
+        walk(filePath);
+      } else {
+        const ext = path.extname(filePath);
+        if (ext === '.wasm' || ext === '.mem') {
+          const newFile = path.posix.join(__dirname, 'dist', env.suffix, path.relative(path.join(context, 'src'), filePath));
+          fs.copySync(filePath, newFile);
+        }
+      }
+    });
   }
-}
 
-const examples = {
-  'examples/windowDemo': path.join('@CMAKE_CURRENT_SOURCE_DIR@', 'src/examples/windowDemo/main'),
-  'examples/noiseDemo': path.join('@CMAKE_CURRENT_SOURCE_DIR@', 'src/examples/noiseDemo/main'),
-};
+  walk(path.join(context, 'src'));
 
-module.exports = {
-  entry: examples,
-  output: {
-    filename: '[name].js',
-    path: path.join('@CMAKE_CURRENT_SOURCE_DIR@', 'dist', suffix),
-    // publicPath: `/dist/${suffix}/`,
-  },
-  module: {
-    rules: [
-      {
-        test: /\.js$/,
-        use: [
-          {
-            loader: StringReplacePlugin.replace({
-              replacements: [
-                {
-                  pattern: /\'\w+\.wasm\'/g,
-                  replacement: replaceWithRequire,
-                },
-                {
-                  pattern: /\"\w+\.wasm\"/g,
-                  replacement: replaceWithRequire,
-                },
-                {
-                  pattern: /\'\w+\.js\.mem\'/g,
-                  replacement: replaceWithRequire,
-                },
-                {
-                  pattern: /\"\w+\.js\.mem\"/g,
-                  replacement: replaceWithRequire,
-                },
-              ],
-            }),
+  return {
+    entry: examples,
+    output: {
+      filename: '[name].js',
+      path: path.posix.join(__dirname, 'dist', env.suffix),
+    },
+    module: {
+      rules: [
+        {
+          test: new RegExp(`workers${path.sep == '\\' ? '\\\\' : path.sep}.+\.js$`),
+          use: [
+            {
+              loader: 'file-loader',
+              options: {
+                name: file => path.posix.format(path.parse(path.relative(path.join(context, 'src'), file))),
+                publicPath: '../',
+                outputPath: './',
+              },
+            },
+          ]
+        },
+        {
+          test: /(\.wasm$)|(\.js\.mem$)/,
+          loader: 'file-loader',
+          options: {
+            name: file => path.posix.format(path.parse(path.relative(path.join(context, 'src'), file))),
+            publicPath: '../',
+            outputPath: './',
           },
-        ],
-      },
-      {
-        test: /\.wasm$/,
-        loader: 'file-loader',
-        options: {
-          name: '[name].[ext]',
-          publicPath: '../',
-          outputPath: 'examples/',
         },
-      },
-      {
-        test: /\.js\.mem$/,
-        loader: 'file-loader',
-        options: {
-          name: '[name].[ext]',
-          publicPath: '../',
-          outputPath: 'examples/',
-        },
-      },
-    ],
-  },
-  resolve: {
-    modules: [
-      __dirname,
-      'node_modules',
-    ],
-  },
-  plugins: [
-    new webpack.NoEmitOnErrorsPlugin(),
-    new StringReplacePlugin(),
-  ].concat(Object.keys(examples).map(chunk => (
-    new HtmlWebpackPlugin({
-      title: path.basename(chunk),
-      filename: `${chunk}.html`,
-      template: path.join('@CMAKE_CURRENT_SOURCE_DIR@', 'src/examples/template.ejs'),
-      chunks: [ chunk ],
-      // publicPath: '',
-    })
-  ))),
-  node: {
-    fs: 'empty',
-  },
+      ],
+    },
+    resolve: {
+      modules: [
+        path.join(context, 'src'),
+        'node_modules',
+      ],
+    },
+    plugins: [
+      new webpack.NoEmitOnErrorsPlugin(),
+    ].concat(Object.keys(examples).map(chunk => (
+      new HtmlWebpackPlugin({
+        title: path.basename(chunk),
+        filename: `${chunk}.html`,
+        template: path.posix.join(__dirname, 'src', 'examples', 'template.ejs'),
+        chunks: [ chunk ],
+      })
+    ))),
+    node: {
+      fs: 'empty',
+    },
+  };
 }

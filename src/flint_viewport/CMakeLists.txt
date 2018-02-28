@@ -57,17 +57,21 @@ set_target_properties(flint_viewport PROPERTIES LINKER_LANGUAGE CXX)
 if (FLINT_VIEWPORT_DEPENDENCIES)
     add_dependencies(flint_viewport ${FLINT_VIEWPORT_DEPENDENCIES})
 endif()
-target_link_libraries(flint_viewport ${FLINT_VIEWPORT_LINK_LIBRARIES})
+add_dependencies(flint_viewport flint)
+target_link_libraries(flint_viewport flint steel ${FLINT_VIEWPORT_LINK_LIBRARIES})
 
 set(INCLUDE_DEST "include/flint_viewport")
 set(LIB_DEST "lib/${CMAKE_BUILD_TYPE}")
 
+target_include_directories(flint_viewport SYSTEM PUBLIC
+    $<BUILD_INTERFACE:${EP_PREFIX}/include>
+    $<BUILD_INTERFACE:${EIGEN_INCLUDE_DIR}>
+    $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>
+)
+
 target_include_directories(flint_viewport PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-    $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>
-    $<BUILD_INTERFACE:${EP_PREFIX}/include>
-    $<BUILD_INTERFACE:${EIGEN_INCLUDE_DIR}>
     $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${INCLUDE_DEST}>
 )
 

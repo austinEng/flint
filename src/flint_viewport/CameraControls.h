@@ -13,7 +13,6 @@ namespace viewport {
 
 template <typename T>
 class CameraControls {
-
     private:
         static core::Camera<T>* currentCamera;
 
@@ -34,7 +33,7 @@ class CameraControls {
             } else if ((e->buttons & 1) == 1) {
                 currentCamera->Rotate(dX * -0.01f, dY * 0.01f);
             } else if ((e->buttons & 2) == 2) {
-                currentCamera->Zoom(dY * -0.005f);
+                currentCamera->Move({ 0, 0, dY * 0.2f });
             }
             return 0;
         }
@@ -73,12 +72,11 @@ class CameraControls {
             } else if (buttons[0]) {
                 currentCamera->Rotate(dX * -0.01f, dY * 0.01f);
             } else if (buttons[1]) {
-                currentCamera->Zoom(dY * -0.005f);
+                currentCamera->Move({ 0, 0, dY * 0.2f });
             }
         }
 
         static void scrollCallback(GLFWwindow*, double, double yOffset) {
-
             currentCamera->Zoom(static_cast<float>(yOffset) * 0.04f);
         }
 
