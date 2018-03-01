@@ -17,7 +17,7 @@ using namespace steel;
 using namespace steel::rendering;
 using namespace steel::rendering::gl;
 
-static constexpr bool traverseMainThread = true;
+static constexpr bool traverseMainThread = false;
 
 static core::FrameState frameState;
 static viewport::CameraControls<float>* cameraControls;
@@ -26,6 +26,7 @@ static flint::viewport::Renderer renderer(&frameState);
 static CommandBlock* terrainCommands = nullptr;
 static std::list<std::pair<CommandBlock*, std::vector<uint8_t>>> commandQueue;
 
+extern tileset::TerrainTileset* InitTerrainTileset();
 static tileset::TerrainTileset* terrainTileset = nullptr;
 static CommandBuffer* commandBuffer = nullptr;
 
@@ -105,7 +106,7 @@ static void frame(void* ptr) {
             });
         }
     }
-    
+
     window->SwapBuffers();
 
     frameState.frameNumber++;
@@ -131,7 +132,7 @@ int main(int argc, char** argv) {
     glClearColor(0.f, 0.f, 0.f, 1.f);
     glEnable(GL_DEPTH_TEST);
 
-    frameState.camera.SetNearFar(0.1, 40000.0f);
+    frameState.camera.SetNearFar(0.1f, 40000.0f);
     frameState.camera.SetAltitude(0);
     frameState.camera.SetAzimuth(static_cast<float>(kPI/6.0));
     frameState.camera.SetDistance(0.01);
@@ -141,13 +142,11 @@ int main(int argc, char** argv) {
     viewport::CameraControls<float> controls(frameState.camera, window.GetGLFWWindow());
     controls.SetCurrent();
     cameraControls = &controls;
-    
-    terrainTileset = new tileset::TerrainTileset();
-    if (traverseMainThread) {
-        commandBuffer = new CommandBuffer();
-    } else {
-        terrainGenerator = new threading::Worker<TerrainGenerator>();
-    }
+
+    commandBuffer = new CommandBuffer();
+
+    terrainTileset = InitTerrainTileset();
+    terrainGenerator = new threading::Worker<TerrainGenerator>();
 
     window.FrameLoop(frame);
 

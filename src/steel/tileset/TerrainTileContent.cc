@@ -2,6 +2,7 @@
 #include <random>
 #include <steel/geometry/BoundingBoxGeometry.h>
 #include <steel/shader/WireProgram.h>
+#include "TerrainTileset.h"
 #include "TerrainTileContent.h"
 
 namespace steel {
@@ -9,12 +10,6 @@ namespace tileset {
 
 using namespace flint;
 using namespace steel::rendering::gl;
-
-#ifdef TERRAIN_SHADER_OFFSETS
-static constexpr bool kUseShaderOffsets = true;
-#else
-static constexpr bool kUseShaderOffsets = false;
-#endif
 
 static constexpr uint32_t indexCount = 6 * core::constPow(4, TERRAIN_SUBDIVISION_LEVEL);
 static constexpr uint32_t bboxIndexCount = 24;
@@ -122,8 +117,9 @@ namespace {
 }
 
 namespace {
+
     const std::string vertexShader = std::string("") +
-R"(#version 300 es
+        R"(#version 300 es
 precision highp float;
 precision highp int;
 
@@ -133,6 +129,7 @@ layout(location = 2) in vec3 color;
 uniform mat4 viewProj;
 uniform mat4 modelMatrix;
 uniform uint depth;
+uniform uint shaderOffsets;
 
 out vec3 fs_color;
 out vec3 fs_norm;
@@ -231,7 +228,7 @@ vec3 terrain(vec2 p, uint d) {
 }
 
 void main() {
-    if ()" + (kUseShaderOffsets ? "true" : "false") + R"() {
+    if (shaderOffsets == 1u) {
         vec4 p = modelMatrix * vec4(position, 1.0);
         vec3 noise = terrain(p.xz, depth);
         vec3 terrain_position = vec3(p.x, noise[2], p.z);
@@ -251,7 +248,7 @@ void main() {
 )";
 
     const std::string fragmentShader =
-R"(#version 300 es
+        R"(#version 300 es
 precision highp float;
 
 in vec3 fs_color;
@@ -300,6 +297,7 @@ void main() {
     outColor = vec4(color, 1.0);
 }
 )";
+
 }
 
 TerrainTileContentShaderProgram::TerrainTileContentShaderProgram() : created(false) {
@@ -399,8 +397,12 @@ void TerrainTileContentGeometry::Draw(const flint::core::FrameState &frameState,
     commands->Record<CommandType::DrawElements>(DrawElementsCmd{ DrawMode::TRIANGLES, indexCount, IndexDatatype::UNSIGNED_INT, 0 });
 }
 
-TerrainTileContent::TerrainTileContent(TerrainTile* tile) : tile(tile), ready(false) {
-    if (kUseShaderOffsets) {
+TerrainTileContent::TerrainTileContent(TerrainTile* tile)
+  : tile(tile),
+    ready(false),
+    useShaderOffsets(reinterpret_cast<TerrainTileset*>(tile->tileset)->generationMode == TerrainTilesetGenerationMode::GPU) {
+
+    if (useShaderOffsets) {
         assert(tile->boundingVolume);
         auto min = tile->boundingVolume->min();
         auto max = tile->boundingVolume->max();
@@ -439,7 +441,7 @@ void TerrainTileContent::CreateImpl(steel::rendering::gl::CommandBuffer* command
     auto max = tile->boundingVolume->max();
     auto diag = max - min;
 
-    if (kUseShaderOffsets) {
+    if (useShaderOffsets) {
         TerrainTileContentGeometry::GetInstance().Create(commands);
     } else {
         std::vector<uint32_t> indices(indexCount + bboxIndexCount);
@@ -547,7 +549,7 @@ void TerrainTileContent::CreateImpl(steel::rendering::gl::CommandBuffer* command
 
 void TerrainTileContent::DestroyImpl(steel::rendering::gl::CommandBuffer* commands) {
     if (ready) {
-        if (!kUseShaderOffsets) {
+        if (!useShaderOffsets) {
             commands->Record<CommandType::DeleteVertexArray>(DeleteVertexArrayCmd{ vertexArray });
             vertexArray.Release();
         }
@@ -569,7 +571,7 @@ bool TerrainTileContent::IsReadyImpl() const {
 }
 
 void TerrainTileContent::UpdateImpl(const flint::core::FrameState &frameState) {
-    if (kUseShaderOffsets) {
+    if (useShaderOffsets) {
         auto min = tile->boundingVolume->min();
         auto max = tile->boundingVolume->max();
         auto diag = max - min;
@@ -597,7 +599,7 @@ void TerrainTileContent::DrawImpl(const flint::core::FrameState &frameState, ste
     if (!IsEmpty() && IsReady()) {
         commands->Record<CommandType::Uniform1ui>(Uniform1uiCmd{ "depth", tile->index.depth });
         commands->Record<CommandType::Uniform1f>(Uniform1fCmd{ "screenSpaceError", tile->screenSpaceError });
-        if (kUseShaderOffsets) {
+        if (useShaderOffsets) {
             commands->Record<CommandType::UniformMatrix4fv>(UniformMatrix4fvCmd{ "modelMatrix", 1, false });
             commands->RecordData<float>(modelMatrix.data(), 16);
             TerrainTileContentGeometry::GetInstance().Draw(frameState, commands);

@@ -8,6 +8,14 @@
 namespace steel {
 namespace tileset {
 
+class TerrainTile;
+class TerrainTileContent;
+
+enum class TerrainTilesetGenerationMode : unsigned short {
+    CPU,
+    GPU,
+};
+
 class TerrainTileset : public Tileset<TerrainTileset> {
 public:
     std::map<TerrainTile::Index, std::shared_ptr<TerrainTile>> rootTiles;
@@ -23,8 +31,10 @@ public:
     };
 
     LRUCache lruCache;
+    TerrainTilesetGenerationMode generationMode;
 
-    TerrainTileset();
+    TerrainTileset() = delete;
+    TerrainTileset(TerrainTilesetGenerationMode generationMode);
 
     void Touch(std::shared_ptr<TerrainTile> tile);
 
