@@ -9,7 +9,8 @@ module.exports = function(env) {
   const examples = {
     'examples/windowDemo': path.posix.join(__dirname, 'src/examples/windowDemo/main'),
     'examples/noiseDemo': path.posix.join(__dirname, 'src/examples/noiseDemo/main'),
-    'examples/terrainDemo': path.posix.join(__dirname, 'src/examples/terrainDemo/main'),
+    'examples/terrainDemoCPU': path.posix.join(__dirname, 'src/examples/terrainDemo/cpu'),
+    'examples/terrainDemoGPU': path.posix.join(__dirname, 'src/examples/terrainDemo/gpu'),
   };
 
   function walk(dir) {
