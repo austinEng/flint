@@ -1,20 +1,38 @@
-function(BuildWorker MODULE_NAME)
-    file(GLOB SOURCES ${MODULE_NAME}/*.cpp ${MODULE_NAME}/*.h)
+include(CMakeParseArguments)
+
+macro(BuildWorker)
+    set( _OPTIONS_ARGS )
+    set( _ONE_VALUE_ARGS NAME)
+    set( _MULTI_VALUE_ARGS SOURCES LINK_LIBRARIES )
+
+    cmake_parse_arguments(_BUILDWORKER "${_OPTIONS_ARGS}" "${_ONE_VALUE_ARGS}" "${_MULTI_VALUE_ARGS}" ${ARGN})
 
     if (EMSCRIPTEN)
-        add_executable(${MODULE_NAME} ${SOURCES})
-        install(TARGETS ${MODULE_NAME} EXPORT ${MODULE_NAME} DESTINATION "bin")
+        add_executable(${_BUILDWORKER_NAME} ${_BUILDWORKER_SOURCES})
+        install(TARGETS ${_BUILDWORKER_NAME} EXPORT ${_BUILDWORKER_NAME} DESTINATION "bin")
     else()
-        add_library(${MODULE_NAME} ${SOURCES})
-        target_link_libraries(${MODULE_NAME} threading flint)
+        add_library(${_BUILDWORKER_NAME} ${_BUILDWORKER_SOURCES})
     endif()
-    InternalTarget("workers" ${MODULE_NAME})
-endfunction()
+    target_link_libraries(${_BUILDWORKER_NAME} ${_BUILDWORKER_LINK_LIBRARIES})
+    InternalTarget("workers" ${_BUILDWORKER_NAME})
+endmacro()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${EMSCRIPTEN_WORKER_FLAGS}")
 
-BuildWorker(createGeometry)
-target_link_libraries(createGeometry threading flint)
+BuildWorker(
+    NAME createGeometry
+    SOURCES createGeometry/module.cpp
+    LINK_LIBRARIES threading flint
+)
 
-BuildWorker(terrainGenerator)
-target_link_libraries(terrainGenerator threading flint steel flint_viewport)
+BuildWorker(
+    NAME terrainGeneratorCPU
+    SOURCES terrainGenerator/module.cpp terrainGenerator/cpu.cpp
+    LINK_LIBRARIES threading flint steel flint_viewport
+)
+
+BuildWorker(
+    NAME terrainGeneratorGPU
+    SOURCES terrainGenerator/module.cpp terrainGenerator/gpu.cpp
+    LINK_LIBRARIES threading flint steel flint_viewport
+)

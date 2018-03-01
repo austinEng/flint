@@ -9,6 +9,8 @@
 namespace steel {
 namespace tileset {
 
+class TerrainTile;
+
 class TerrainTileContentShaderProgram {
 private:
     TerrainTileContentShaderProgram();
@@ -62,6 +64,7 @@ public:
 
 private:
     TerrainTile* tile;
+    bool useShaderOffsets;
     bool ready = false;
 
     rendering::gl::SerialCounted<rendering::gl::VertexArray> vertexArray;

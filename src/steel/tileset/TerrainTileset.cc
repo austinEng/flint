@@ -40,8 +40,8 @@ void TerrainTileset::LRUCache::Splice(TerrainTile::LRUNode* n1, TerrainTile::LRU
     if (n2 == tail) tail = n2_prev;
 }
 
-TerrainTileset::TerrainTileset()
-  : lruCache({ &lruSentinel, &lruSentinel }) {
+TerrainTileset::TerrainTileset(TerrainTilesetGenerationMode generationMode)
+  : lruCache({ &lruSentinel, &lruSentinel }), generationMode(generationMode) {
 
 }
 
@@ -130,6 +130,9 @@ void TerrainTileset::UpdateTilesImpl(const flint::core::FrameState &frameState, 
 
 void TerrainTileset::DrawTilesImpl(const flint::core::FrameState &frameState, steel::rendering::gl::CommandBuffer* commands) {
     TerrainTileContentShaderProgram::GetInstance().Use(commands);
+
+    using namespace steel::rendering::gl;
+    commands->Record<CommandType::Uniform1ui>(Uniform1uiCmd{ "shaderOffsets", generationMode == TerrainTilesetGenerationMode::GPU });
 
     // Sort tiles for early Z
     std::sort(selectedTiles.begin(), selectedTiles.end(), [](std::shared_ptr<const TileBase> a, std::shared_ptr<const TileBase> b) {

@@ -13,8 +13,10 @@ using namespace steel;
 using namespace steel::rendering;
 using namespace steel::rendering::gl;
 
-static core::FrameState frameState;
+extern tileset::TerrainTileset* InitTerrainTileset();
 static tileset::TerrainTileset* terrainTileset;
+
+static core::FrameState frameState;
 
 static uint8_t* serializedResourceCommands = nullptr;
 static uint8_t* serializedDrawCommands = nullptr;
@@ -68,9 +70,9 @@ threading::WorkerBase::WorkerResponse TerrainGenerator::Update(void* data, int s
 }
 
 WORKER_MAIN(TerrainGenerator, {
-    terrainTileset = new tileset::TerrainTileset();
+    terrainTileset = InitTerrainTileset();
     resourceCommandBuffer = new CommandBuffer();
     drawCommandBuffer = new CommandBuffer();
-    worker->SetLoop(UpdateTileset, 30);
+    worker->SetLoop(UpdateTileset, 60);
     return 0;
 })

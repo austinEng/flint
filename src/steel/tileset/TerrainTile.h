@@ -12,8 +12,8 @@ constexpr float TERRAIN_ROOT_SIZE = 50000.f;
 constexpr float TERRAIN_ROOT_GEOMETRIC_ERROR = 2000000.f;
 constexpr uint32_t TERRAIN_SUBDIVISION_LEVEL = 5;
 
-class TerrainTileContent;
 class TerrainTileset;
+class TerrainTileContent;
 class TerrainTileChildren;
 class TerrainTile : public Tile<TerrainTile> {
 public:
