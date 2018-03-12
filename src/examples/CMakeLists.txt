@@ -45,7 +45,7 @@ macro(BuildDemo)
 
         set(EXPORT_FLAGS "-s \"EXPORTED_FUNCTIONS=[${EXPORTED_FUNCTIONS}]\" -s \"EXTRA_EXPORTED_RUNTIME_METHODS=[${EXTRA_EXPORTED_RUNTIME_METHODS}]\"")
 
-        set_target_properties(${_BUILDDEMO_NAME} PROPERTIES COMPILE_FLAGS "${EMSCRIPTEN_MODULE_FLAGS} ${EXPORT_FLAGS}")
+        set_target_properties(${_BUILDDEMO_NAME} PROPERTIES COMPILE_FLAGS "${EXPORT_FLAGS}")
         if (WASM)
             install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${_BUILDDEMO_NAME}.wasm DESTINATION "bin")
         else()
@@ -55,6 +55,10 @@ macro(BuildDemo)
 
     add_dependencies(flint_examples ${_BUILDDEMO_NAME})
 endmacro()
+
+if (EMSCRIPTEN)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${EMSCRIPTEN_MODULE_FLAGS}")
+endif()
 
 BuildDemo(
     NAME windowDemo
