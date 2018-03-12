@@ -125,7 +125,6 @@ precision highp int;
 
 layout(location = 0) in vec3 position;
 layout(location = 1) in vec3 normal;
-layout(location = 2) in vec3 color;
 uniform mat4 viewProj;
 uniform mat4 modelMatrix;
 uniform uint depth;
@@ -234,16 +233,16 @@ void main() {
         vec3 terrain_position = vec3(p.x, noise[2], p.z);
         vec3 terrain_normal = normalize(vec3(-noise.x, 1.0, -noise.y));
 
-        fs_color = vec3(0.2);
         fs_norm = terrain_normal;
         fs_pos = terrain_position;
         gl_Position = viewProj * vec4(terrain_position, 1.0);
     } else {
-        fs_color = color;
         fs_norm = normal;
         fs_pos = position;
         gl_Position = viewProj * vec4(position, 1.0);
     }
+
+    fs_color = vec3(0.2);
 }
 )";
 
@@ -272,9 +271,6 @@ const vec3 specularColor = vec3(0.1);
 
 void main() {
     vec3 color = fs_color;
-    if (screenSpaceError > 20.0) {
-        color = vec3(1.0, 0.2, 0.2);
-    }
 
     vec3 cameraVec = cameraPosition - fs_pos;
     vec3 cameraDir = normalize(cameraVec);
@@ -327,82 +323,185 @@ void TerrainTileContentShaderProgram::Use(steel::rendering::gl::CommandBuffer* c
     commands->Record<CommandType::UseProgram>(UseProgramCmd{ program });
 }
 
-TerrainTileContentGeometry::TerrainTileContentGeometry() : created(false) {
+TerrainTileContentGeometry::TerrainTileContentGeometry() : created(false), singletonInstance(true) {
+}
+
+TerrainTileContentGeometry::TerrainTileContentGeometry(TerrainTileContent* tileContent)
+  : created(false), singletonInstance(false), tileContent(tileContent) {
 }
 
 void TerrainTileContentGeometry::Create(CommandBuffer* commands) {
     if (!created) {
         created = true;
 
-        std::vector<uint32_t> indices(indexCount);
-        std::vector<std::array<float, 3>> positions(vertexCount);
+        if (singletonInstance) {
+            std::vector<uint32_t> indices(indexCount);
+            std::vector<std::array<float, 3>> positions(vertexCount);
 
-        for (uint32_t j = 0; j < vertexLength; ++j) {
-            for (uint32_t i = 0; i < vertexLength; ++i) {
-                uint32_t index = j * vertexLength + i;
-                positions[index][0] = vertexStepSize * i;
-                positions[index][1] = 0.f;
-                positions[index][2] = vertexStepSize * j;
+            for (uint32_t j = 0; j < vertexLength; ++j) {
+                for (uint32_t i = 0; i < vertexLength; ++i) {
+                    uint32_t index = j * vertexLength + i;
+                    positions[index][0] = vertexStepSize * i;
+                    positions[index][1] = 0.f;
+                    positions[index][2] = vertexStepSize * j;
+                }
             }
-        }
 
-        for (uint32_t j = 0; j < vertexLength - 1; ++j) {
-            for (uint32_t i = 0; i < vertexLength - 1; ++i) {
-                uint32_t vertexIndex = j * vertexLength + i;
-                uint32_t index = j * (vertexLength - 1) + i;
+            for (uint32_t j = 0; j < vertexLength - 1; ++j) {
+                for (uint32_t i = 0; i < vertexLength - 1; ++i) {
+                    uint32_t vertexIndex = j * vertexLength + i;
+                    uint32_t index = j * (vertexLength - 1) + i;
 
-                indices[6 * index + 0] = vertexIndex;
-                indices[6 * index + 1] = vertexIndex + 1;
-                indices[6 * index + 2] = vertexIndex + 1 + vertexLength;
-                indices[6 * index + 3] = vertexIndex;
-                indices[6 * index + 4] = vertexIndex + 1 + vertexLength;
-                indices[6 * index + 5] = vertexIndex + vertexLength;
+                    indices[6 * index + 0] = vertexIndex;
+                    indices[6 * index + 1] = vertexIndex + 1;
+                    indices[6 * index + 2] = vertexIndex + 1 + vertexLength;
+                    indices[6 * index + 3] = vertexIndex;
+                    indices[6 * index + 4] = vertexIndex + 1 + vertexLength;
+                    indices[6 * index + 5] = vertexIndex + vertexLength;
+                }
             }
+
+            rendering::gl::SerialCounted<rendering::gl::Buffer> indexBuffer(new rendering::gl::Buffer{
+                BufferUsage::STATIC_DRAW,
+                BufferTarget::ELEMENT_ARRAY_BUFFER,
+                indices.data(),
+                indices.size(),
+            });
+
+            rendering::gl::SerialCounted<rendering::gl::Buffer> positionBuffer(new rendering::gl::Buffer{
+                BufferUsage::STATIC_DRAW,
+                BufferTarget::ARRAY_BUFFER,
+                positions.data(),
+                3 * positions.size(),
+            });
+
+            vertexArray.Create();
+
+            commands->Record<CommandType::CreateVertexArray>(CreateVertexArrayCmd{ vertexArray });
+            commands->Record<CommandType::BindVertexArray>(BindVertexArrayCmd{ vertexArray });
+
+            indexBuffer->CreateAndUpload<uint32_t>(commands, indexBuffer);
+
+            positionBuffer->CreateAndUpload<float>(commands, positionBuffer);
+            commands->Record<CommandType::VertexAttribPointer>(VertexAttribPointerCmd{ 0, 3, ComponentDatatype::FLOAT, false, 0, 0 });
+            commands->Record<CommandType::EnableVertexAttribArray>(EnableVertexAttribArrayCmd{ 0 });
+
+            commands->Record<CommandType::BindVertexArray>(BindVertexArrayCmd{ 0 });
+
+            commands->Record<CommandType::DeleteBuffer>(DeleteBufferCmd{ indexBuffer });
+            commands->Record<CommandType::DeleteBuffer>(DeleteBufferCmd{ positionBuffer });
+        } else {
+            TerrainTile* tile = tileContent->tile;
+            assert(tile->boundingVolume);
+            auto min = tile->boundingVolume->min();
+            auto max = tile->boundingVolume->max();
+            auto diag = max - min;
+
+            std::vector<uint32_t> indices(indexCount + bboxIndexCount);
+            std::vector<std::array<float, 3>> positions(vertexCount);
+            std::vector<std::array<float, 3>> normals(vertexCount);
+
+            for (uint32_t j = 0; j < vertexLength; ++j) {
+                for (uint32_t i = 0; i < vertexLength; ++i) {
+                    uint32_t index = j * vertexLength + i;
+                    positions[index][0] = min[0] + vertexStepSize * i * diag[0];
+                    positions[index][2] = min[2] + vertexStepSize * j * diag[2];
+
+                    auto sample = tileContent->SampleTerrain(positions[index][0], positions[index][2], tile->index.depth);
+                    positions[index][1] = sample.height;
+                    Eigen::Array<float, 3, 1> p{ positions[index][0], positions[index][1], positions[index][2] };
+
+                    if (tileContent->contentBoundingVolume) {
+                        tileContent->contentBoundingVolume->Merge(p);
+                    } else {
+                        tileContent->contentBoundingVolume.set(core::AxisAlignedBox<3, float>(p, p));
+                    }
+
+                    normals[index][0] = sample.normal[0];
+                    normals[index][1] = sample.normal[1];
+                    normals[index][2] = sample.normal[2];
+                }
+            }
+
+            for (uint32_t j = 0; j < vertexLength - 1; ++j) {
+                for (uint32_t i = 0; i < vertexLength - 1; ++i) {
+                    uint32_t vertexIndex = j * vertexLength + i;
+                    uint32_t index = j * (vertexLength - 1) + i;
+
+                    indices[6 * index + 0] = vertexIndex;
+                    indices[6 * index + 1] = vertexIndex + 1;
+                    indices[6 * index + 2] = vertexIndex + 1 + vertexLength;
+                    indices[6 * index + 3] = vertexIndex;
+                    indices[6 * index + 4] = vertexIndex + 1 + vertexLength;
+                    indices[6 * index + 5] = vertexIndex + vertexLength;
+                }
+            }
+
+            rendering::gl::SerialCounted<rendering::gl::Buffer> indexBuffer(new rendering::gl::Buffer{
+                BufferUsage::STATIC_DRAW,
+                BufferTarget::ELEMENT_ARRAY_BUFFER,
+                indices.data(),
+                indices.size(),
+            });
+
+            rendering::gl::SerialCounted<rendering::gl::Buffer> positionBuffer(new rendering::gl::Buffer{
+                BufferUsage::STATIC_DRAW,
+                BufferTarget::ARRAY_BUFFER,
+                positions.data(),
+                3 * positions.size(),
+            });
+
+            rendering::gl::SerialCounted<rendering::gl::Buffer> normalBuffer(new rendering::gl::Buffer{
+                BufferUsage::STATIC_DRAW,
+                BufferTarget::ARRAY_BUFFER,
+                normals.data(),
+                3 * normals.size(),
+            });
+
+            vertexArray.Create();
+
+            commands->Record<CommandType::CreateVertexArray>(CreateVertexArrayCmd{ vertexArray });
+            commands->Record<CommandType::BindVertexArray>(BindVertexArrayCmd{ vertexArray });
+
+            indexBuffer->CreateAndUpload<uint32_t>(commands, indexBuffer);
+
+            positionBuffer->CreateAndUpload<float>(commands, positionBuffer);
+            commands->Record<CommandType::VertexAttribPointer>(VertexAttribPointerCmd{ 0, 3, ComponentDatatype::FLOAT, false, 0, 0 });
+            commands->Record<CommandType::EnableVertexAttribArray>(EnableVertexAttribArrayCmd{ 0 });
+
+            normalBuffer->CreateAndUpload<float>(commands, normalBuffer);
+            commands->Record<CommandType::VertexAttribPointer>(VertexAttribPointerCmd{ 1, 3, ComponentDatatype::FLOAT, false, 0, 0 });
+            commands->Record<CommandType::EnableVertexAttribArray>(EnableVertexAttribArrayCmd{ 1 });
+
+            commands->Record<CommandType::BindVertexArray>(BindVertexArrayCmd{ 0 });
+
+            commands->Record<CommandType::DeleteBuffer>(DeleteBufferCmd{ indexBuffer });
+            commands->Record<CommandType::DeleteBuffer>(DeleteBufferCmd{ positionBuffer });
+            commands->Record<CommandType::DeleteBuffer>(DeleteBufferCmd{ normalBuffer });
         }
-
-        rendering::gl::SerialCounted<rendering::gl::Buffer> indexBuffer(new rendering::gl::Buffer{
-            BufferUsage::STATIC_DRAW,
-            BufferTarget::ELEMENT_ARRAY_BUFFER,
-            indices.data(),
-            indices.size(),
-        });
-
-        rendering::gl::SerialCounted<rendering::gl::Buffer> positionBuffer(new rendering::gl::Buffer{
-            BufferUsage::STATIC_DRAW,
-            BufferTarget::ARRAY_BUFFER,
-            positions.data(),
-            3 * positions.size(),
-        });
-
-        vertexArray.Create();
-
-        commands->Record<CommandType::CreateVertexArray>(CreateVertexArrayCmd{ vertexArray });
-        commands->Record<CommandType::BindVertexArray>(BindVertexArrayCmd{ vertexArray });
-
-        indexBuffer->CreateAndUpload<uint32_t>(commands, indexBuffer);
-
-        positionBuffer->CreateAndUpload<float>(commands, positionBuffer);
-        commands->Record<CommandType::VertexAttribPointer>(VertexAttribPointerCmd{ 0, 3, ComponentDatatype::FLOAT, false, 0, 0 });
-        commands->Record<CommandType::EnableVertexAttribArray>(EnableVertexAttribArrayCmd{ 0 });
-
-        commands->Record<CommandType::BindVertexArray>(BindVertexArrayCmd{ 0 });
-
-        commands->Record<CommandType::DeleteBuffer>(DeleteBufferCmd{ indexBuffer });
-        commands->Record<CommandType::DeleteBuffer>(DeleteBufferCmd{ positionBuffer });
     }
 }
 
 void TerrainTileContentGeometry::Draw(const flint::core::FrameState &frameState, CommandBuffer* commands) {
+    assert(static_cast<uint32_t>(vertexArray));
     commands->Record<CommandType::BindVertexArray>(BindVertexArrayCmd{ vertexArray });
     commands->Record<CommandType::DrawElements>(DrawElementsCmd{ DrawMode::TRIANGLES, indexCount, IndexDatatype::UNSIGNED_INT, 0 });
+}
+
+void TerrainTileContentGeometry::Destroy(CommandBuffer* commands) {
+    if (!singletonInstance) {
+        commands->Record<CommandType::DeleteVertexArray>(DeleteVertexArrayCmd{ vertexArray });
+        vertexArray.Release();
+        created = false;
+    }
 }
 
 TerrainTileContent::TerrainTileContent(TerrainTile* tile)
   : tile(tile),
     ready(false),
-    useShaderOffsets(reinterpret_cast<TerrainTileset*>(tile->tileset)->generationMode == TerrainTilesetGenerationMode::GPU) {
+    geometry(useShaderOffsets() ? &TerrainTileContentGeometry::GetInstance() : new TerrainTileContentGeometry(this)) {
 
-    if (useShaderOffsets) {
+    if (useShaderOffsets()) {
         assert(tile->boundingVolume);
         auto min = tile->boundingVolume->min();
         auto max = tile->boundingVolume->max();
@@ -414,6 +513,16 @@ TerrainTileContent::TerrainTileContent(TerrainTile* tile)
             0.f, 0.f, diag[2], min[2],
             0.f, 0.f, 0.f, 1.f;
     }
+}
+
+TerrainTileContent::~TerrainTileContent() {
+    if (!useShaderOffsets()) {
+        delete geometry;
+    }
+}
+
+bool TerrainTileContent::useShaderOffsets() const {
+    return reinterpret_cast<TerrainTileset*>(tile->tileset)->generationMode == TerrainTilesetGenerationMode::GPU;
 }
 
 TerrainTileContent::TerrainSample TerrainTileContent::SampleTerrain(float x, float z, uint32_t depth) {
@@ -435,124 +544,13 @@ void TerrainTileContent::CreateImpl(steel::rendering::gl::CommandBuffer* command
     TerrainTileContentShaderProgram::GetInstance().Create(commands);
     steel::shader::WireProgram::GetInstance().Create(commands);
     steel::geometry::BoundingBoxGeometry::GetInstance().Create(commands);
-
-    assert(tile->boundingVolume);
-    auto min = tile->boundingVolume->min();
-    auto max = tile->boundingVolume->max();
-    auto diag = max - min;
-
-    if (useShaderOffsets) {
-        TerrainTileContentGeometry::GetInstance().Create(commands);
-    } else {
-        std::vector<uint32_t> indices(indexCount + bboxIndexCount);
-        std::vector<std::array<float, 3>> positions(vertexCount);
-        std::vector<std::array<float, 3>> normals(vertexCount);
-        std::vector<std::array<float, 3>> colors(vertexCount);
-
-        for (uint32_t j = 0; j < vertexLength; ++j) {
-            for (uint32_t i = 0; i < vertexLength; ++i) {
-                uint32_t index = j * vertexLength + i;
-                positions[index][0] = min[0] + vertexStepSize * i * diag[0];
-                positions[index][2] = min[2] + vertexStepSize * j * diag[2];
-
-                auto sample = SampleTerrain(positions[index][0], positions[index][2], tile->index.depth);
-                positions[index][1] = sample.height;
-                Eigen::Array<float, 3, 1> p{ positions[index][0], positions[index][1], positions[index][2] };
-
-                if (contentBoundingVolume) {
-                    contentBoundingVolume->Merge(p);
-                } else {
-                    contentBoundingVolume.set(core::AxisAlignedBox<3, float>(p, p));
-                }
-
-                normals[index][0] = sample.normal[0];
-                normals[index][1] = sample.normal[1];
-                normals[index][2] = sample.normal[2];
-
-                colors[index][0] = 0.8f;
-                colors[index][1] = 0.8f;
-                colors[index][2] = 0.8f;
-            }
-        }
-
-        for (uint32_t j = 0; j < vertexLength - 1; ++j) {
-            for (uint32_t i = 0; i < vertexLength - 1; ++i) {
-                uint32_t vertexIndex = j * vertexLength + i;
-                uint32_t index = j * (vertexLength - 1) + i;
-
-                indices[6 * index + 0] = vertexIndex;
-                indices[6 * index + 1] = vertexIndex + 1;
-                indices[6 * index + 2] = vertexIndex + 1 + vertexLength;
-                indices[6 * index + 3] = vertexIndex;
-                indices[6 * index + 4] = vertexIndex + 1 + vertexLength;
-                indices[6 * index + 5] = vertexIndex + vertexLength;
-            }
-        }
-
-        rendering::gl::SerialCounted<rendering::gl::Buffer> indexBuffer(new rendering::gl::Buffer{
-            BufferUsage::STATIC_DRAW,
-            BufferTarget::ELEMENT_ARRAY_BUFFER,
-            indices.data(),
-            indices.size(),
-        });
-
-        rendering::gl::SerialCounted<rendering::gl::Buffer> positionBuffer(new rendering::gl::Buffer{
-            BufferUsage::STATIC_DRAW,
-            BufferTarget::ARRAY_BUFFER,
-            positions.data(),
-            3 * positions.size(),
-        });
-
-        rendering::gl::SerialCounted<rendering::gl::Buffer> normalBuffer(new rendering::gl::Buffer{
-            BufferUsage::STATIC_DRAW,
-            BufferTarget::ARRAY_BUFFER,
-            normals.data(),
-            3 * normals.size(),
-        });
-
-        rendering::gl::SerialCounted<rendering::gl::Buffer> colorBuffer(new rendering::gl::Buffer{
-            BufferUsage::STATIC_DRAW,
-            BufferTarget::ARRAY_BUFFER,
-            colors.data(),
-            3 * colors.size(),
-        });
-
-        vertexArray.Create();
-
-        commands->Record<CommandType::CreateVertexArray>(CreateVertexArrayCmd{ vertexArray });
-        commands->Record<CommandType::BindVertexArray>(BindVertexArrayCmd{ vertexArray });
-
-        indexBuffer->CreateAndUpload<uint32_t>(commands, indexBuffer);
-
-        positionBuffer->CreateAndUpload<float>(commands, positionBuffer);
-        commands->Record<CommandType::VertexAttribPointer>(VertexAttribPointerCmd{ 0, 3, ComponentDatatype::FLOAT, false, 0, 0 });
-        commands->Record<CommandType::EnableVertexAttribArray>(EnableVertexAttribArrayCmd{ 0 });
-
-        normalBuffer->CreateAndUpload<float>(commands, normalBuffer);
-        commands->Record<CommandType::VertexAttribPointer>(VertexAttribPointerCmd{ 1, 3, ComponentDatatype::FLOAT, false, 0, 0 });
-        commands->Record<CommandType::EnableVertexAttribArray>(EnableVertexAttribArrayCmd{ 1 });
-
-        colorBuffer->CreateAndUpload<float>(commands, colorBuffer);
-        commands->Record<CommandType::VertexAttribPointer>(VertexAttribPointerCmd{ 2, 3, ComponentDatatype::FLOAT, false, 0, 0 });
-        commands->Record<CommandType::EnableVertexAttribArray>(EnableVertexAttribArrayCmd{ 2 });
-
-        commands->Record<CommandType::BindVertexArray>(BindVertexArrayCmd{ 0 });
-
-        commands->Record<CommandType::DeleteBuffer>(DeleteBufferCmd{ indexBuffer });
-        commands->Record<CommandType::DeleteBuffer>(DeleteBufferCmd{ positionBuffer });
-        commands->Record<CommandType::DeleteBuffer>(DeleteBufferCmd{ normalBuffer });
-        commands->Record<CommandType::DeleteBuffer>(DeleteBufferCmd{ colorBuffer });
-    }
-
+    geometry->Create(commands);
     ready = true;
 }
 
 void TerrainTileContent::DestroyImpl(steel::rendering::gl::CommandBuffer* commands) {
     if (ready) {
-        if (!useShaderOffsets) {
-            commands->Record<CommandType::DeleteVertexArray>(DeleteVertexArrayCmd{ vertexArray });
-            vertexArray.Release();
-        }
+        geometry->Destroy(commands);
         ready = false;
     }
 }
@@ -571,7 +569,7 @@ bool TerrainTileContent::IsReadyImpl() const {
 }
 
 void TerrainTileContent::UpdateImpl(const flint::core::FrameState &frameState) {
-    if (useShaderOffsets) {
+    if (useShaderOffsets()) {
         auto min = tile->boundingVolume->min();
         auto max = tile->boundingVolume->max();
         auto diag = max - min;
@@ -599,15 +597,11 @@ void TerrainTileContent::DrawImpl(const flint::core::FrameState &frameState, ste
     if (!IsEmpty() && IsReady()) {
         commands->Record<CommandType::Uniform1ui>(Uniform1uiCmd{ "depth", tile->index.depth });
         commands->Record<CommandType::Uniform1f>(Uniform1fCmd{ "screenSpaceError", tile->screenSpaceError });
-        if (useShaderOffsets) {
+        if (useShaderOffsets()) {
             commands->Record<CommandType::UniformMatrix4fv>(UniformMatrix4fvCmd{ "modelMatrix", 1, false });
             commands->RecordData<float>(modelMatrix.data(), 16);
-            TerrainTileContentGeometry::GetInstance().Draw(frameState, commands);
-        } else {
-            commands->Record<CommandType::BindVertexArray>(BindVertexArrayCmd{ vertexArray });
-            commands->Record<CommandType::DrawElements>(DrawElementsCmd{ DrawMode::TRIANGLES, indexCount, IndexDatatype::UNSIGNED_INT, 0 });
-            commands->Record<CommandType::DrawElements>(DrawElementsCmd{ DrawMode::LINES, bboxIndexCount, IndexDatatype::UNSIGNED_INT, indexCount * sizeof(uint32_t) });
         }
+        geometry->Draw(frameState, commands);
     }
 }
 

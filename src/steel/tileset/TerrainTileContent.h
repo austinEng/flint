@@ -39,20 +39,27 @@ public:
         return instance;
     }
 
+    TerrainTileContentGeometry(TerrainTileContent* tileContent);
+
     void Create(steel::rendering::gl::CommandBuffer* commands);
     void Draw(const flint::core::FrameState &frameState, steel::rendering::gl::CommandBuffer* commands);
+    void Destroy(steel::rendering::gl::CommandBuffer* commands);
     TerrainTileContentGeometry(const TerrainTileContentGeometry&) = delete;
     TerrainTileContentGeometry& operator=(const TerrainTileContentGeometry&) = delete;
 
     bool created = false;
+    bool singletonInstance = false;
+    TerrainTileContent* tileContent = nullptr;
 };
 
 class TerrainTileContent : public TileContent<TerrainTileContent> {
     friend class TileContent<TerrainTileContent>;
+    friend class TerrainTileContentGeometry;
 
 public:
     TerrainTileContent() = delete;
     TerrainTileContent(TerrainTile* tile);
+    ~TerrainTileContent();
 
     struct TerrainSample {
         float height;
@@ -64,11 +71,13 @@ public:
 
 private:
     TerrainTile* tile;
-    bool useShaderOffsets;
+    TerrainTileContentGeometry* geometry;
     bool ready = false;
 
-    rendering::gl::SerialCounted<rendering::gl::VertexArray> vertexArray;
+    // rendering::gl::SerialCounted<rendering::gl::VertexArray> vertexArray;
     Eigen::Matrix<float, 4, 4> modelMatrix;
+
+    bool useShaderOffsets() const;
 
     void CreateImpl(steel::rendering::gl::CommandBuffer* commands);
     void DestroyImpl(steel::rendering::gl::CommandBuffer* commands);
