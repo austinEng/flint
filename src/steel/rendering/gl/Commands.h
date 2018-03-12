@@ -28,6 +28,7 @@ enum class CommandType {
     EnableVertexAttribArray,
     DisableVertexAttribArray,
     VertexAttribPointer,
+    VertexAttribDivisor,
     DrawElements,
     DrawArrays,
 };
@@ -133,6 +134,11 @@ struct VertexAttribPointerCmd {
     size_t offset;
 };
 
+struct VertexAttribDivisorCmd {
+    uint32_t location;
+    uint32_t divisor;
+};
+
 struct DrawElementsCmd {
     DrawMode mode;
     uint32_t count;
@@ -168,6 +174,7 @@ static void PrintCommandType(CommandType c) {
     case CommandType::EnableVertexAttribArray: printf("EnableVertexAttribArray\n"); break;
     case CommandType::DisableVertexAttribArray: printf("DisableVertexAttribArray\n"); break;
     case CommandType::VertexAttribPointer: printf("VertexAttribPointer\n"); break;
+    case CommandType::VertexAttribDivisor: printf("VertexAttribDivisor\n"); break;
     case CommandType::DrawElements: printf("DrawElements\n"); break;
     case CommandType::DrawArrays: printf("DrawArrays\n"); break;
     }

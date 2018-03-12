@@ -110,6 +110,7 @@ void Renderer::ExecuteCommands(const CommandBlock* commands) {
 
     CommandType c;
     while (iter.NextCommandId(&c)) {
+
         switch (c) {
             case CommandType::Clear: {
                 auto* cmd = iter.NextCommand<ClearCmd>();
@@ -250,6 +251,11 @@ void Renderer::ExecuteCommands(const CommandBlock* commands) {
             case CommandType::VertexAttribPointer: {
                 auto* cmd = iter.NextCommand<VertexAttribPointerCmd>();
                 glVertexAttribPointer(cmd->location, cmd->size, GLComponentDatatype(cmd->type), cmd->normalized, cmd->stride, reinterpret_cast<const void*>(cmd->offset));
+                break;
+            }
+            case CommandType::VertexAttribDivisor: {
+                auto* cmd = iter.NextCommand<VertexAttribDivisorCmd>();
+                glVertexAttribDivisor(cmd->location, cmd->divisor);
                 break;
             }
             case CommandType::DrawElements: {
