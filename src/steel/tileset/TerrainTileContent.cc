@@ -1,5 +1,4 @@
 #include <vector>
-#include <random>
 #include <steel/geometry/BoundingBoxGeometry.h>
 #include <steel/shader/WireProgram.h>
 #include "TerrainTileset.h"
@@ -26,15 +25,18 @@ namespace {
         return static_cast<float>(f - std::floor(f));
     }
 
-    float wangHash(uint32_t u, uint32_t v, uint32_t s) {
-        uint32_t seed = (u * 1664525u + v) + s;
-        seed = (seed ^ 61u) ^ (seed >> 16u);
-        seed *= 9u;
-        seed = seed ^ (seed >> 4u);
-        seed *= 668265261u;
-        seed = seed ^ (seed >> 15u);
+    constexpr float wangHash(uint32_t seed) {
+        uint32_t a = (seed ^ 61u) ^ (seed >> 16u);
+        uint32_t b = a * 9u;
+        uint32_t c = b ^ (b >> 4u);
+        uint32_t d = c * 668265261u;
+        uint32_t e = d ^ (d >> 15u);
+        return static_cast<float>(e) / 4294967296.f;
+    }
 
-        return static_cast<float>(seed) / 4294967296.f;
+    constexpr float wangHash(uint32_t u, uint32_t v, uint32_t s) {
+        uint32_t seed = (u * 1664525u + v) + s;
+        return wangHash(seed);
     }
 
     float wangHash(const Eigen::Matrix<float, 2, 1> &x) {
@@ -568,18 +570,17 @@ bool TerrainTileContent::IsReadyImpl() const {
     return ready;
 }
 
+static uint32_t sampleIndex = 0;
 void TerrainTileContent::UpdateImpl(const flint::core::FrameState &frameState) {
     if (useShaderOffsets()) {
         auto min = tile->boundingVolume->min();
         auto max = tile->boundingVolume->max();
         auto diag = max - min;
 
-        static std::random_device rd;
-        std::uniform_real_distribution<float> xdist(min[0], max[0]);
-        std::uniform_real_distribution<float> zdist(min[2], max[2]);
         for (uint32_t i = 0; i < 5; ++i) {
-            float x = xdist(rd);
-            float z = zdist(rd);
+            float x = min[0] + diag[0] * wangHash(sampleIndex++);
+            float z = min[2] + diag[2] * wangHash(sampleIndex++);
+
             auto sample = SampleTerrain(x, z, tile->index.depth);
             Eigen::Array<float, 3, 1> p{ x, sample.height, z };
             if (contentBoundingVolume) {
