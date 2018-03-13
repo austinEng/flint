@@ -74,7 +74,7 @@ BuildDemo(
     LINK_LIBRARIES flint flint_viewport
     WORKERS createGeometry
     EXPORTED_FUNCTIONS _main
-    EXTRA_EXPORTED_RUNTIME_METHODS cwrap UTF8ToString
+    EXTRA_EXPORTED_RUNTIME_METHODS cwrap UTF8ToString stringToUTF8
 )
 
 BuildDemo(
@@ -83,7 +83,7 @@ BuildDemo(
     LINK_LIBRARIES flint steel flint_viewport
     WORKERS terrainGeneratorCPU
     EXPORTED_FUNCTIONS _main
-    EXTRA_EXPORTED_RUNTIME_METHODS UTF8ToString
+    EXTRA_EXPORTED_RUNTIME_METHODS UTF8ToString stringToUTF8
 )
 
 BuildDemo(
@@ -92,5 +92,5 @@ BuildDemo(
     LINK_LIBRARIES flint steel flint_viewport
     WORKERS terrainGeneratorGPU
     EXPORTED_FUNCTIONS _main
-    EXTRA_EXPORTED_RUNTIME_METHODS UTF8ToString
+    EXTRA_EXPORTED_RUNTIME_METHODS UTF8ToString stringToUTF8
 )
