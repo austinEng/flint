@@ -1,0 +1,69 @@
+<!doctype html>
+<html>
+    <head>
+        <style>
+            html, body {
+                padding: 0;
+                margin: 0;
+                overflow: hidden;
+            }
+            .container {
+                display: flex;
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+            }
+            .container .panel {
+                position: relative;
+                width: 50%;
+                height: 100%;
+            }
+            .panel .overlay {
+                background-color: rgba(0,0,0,0.5);
+                position: absolute;
+                bottom: 0px;
+                width: 100%;
+                pointer-events: none;
+            }
+            .overlay h2 {
+                text-align: center;
+                color: white;
+            }
+            iframe {
+                border: none;
+                height: 100%;
+                width: 100%;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="panel">
+                <div class="overlay">
+                    <h2>Javascript</h2>
+                </div>
+                <iframe id="frame0"></iframe>
+            </div>
+            <div class="panel">
+                <div class="overlay">
+                    <h2>Web Assembly</h2>
+                </div>
+                <iframe id="frame1"></iframe>
+            </div>
+        </div>
+        <script>
+            (function() {
+                const queryParams = window.location.search.substring(1).split('&').reduce((acc, el) => {
+                    const kv = el.split('=');
+                    return Object.assign(acc, { [kv[0]]: kv[1] });
+                }, {});
+                if (queryParams.demo) {
+                    document.querySelector('#frame0').setAttribute('src', `js/examples/${queryParams.demo}.html`);
+                    document.querySelector('#frame1').setAttribute('src', `wasm/examples/${queryParams.demo}.html`);
+                }
+            })()
+        </script>
+    </body>
+</html>
