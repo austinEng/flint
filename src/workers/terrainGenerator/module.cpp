@@ -71,10 +71,13 @@ threading::WorkerBase::WorkerResponse TerrainGenerator::Update(void* data, int s
 
 threading::WorkerBase::WorkerResponse TerrainGenerator::UpdateShowBoundingBoxes(void* data, int size, void* arg) {
     assert(size == sizeof(bool));
+    terrainTileset->showBoundingBoxes = *reinterpret_cast<bool*>(data);
+    return { nullptr, 0 };
+}
 
-    bool showBoundingBoxes = *reinterpret_cast<bool*>(data);
-    terrainTileset->UpdateShowBoundingBoxes(showBoundingBoxes);
-
+threading::WorkerBase::WorkerResponse TerrainGenerator::UpdateDrawWireframe(void* data, int size, void* arg) {
+    assert(size == sizeof(bool));
+    terrainTileset->drawWireframe = *reinterpret_cast<bool*>(data);
     return { nullptr, 0 };
 }
 

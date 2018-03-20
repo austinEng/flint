@@ -33,6 +33,7 @@ public:
     LRUCache lruCache;
     TerrainTilesetGenerationMode generationMode;
     bool showBoundingBoxes = false;
+    bool drawWireframe = false;
 
     TerrainTileset() = delete;
     TerrainTileset(TerrainTilesetGenerationMode generationMode);
@@ -50,8 +51,6 @@ public:
     void UnloadTilesImpl(steel::rendering::gl::CommandBuffer* commands);
 
     TerrainTileContent::TerrainSample SampleTerrain(float x, float z, uint32_t depth) const;
-
-    void UpdateShowBoundingBoxes(bool showBoundingBoxes);
 };
 
 }

@@ -193,9 +193,5 @@ TerrainTileContent::TerrainSample TerrainTileset::SampleTerrain(float x, float z
     return TerrainTileContent::SampleTerrain(x, z, depth);
 }
 
-void TerrainTileset::UpdateShowBoundingBoxes(bool showBoundingBoxes) {
-    this->showBoundingBoxes = showBoundingBoxes;
-}
-
 }
 }

@@ -17,6 +17,7 @@ struct TerrainGenerator {
 
     static threading::WorkerBase::WorkerResponse Update(void* data, int size, void* arg);
     static threading::WorkerBase::WorkerResponse UpdateShowBoundingBoxes(void* data, int size, void* arg);
+    static threading::WorkerBase::WorkerResponse UpdateDrawWireframe(void* data, int size, void* arg);
 
     static int Main(int argc, char** argv, threading::Worker<TerrainGenerator>* worker = nullptr);
 };
@@ -24,4 +25,5 @@ struct TerrainGenerator {
 #ifdef __EMSCRIPTEN__
 EXPORT_WORKER_FUNCTION(TerrainGenerator, Update)
 EXPORT_WORKER_FUNCTION(TerrainGenerator, UpdateShowBoundingBoxes)
+EXPORT_WORKER_FUNCTION(TerrainGenerator, UpdateDrawWireframe)
 #endif
