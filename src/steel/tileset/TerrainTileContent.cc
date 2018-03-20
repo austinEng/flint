@@ -487,7 +487,11 @@ void TerrainTileContentGeometry::Create(CommandBuffer* commands) {
 void TerrainTileContentGeometry::Draw(const flint::core::FrameState &frameState, CommandBuffer* commands) {
     assert(static_cast<uint32_t>(vertexArray));
     commands->Record<CommandType::BindVertexArray>(BindVertexArrayCmd{ vertexArray });
-    commands->Record<CommandType::DrawElements>(DrawElementsCmd{ DrawMode::TRIANGLES, indexCount, IndexDatatype::UNSIGNED_INT, 0 });
+    if (reinterpret_cast<TerrainTileset*>(tileContent->tile->tileset)->drawWireframe) {
+        commands->Record<CommandType::DrawElements>(DrawElementsCmd{ DrawMode::LINES, indexCount, IndexDatatype::UNSIGNED_INT, 0 });
+    } else {
+        commands->Record<CommandType::DrawElements>(DrawElementsCmd{ DrawMode::TRIANGLES, indexCount, IndexDatatype::UNSIGNED_INT, 0 });
+    }
 }
 
 void TerrainTileContentGeometry::Destroy(CommandBuffer* commands) {

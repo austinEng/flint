@@ -32,6 +32,8 @@ static CommandBuffer* commandBuffer = nullptr;
 
 static bool showBoundingBoxes = false;
 static bool _showBoundingBoxes = showBoundingBoxes;
+static bool drawWireframe = false;
+static bool _drawWireframe = drawWireframe;
 
 static void resizeCallback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
@@ -64,6 +66,11 @@ static void frame(void* ptr) {
     if (showBoundingBoxes != _showBoundingBoxes) {
         showBoundingBoxes = _showBoundingBoxes;
         terrainGenerator->Call<&TerrainGenerator::UpdateShowBoundingBoxes>(&showBoundingBoxes, sizeof(showBoundingBoxes));
+    }
+
+    if (drawWireframe != _drawWireframe) {
+        drawWireframe = _drawWireframe;
+        terrainGenerator->Call<&TerrainGenerator::UpdateDrawWireframe>(&drawWireframe, sizeof(drawWireframe));
     }
 
     if (traverseMainThread) {
@@ -170,6 +177,11 @@ extern "C" {
     EMSCRIPTEN_KEEPALIVE
     void updateShowBoundingBoxes(unsigned int value) {
         _showBoundingBoxes = static_cast<bool>(value);
+    }
+
+    EMSCRIPTEN_KEEPALIVE
+    void updateDrawWireframe(unsigned int value) {
+        _drawWireframe = static_cast<bool>(value);
     }
 
     EMSCRIPTEN_KEEPALIVE
