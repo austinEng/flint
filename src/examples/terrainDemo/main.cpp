@@ -45,11 +45,11 @@ static void frame(void* ptr) {
 
     glfwPollEvents();
 
-    frameState.camera.Rotate(-0.25f * 3.14159f / 180.f, 0);
+    frameState.camera.Rotate(-.5f * 3.14159f / 180.f, 0);
     auto cameraForward = frameState.camera.GetForward();
     cameraForward[1] = 0.f;
     cameraForward.normalize();
-    frameState.camera.MoveGlobal(cameraForward * 100.f);
+    frameState.camera.MoveGlobal(cameraForward * 200.f);
 
     auto cameraPos = frameState.camera.GetPosition();
     auto sample = terrainTileset->SampleTerrain(cameraPos[0], cameraPos[2], 0);

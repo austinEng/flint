@@ -20,7 +20,7 @@ script:
   - docker exec -it emscripten bash -c "mkdir -p /src/build_wasm && cd /src/build_wasm && cmake ../ -DCMAKE_TOOLCHAIN_FILE=/emsdk_portable/sdk/cmake/Modules/Platform/Emscripten.cmake -DCMAKE_BUILD_TYPE=Release -DWASM=1"
   - docker exec -it emscripten bash -c "cd /src/build_wasm && make"
   - docker exec -it emscripten bash -c "cd /src && npm run bundle:wasm"
-  - docker exec -it emscripten bash -c "mkdir -p /src/build_js && cd /src/build_js && cmake ../ -DCMAKE_TOOLCHAIN_FILE=/emsdk_portable/sdk/cmake/Modules/Platform/Emscripten.cmake -DCMAKE_BUILD_TYPE=Release -DWASM=0"
+  - docker exec -it emscripten bash -c "mkdir -p /src/build_js && cd /src/build_js && cmake ../ -DCMAKE_TOOLCHAIN_FILE=/emsdk_portable/sdk/cmake/Modules/Platform/Emscripten.cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DWASM=0"
   - docker exec -it emscripten bash -c "cd /src/build_js && make"
   - docker exec -it emscripten bash -c "cd /src && npm run bundle:js"
 
