@@ -69,6 +69,15 @@ threading::WorkerBase::WorkerResponse TerrainGenerator::Update(void* data, int s
     return { updateResponseBuffer.data(), static_cast<int>(updateResponseBuffer.size()) };
 }
 
+threading::WorkerBase::WorkerResponse TerrainGenerator::UpdateShowBoundingBoxes(void* data, int size, void* arg) {
+    assert(size == sizeof(bool));
+
+    bool showBoundingBoxes = *reinterpret_cast<bool*>(data);
+    terrainTileset->UpdateShowBoundingBoxes(showBoundingBoxes);
+
+    return { nullptr, 0 };
+}
+
 WORKER_MAIN(TerrainGenerator, {
     terrainTileset = InitTerrainTileset();
     resourceCommandBuffer = new CommandBuffer();

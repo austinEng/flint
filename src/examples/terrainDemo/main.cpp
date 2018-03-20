@@ -30,6 +30,9 @@ extern tileset::TerrainTileset* InitTerrainTileset();
 static tileset::TerrainTileset* terrainTileset = nullptr;
 static CommandBuffer* commandBuffer = nullptr;
 
+static bool showBoundingBoxes = false;
+static bool _showBoundingBoxes = showBoundingBoxes;
+
 static void resizeCallback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
     frameState.width = width;
@@ -42,10 +45,11 @@ static void frame(void* ptr) {
 
     glfwPollEvents();
 
+    frameState.camera.Rotate(-0.25f * 3.14159f / 180.f, 0);
     auto cameraForward = frameState.camera.GetForward();
     cameraForward[1] = 0.f;
     cameraForward.normalize();
-    frameState.camera.MoveGlobal(cameraForward * 50.f);
+    frameState.camera.MoveGlobal(cameraForward * 100.f);
 
     auto cameraPos = frameState.camera.GetPosition();
     auto sample = terrainTileset->SampleTerrain(cameraPos[0], cameraPos[2], 0);
@@ -55,6 +59,11 @@ static void frame(void* ptr) {
     } else {
         float falloff = 0.95f;
         frameState.camera.SetPosition({ cameraPos[0], cameraPos[1] * falloff + newHeight * (1.f - falloff), cameraPos[2] });
+    }
+
+    if (showBoundingBoxes != _showBoundingBoxes) {
+        showBoundingBoxes = _showBoundingBoxes;
+        terrainGenerator->Call<&TerrainGenerator::UpdateShowBoundingBoxes>(&showBoundingBoxes, sizeof(showBoundingBoxes));
     }
 
     if (traverseMainThread) {
@@ -152,3 +161,16 @@ int main(int argc, char** argv) {
 
     return 0;
 }
+
+#ifdef __EMSCRIPTEN__
+#include <emscripten/emscripten.h>
+
+// Define JavaScript bindings
+extern "C" {
+    EMSCRIPTEN_KEEPALIVE
+    void updateShowBoundingBoxes(unsigned int value) {
+        _showBoundingBoxes = static_cast<bool>(value);
+    }
+}
+
+#endif

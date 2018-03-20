@@ -143,9 +143,11 @@ void TerrainTileset::DrawTilesImpl(const flint::core::FrameState &frameState, st
         tile->Draw(frameState, commands);
     }
 
-    steel::shader::WireProgram::GetInstance().Use(commands);
-    for (std::shared_ptr<TileBase> tile : selectedTiles) {
-        tile->DrawBoundingBox(frameState, commands);
+    if (showBoundingBoxes) {
+        steel::shader::WireProgram::GetInstance().Use(commands);
+        for (std::shared_ptr<TileBase> tile : selectedTiles) {
+            tile->DrawBoundingBox(frameState, commands);
+        }
     }
 }
 
@@ -189,6 +191,10 @@ void TerrainTileset::UnloadTilesImpl(steel::rendering::gl::CommandBuffer* comman
 
 TerrainTileContent::TerrainSample TerrainTileset::SampleTerrain(float x, float z, uint32_t depth) const {
     return TerrainTileContent::SampleTerrain(x, z, depth);
+}
+
+void TerrainTileset::UpdateShowBoundingBoxes(bool showBoundingBoxes) {
+    this->showBoundingBoxes = showBoundingBoxes;
 }
 
 }
