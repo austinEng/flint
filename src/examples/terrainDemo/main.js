@@ -8,6 +8,7 @@ export function main(TerrainDemo, workers) {
 
   const params = {
     showBoundingBoxes: false,
+    traverseMainThread: false,
   };
 
   const terrainDemoModule = new TerrainDemo({
@@ -16,6 +17,7 @@ export function main(TerrainDemo, workers) {
     onRuntimeInitialized() {
       setCanvasToWindowSize(terrainDemoModule);
       moduleBindings.updateShowBoundingBoxes(params.showBoundingBoxes);
+      moduleBindings.updateTraverseMainThread(params.traverseMainThread);
     },
     getWorkerURL(moduleName) {
       return workers[moduleName];
@@ -24,9 +26,11 @@ export function main(TerrainDemo, workers) {
 
   const moduleBindings = {
     updateShowBoundingBoxes: terrainDemoModule.cwrap('updateShowBoundingBoxes', 'number', ['number']),
+    updateTraverseMainThread: terrainDemoModule.cwrap('updateTraverseMainThread', 'number', ['number']),
   };
 
   const gui = createStatsAndGUI();
   gui.add(params, 'showBoundingBoxes').onChange(moduleBindings.updateShowBoundingBoxes);
+  gui.add(params, 'traverseMainThread').onChange(moduleBindings.updateTraverseMainThread);
 
 }
