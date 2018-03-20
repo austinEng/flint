@@ -17,7 +17,7 @@ using namespace steel;
 using namespace steel::rendering;
 using namespace steel::rendering::gl;
 
-static constexpr bool traverseMainThread = false;
+static bool traverseMainThread = false;
 
 static core::FrameState frameState;
 static viewport::CameraControls<float>* cameraControls;
@@ -170,6 +170,11 @@ extern "C" {
     EMSCRIPTEN_KEEPALIVE
     void updateShowBoundingBoxes(unsigned int value) {
         _showBoundingBoxes = static_cast<bool>(value);
+    }
+
+    EMSCRIPTEN_KEEPALIVE
+    void updateTraverseMainThread(unsigned int value) {
+        traverseMainThread = static_cast<bool>(value);
     }
 }
 
