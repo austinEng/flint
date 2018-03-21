@@ -539,8 +539,8 @@ TerrainTileContent::TerrainSample TerrainTileContent::SampleTerrain(float x, flo
 
 float TerrainTileContent::GeometricError(uint32_t depth) {
     constexpr float fac = 0.4;
-    float heightError = terrainAmplitude * core::constPow(fac, depth) / (1.f - fac);
-    float tileSize = TERRAIN_ROOT_SIZE * core::constPow(0.5, depth);
+    float heightError = terrainAmplitude * std::pow(fac, depth) / (1.f - fac);
+    float tileSize = TERRAIN_ROOT_SIZE * std::pow(0.5, depth);
     float tileArea = tileSize * tileSize;
 
     return heightError * tileArea / static_cast<float>(vertexCount);

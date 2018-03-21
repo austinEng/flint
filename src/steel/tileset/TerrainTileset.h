@@ -19,7 +19,7 @@ enum class TerrainTilesetGenerationMode : unsigned short {
 class TerrainTileset : public Tileset<TerrainTileset> {
 public:
     std::map<TerrainTile::Index, std::shared_ptr<TerrainTile>> rootTiles;
-    float maximumScreenSpaceError = 20;
+    float maximumScreenSpaceError = 15;
 
     TerrainTile::LRUNode lruSentinel;
     struct LRUCache {

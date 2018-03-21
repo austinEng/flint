@@ -39,7 +39,7 @@ public:
 
     template <typename... Args>
     static std::shared_ptr<TerrainTile> Create(Args&&... args) {
-        std::shared_ptr<TerrainTile> ptr = std::make_shared<TerrainTile>(std::forward<Args>(args)...);
+        std::shared_ptr<TerrainTile> ptr(new TerrainTile(std::forward<Args>(args)...));
         ptr->lruNode.tile = ptr;
         return ptr;
     }

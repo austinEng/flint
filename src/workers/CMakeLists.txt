@@ -17,7 +17,9 @@ macro(BuildWorker)
     InternalTarget("workers" ${_BUILDWORKER_NAME})
 endmacro()
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${EMSCRIPTEN_WORKER_FLAGS}")
+if (EMSCRIPTEN)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${EMSCRIPTEN_WORKER_FLAGS}")
+endif()
 
 BuildWorker(
     NAME createGeometry
