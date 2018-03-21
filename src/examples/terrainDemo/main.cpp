@@ -51,17 +51,22 @@ static void frame(void* ptr) {
     auto cameraForward = frameState.camera.GetForward();
     cameraForward[1] = 0.f;
     cameraForward.normalize();
-    frameState.camera.MoveGlobal(cameraForward * 200.f);
+    frameState.camera.MoveGlobal(cameraForward * 300.f);
 
-    auto cameraPos = frameState.camera.GetPosition();
-    auto sample = terrainTileset->SampleTerrain(cameraPos[0], cameraPos[2], 0);
-    float newHeight = sample.height + 1000.f;
-    if (newHeight > cameraPos[1]) {
-        frameState.camera.SetPosition({cameraPos[0], newHeight, cameraPos[2]});
-    } else {
-        float falloff = 0.95f;
-        frameState.camera.SetPosition({ cameraPos[0], cameraPos[1] * falloff + newHeight * (1.f - falloff), cameraPos[2] });
-    }
+    auto cameraPos0 = frameState.camera.GetPosition();
+    auto cameraPos1 = cameraPos0 +  50.f * cameraForward;
+    auto cameraPos2 = cameraPos0 + 100.f * cameraForward;
+    auto cameraPos3 = cameraPos0 + 150.f * cameraForward;
+
+    auto sample0 = terrainTileset->SampleTerrain(cameraPos0[0], cameraPos0[2], 0);
+    auto sample1 = terrainTileset->SampleTerrain(cameraPos1[0], cameraPos1[2], 0);
+    auto sample2 = terrainTileset->SampleTerrain(cameraPos2[0], cameraPos2[2], 0);
+    auto sample3 = terrainTileset->SampleTerrain(cameraPos3[0], cameraPos3[2], 0);
+
+    float newHeight = std::max(std::max(std::max(sample0.height, sample1.height), sample2.height), sample3.height) + 5000.f;
+
+    constexpr float falloff = 0.95f;
+    frameState.camera.SetPosition({ cameraPos0[0], cameraPos0[1] * falloff + newHeight * (1.f - falloff), cameraPos0[2] });
 
     if (showBoundingBoxes != _showBoundingBoxes) {
         showBoundingBoxes = _showBoundingBoxes;
@@ -149,7 +154,7 @@ int main(int argc, char** argv) {
     glEnable(GL_DEPTH_TEST);
 
     frameState.camera.SetNearFar(0.1f, 40000.0f);
-    frameState.camera.SetAltitude(0);
+    frameState.camera.SetAltitude(static_cast<float>(kPI/12.0));
     frameState.camera.SetAzimuth(static_cast<float>(kPI/6.0));
     frameState.camera.SetDistance(0.01);
     frameState.camera.SetAspectRatio(static_cast<float>(width) / static_cast<float>(height));

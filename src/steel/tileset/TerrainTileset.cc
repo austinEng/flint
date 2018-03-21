@@ -151,6 +151,9 @@ void TerrainTileset::DrawTilesImpl(const flint::core::FrameState &frameState, st
     }
 }
 
+static uint32_t tilesLoadedTotal = 0;
+static uint32_t tilesLoadedTimeTotal = 0;
+static float averageTileLoadTime = 0;
 void TerrainTileset::LoadTilesImpl(steel::rendering::gl::CommandBuffer* commands) {
     std::sort(loadQueue.begin(), loadQueue.end(), [](std::shared_ptr<const TileBase> a, std::shared_ptr<const TileBase> b) {
         return std::static_pointer_cast<const TerrainTile, const TileBase>(a)->screenSpaceError > std::static_pointer_cast<const TerrainTile, const TileBase>(b)->screenSpaceError;
@@ -158,13 +161,24 @@ void TerrainTileset::LoadTilesImpl(steel::rendering::gl::CommandBuffer* commands
 
     using namespace std::chrono;
     auto start = high_resolution_clock::now();
+
+    uint32_t tilesLoaded = 0;
+    int duration;
     for (std::shared_ptr<TileBase> tile : loadQueue) {
+        tilesLoaded++;
         tile->LoadContent(commands);
         Touch(std::static_pointer_cast<TerrainTile, TileBase>(tile));
-        if (duration_cast<milliseconds>(high_resolution_clock::now() - start).count() > 10) {
+        duration = duration_cast<milliseconds>(high_resolution_clock::now() - start).count();
+        if (duration > 10) {
             break;
         }
     }
+
+    tilesLoadedTotal += tilesLoaded;
+    tilesLoadedTimeTotal += duration;
+    averageTileLoadTime = static_cast<float>(tilesLoadedTimeTotal) / tilesLoadedTotal;
+    printf("%f ms\n", averageTileLoadTime);
+
     loadQueue.clear();
 }
 
@@ -174,7 +188,6 @@ void TerrainTileset::UnloadTilesImpl(steel::rendering::gl::CommandBuffer* comman
         auto* current = node;
         auto ptr = current->tile;
         node = current->next;
-        current->tile.reset();
 
         if (ptr) {
             ptr->UnloadContent(commands);
@@ -183,6 +196,8 @@ void TerrainTileset::UnloadTilesImpl(steel::rendering::gl::CommandBuffer* comman
                 rootTiles.erase(it);
             }
         }
+
+        ptr.reset();
     }
 
     lruSentinel.next = nullptr;
