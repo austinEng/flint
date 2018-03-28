@@ -69,9 +69,21 @@ threading::WorkerBase::WorkerResponse TerrainGenerator::Update(void* data, int s
     return { updateResponseBuffer.data(), static_cast<int>(updateResponseBuffer.size()) };
 }
 
+threading::WorkerBase::WorkerResponse TerrainGenerator::UpdateFreeze(void* data, int size, void* arg) {
+    assert(size == sizeof(bool));
+    terrainTileset->freeze = *reinterpret_cast<bool*>(data);
+    return { nullptr, 0 };
+}
+
 threading::WorkerBase::WorkerResponse TerrainGenerator::UpdateShowBoundingBoxes(void* data, int size, void* arg) {
     assert(size == sizeof(bool));
     terrainTileset->showBoundingBoxes = *reinterpret_cast<bool*>(data);
+    return { nullptr, 0 };
+}
+
+threading::WorkerBase::WorkerResponse TerrainGenerator::UpdateShowTerrain(void* data, int size, void* arg) {
+    assert(size == sizeof(bool));
+    terrainTileset->showTerrain = *reinterpret_cast<bool*>(data);
     return { nullptr, 0 };
 }
 

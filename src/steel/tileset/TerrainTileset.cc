@@ -51,6 +51,8 @@ void TerrainTileset::Touch(std::shared_ptr<TerrainTile> tile) {
 }
 
 void TerrainTileset::SelectTilesImpl(const flint::core::FrameState &frameState) {
+    if (freeze) return;
+
     auto cameraIndex = (frameState.camera.GetPosition() / TERRAIN_ROOT_SIZE).template cast<int>();
 
     lruCache.Splice(lruCache.head, &lruSentinel);
@@ -132,15 +134,18 @@ void TerrainTileset::DrawTilesImpl(const flint::core::FrameState &frameState, st
     TerrainTileContentShaderProgram::GetInstance().Use(commands);
 
     using namespace steel::rendering::gl;
-    commands->Record<CommandType::Uniform1ui>(Uniform1uiCmd{ "shaderOffsets", generationMode == TerrainTilesetGenerationMode::GPU });
 
-    // Sort tiles for early Z
-    std::sort(selectedTiles.begin(), selectedTiles.end(), [](std::shared_ptr<const TileBase> a, std::shared_ptr<const TileBase> b) {
-        return std::static_pointer_cast<const TerrainTile, const TileBase>(a)->distanceToCamera < std::static_pointer_cast<const TerrainTile, const TileBase>(b)->distanceToCamera;
-    });
+    if (showTerrain) {
+        commands->Record<CommandType::Uniform1ui>(Uniform1uiCmd{ "shaderOffsets", generationMode == TerrainTilesetGenerationMode::GPU });
 
-    for (std::shared_ptr<TileBase> tile : selectedTiles) {
-        tile->Draw(frameState, commands);
+        // Sort tiles for early Z
+        std::sort(selectedTiles.begin(), selectedTiles.end(), [](std::shared_ptr<const TileBase> a, std::shared_ptr<const TileBase> b) {
+            return std::static_pointer_cast<const TerrainTile, const TileBase>(a)->distanceToCamera < std::static_pointer_cast<const TerrainTile, const TileBase>(b)->distanceToCamera;
+        });
+
+        for (std::shared_ptr<TileBase> tile : selectedTiles) {
+            tile->Draw(frameState, commands);
+        }
     }
 
     if (showBoundingBoxes) {
@@ -155,6 +160,8 @@ static uint32_t tilesLoadedTotal = 0;
 static uint32_t tilesLoadedTimeTotal = 0;
 static float averageTileLoadTime = 0;
 void TerrainTileset::LoadTilesImpl(steel::rendering::gl::CommandBuffer* commands) {
+    if (freeze) return;
+
     std::sort(loadQueue.begin(), loadQueue.end(), [](std::shared_ptr<const TileBase> a, std::shared_ptr<const TileBase> b) {
         return std::static_pointer_cast<const TerrainTile, const TileBase>(a)->screenSpaceError > std::static_pointer_cast<const TerrainTile, const TileBase>(b)->screenSpaceError;
     });

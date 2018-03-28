@@ -30,8 +30,13 @@ extern tileset::TerrainTileset* InitTerrainTileset();
 static tileset::TerrainTileset* terrainTileset = nullptr;
 static CommandBuffer* commandBuffer = nullptr;
 
+static bool freeze = false;
+static bool _freeze = freeze;
+static bool autoCamera = true;
 static bool showBoundingBoxes = false;
 static bool _showBoundingBoxes = showBoundingBoxes;
+static bool showTerrain = true;
+static bool _showTerrain = showTerrain;
 static bool drawWireframe = false;
 static bool _drawWireframe = drawWireframe;
 
@@ -47,30 +52,42 @@ static void frame(void* ptr) {
 
     glfwPollEvents();
 
-    frameState.camera.Rotate(-.5f * 3.14159f / 180.f, 0);
-    auto cameraForward = frameState.camera.GetForward();
-    cameraForward[1] = 0.f;
-    cameraForward.normalize();
-    frameState.camera.MoveGlobal(cameraForward * 300.f);
+    if (autoCamera) {
+        frameState.camera.Rotate(-.5f * 3.14159f / 180.f, 0);
+        auto cameraForward = frameState.camera.GetForward();
+        cameraForward[1] = 0.f;
+        cameraForward.normalize();
+        frameState.camera.MoveGlobal(cameraForward * 300.f);
 
-    auto cameraPos0 = frameState.camera.GetPosition();
-    auto cameraPos1 = cameraPos0 +  50.f * cameraForward;
-    auto cameraPos2 = cameraPos0 + 100.f * cameraForward;
-    auto cameraPos3 = cameraPos0 + 150.f * cameraForward;
+        auto cameraPos0 = frameState.camera.GetPosition();
+        auto cameraPos1 = cameraPos0 +  50.f * cameraForward;
+        auto cameraPos2 = cameraPos0 + 100.f * cameraForward;
+        auto cameraPos3 = cameraPos0 + 150.f * cameraForward;
 
-    auto sample0 = terrainTileset->SampleTerrain(cameraPos0[0], cameraPos0[2], 0);
-    auto sample1 = terrainTileset->SampleTerrain(cameraPos1[0], cameraPos1[2], 0);
-    auto sample2 = terrainTileset->SampleTerrain(cameraPos2[0], cameraPos2[2], 0);
-    auto sample3 = terrainTileset->SampleTerrain(cameraPos3[0], cameraPos3[2], 0);
+        auto sample0 = terrainTileset->SampleTerrain(cameraPos0[0], cameraPos0[2], 0);
+        auto sample1 = terrainTileset->SampleTerrain(cameraPos1[0], cameraPos1[2], 0);
+        auto sample2 = terrainTileset->SampleTerrain(cameraPos2[0], cameraPos2[2], 0);
+        auto sample3 = terrainTileset->SampleTerrain(cameraPos3[0], cameraPos3[2], 0);
 
-    float newHeight = std::max(std::max(std::max(sample0.height, sample1.height), sample2.height), sample3.height) + 5000.f;
+        float newHeight = std::max(std::max(std::max(sample0.height, sample1.height), sample2.height), sample3.height) + 5000.f;
 
-    constexpr float falloff = 0.95f;
-    frameState.camera.SetPosition({ cameraPos0[0], cameraPos0[1] * falloff + newHeight * (1.f - falloff), cameraPos0[2] });
+        constexpr float falloff = 0.95f;
+        frameState.camera.SetPosition({ cameraPos0[0], cameraPos0[1] * falloff + newHeight * (1.f - falloff), cameraPos0[2] });
+    }
+
+    if (freeze != _freeze) {
+        freeze = _freeze;
+        terrainGenerator->Call<&TerrainGenerator::UpdateFreeze>(&freeze, sizeof(freeze));
+    }
 
     if (showBoundingBoxes != _showBoundingBoxes) {
         showBoundingBoxes = _showBoundingBoxes;
         terrainGenerator->Call<&TerrainGenerator::UpdateShowBoundingBoxes>(&showBoundingBoxes, sizeof(showBoundingBoxes));
+    }
+
+    if (showTerrain != _showTerrain) {
+        showTerrain = _showTerrain;
+        terrainGenerator->Call<&TerrainGenerator::UpdateShowTerrain>(&showTerrain, sizeof(showTerrain));
     }
 
     if (drawWireframe != _drawWireframe) {
@@ -180,8 +197,23 @@ int main(int argc, char** argv) {
 // Define JavaScript bindings
 extern "C" {
     EMSCRIPTEN_KEEPALIVE
+    void updateFreeze(unsigned int value) {
+        _freeze = static_cast<bool>(value);
+    }
+
+    EMSCRIPTEN_KEEPALIVE
+    void updateAutoCamera(unsigned int value) {
+        autoCamera = static_cast<bool>(value);
+    }
+
+    EMSCRIPTEN_KEEPALIVE
     void updateShowBoundingBoxes(unsigned int value) {
         _showBoundingBoxes = static_cast<bool>(value);
+    }
+
+    EMSCRIPTEN_KEEPALIVE
+    void updateShowTerrain(unsigned int value) {
+        _showTerrain = static_cast<bool>(value);
     }
 
     EMSCRIPTEN_KEEPALIVE

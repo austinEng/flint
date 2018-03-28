@@ -32,7 +32,9 @@ public:
 
     LRUCache lruCache;
     TerrainTilesetGenerationMode generationMode;
+    bool freeze = false;
     bool showBoundingBoxes = false;
+    bool showTerrain = true;
     bool drawWireframe = false;
 
     TerrainTileset() = delete;
